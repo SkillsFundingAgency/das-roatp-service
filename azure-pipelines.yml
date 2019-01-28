@@ -1,4 +1,10 @@
 trigger:
+  batch: true
+  branches:
+    include:
+      - "*"
+
+pr: none
 - master
 
 workspace:
