@@ -2,16 +2,40 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "resourceEnvironmentName": {
+            "type": "string"
+        },
+        "environmentName": {
+            "type": "string"
+        },
         "sharedAppServicePlanName": {
             "type": "string"
         },
         "sharedAppServicePlanResourceGroup": {
             "type": "string"
         },
-        "apiAppServiceName": {
+        "sharedSqlServerName": {
             "type": "string"
         },
-        "environmentName": {
+        "sharedSqlResourceGroup": {
+            "type": "string"
+        },
+        "databaseSkuName": {
+            "type": "string",
+            "defaultValue": "S0"
+        },
+        "databaseTier": {
+            "type": "string",
+            "defaultValue": "Standard"
+        },
+        "logAnalyticsSubscriptionId": {
+            "type": "string",
+            "defaultValue": "[subscription().subscriptionId]"
+        },
+        "logAnalyticsResourceGroup": {
+            "type": "string"
+        },
+        "logAnalyticsWorkspaceName": {
             "type": "string"
         },
         "configurationStorageConnectionString": {
@@ -21,7 +45,12 @@
             "type": "string"
         }
     },
-    "variables": {},
+    "variables": {
+        "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
+        "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName')))]",
+        "apiAppServiceName": "[concat(variables('resourceNamePrefix'), '-roatpapi-as')]",
+        "databaseName": "[concat(variables('resourceNamePrefix'), '-roatp-db')]"
+    },
     "resources": [
         {
             "apiVersion": "2017-08-01",
@@ -30,15 +59,15 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/application-insights.json",
+                    "uri": "[concat(variables('deploymentUrlBase'),'application-insights.json')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
                     "appInsightsName": {
-                        "value": "[parameters('apiAppServiceName')]"
+                        "value": "[variables('apiAppServiceName')]"
                     },
                     "attachedService": {
-                        "value": "[parameters('apiAppServiceName')]"
+                        "value": "[variables('apiAppServiceName')]"
                     }
                 }
             },
@@ -51,12 +80,12 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/app-service.json",
+                    "uri": "[concat(variables('deploymentUrlBase'),'app-service.json')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
                     "appServiceName": {
-                        "value": "[parameters('apiAppServiceName')]"
+                        "value": "[variables('apiAppServiceName')]"
                     },
                     "appServicePlanName": {
                         "value": "[parameters('SharedAppServicePlanName')]"
@@ -94,6 +123,42 @@
             "dependsOn": [
                 "ApiAppInsights"
             ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "sqlDatabase",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('sharedSqlResourceGroup')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'sql-database.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "databaseName": {
+                        "value": "[variables('databaseName')]"
+                    },
+                    "sqlServerName": {
+                        "value": "[parameters('sharedSqlServerName')]"
+                    },
+                    "databaseSkuName": {
+                        "value": "[parameters('databaseSkuName')]"
+                    },
+                    "databaseTier": {
+                        "value": "[parameters('databaseTier')]"
+                    },
+                    "logAnalyticsSubscriptionId": {
+                        "value": "[parameters('logAnalyticsSubscriptionId')]"
+                    },
+                    "logAnalyticsResourceGroup": {
+                        "value": "[parameters('logAnalyticsResourceGroup')]"
+                    },
+                    "logAnalyticsWorkspaceName": {
+                        "value": "[parameters('logAnalyticsWorkspaceName')]"
+                    }
+                }
+            }
         }
     ],
     "outputs": {}
