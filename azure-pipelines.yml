@@ -5,7 +5,6 @@ trigger:
       - "*"
 
 pr: none
-- master
 
 workspace:
     clean: all
