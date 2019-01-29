@@ -10,8 +10,8 @@
 	[UKPRN] bigint NOT NULL,
 	[LegalName] [nvarchar] (200) NOT NULL,
 	[TradingName] [nvarchar] (200) NULL,
-	[RegisterStartDate] [datetime] NOT NULL,
-	[RegisterEndDate] [datetime] NULL,
+	[StatusStartDate] [datetime] NOT NULL,
+	[StatusEndDate] [datetime] NULL,
 	OrganisationData [nvarchar](max) NULL
 	
  CONSTRAINT [PK_Organisations] PRIMARY KEY CLUSTERED 

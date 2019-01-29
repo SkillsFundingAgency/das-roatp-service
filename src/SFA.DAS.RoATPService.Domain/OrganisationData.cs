@@ -11,11 +11,12 @@
         public string Postcode { get; set; }
         public string CompanyNumber { get; set; }
         public string CharityNumber { get; set; }
-        public bool RestrictionOnNewStarts { get; set; }
-        public DateTime? RestrictionStartDate { get; set; }
-        public DateTime? RestrictionEndDate { get; set; }
-        public DateTime? RegisterEndDate { get; set; }
+        public bool AcceptNewApprentices { get; set; }
+        public DateTime? AcceptStartDate { get; set; }
+        public DateTime? AcceptEndDate { get; set; }
         public int EndReasonId { get; set; }
         public string EndReasonDescription { get; set; }
+        public bool ParentCompanyGuarantee { get; set; }
+        public bool HasNoFinancialTrackRecord { get; set; }
     }
 }

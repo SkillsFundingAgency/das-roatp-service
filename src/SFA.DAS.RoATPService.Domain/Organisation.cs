@@ -10,8 +10,9 @@
         public long UKPRN { get; set; }
         public string LegalName { get; set; }
         public string TradingName { get; set; }
-        public DateTime RegisterStartDate { get; set; }
-        public DateTime? RegisterEndDate { get; set; }
+        public string Status { get; set; }
+        public DateTime StatusStartDate { get; set; }
+        public DateTime? StatusEndDate { get; set; }
         public OrganisationData OrganisationData { get; set; }
     }
 }
