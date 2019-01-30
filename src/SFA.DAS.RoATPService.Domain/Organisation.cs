@@ -11,8 +11,7 @@
         public string LegalName { get; set; }
         public string TradingName { get; set; }
         public string Status { get; set; }
-        public DateTime StatusStartDate { get; set; }
-        public DateTime? StatusEndDate { get; set; }
+        public DateTime StatusDate { get; set; }
         public OrganisationData OrganisationData { get; set; }
     }
 }
