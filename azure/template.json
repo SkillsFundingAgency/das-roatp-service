@@ -174,5 +174,14 @@
             }
         }
     ],
-    "outputs": {}
+    "outputs": {
+        "InternalApiAppServiceName": {
+            "type": "string",
+            "value": "[variables('internalApiAppServiceName')]"
+        },
+        "DatabaseName": {
+            "type": "string",
+            "value": "[variables('databaseName')]"
+        }
+    }
 }
