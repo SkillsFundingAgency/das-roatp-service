@@ -38,9 +38,6 @@
             _logger.LogInformation("In startup constructor.  Before GetConfig");
             Configuration = ConfigurationService
                 .GetConfig(config["EnvironmentName"], config["ConfigurationStorageConnectionString"], Version, ServiceName).Result;
-            var connectionStrings = config.GetSection("ConnectionStrings");
-            Configuration.SessionRedisConnectionString = connectionStrings["Redis"];
-            Configuration.SqlConnectionString = connectionStrings["Register"];
             _logger.LogInformation("In startup constructor.  After GetConfig");
         }
 
