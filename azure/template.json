@@ -39,10 +39,10 @@
             "type": "string"
         },
         "configurationStorageConnectionString": {
-            "type": "string"
+            "type": "securestring"
         },
         "loggingRedisConnectionString": {
-            "type": "string"
+            "type": "securestring"
         },
         "internalApiCustomHostname": {
             "type": "string",
@@ -50,7 +50,13 @@
         },
         "internalApiCertificateName": {
             "type": "string"
-        }
+        },
+        "sqlConnectionString": {
+            "type": "securestring"
+        },
+        "sessionRedisConnectionString": {
+            "type": "securestring"
+        }                
     },
     "variables": {
         "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
@@ -122,7 +128,17 @@
                                 "name": "Redis",
                                 "connectionString": "[parameters('loggingRedisConnectionString')]",
                                 "type": "Custom"
-                            }
+                            },
+                            {
+                                "name": "Storage",
+                                "connectionString": "[parameters('sqlConnectionString')]",
+                                "type": "Custom"
+                            },
+                            {
+                                "name": "Register",
+                                "connectionString": "[parameters('sessionRedisConnectionString')]",
+                                "type": "Custom"
+                            }                                                        
                         ]
                     },
                     "customHostName": {
