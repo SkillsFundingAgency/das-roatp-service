@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[OrganisationStatusEvent]
 (
-	[Id] BIGINT IDENTITY(35000,1) NOT NULL PRIMARY KEY, 
+	[Id] BIGINT IDENTITY(40000,1) NOT NULL PRIMARY KEY, 
     [OrganisationStatusId] INT NOT NULL, 
     [CreatedOn] DATETIME NOT NULL DEFAULT Getdate(), 
     [ProviderId] BIGINT NOT NULL, 
