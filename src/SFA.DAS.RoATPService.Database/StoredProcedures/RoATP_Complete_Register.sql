@@ -23,10 +23,7 @@ SELECT
 	SUBSTRING(JSON_VALUE(OrganisationData, '$.StartDate'), 9, 2) + '/' 
 	+ SUBSTRING(JSON_VALUE(OrganisationData, '$.StartDate'), 6, 2) + '/'
 	+ SUBSTRING(JSON_VALUE(OrganisationData, '$.StartDate'), 0, 5)
-	AS [Date joined],
-	o.StatusId,
-	o.OrganisationTypeId,
-	o.ProviderTypeId
+	AS [Date joined]
 	FROM Organisations o
 	INNER JOIN ProviderTypes pt
 	ON pt.Id = o.ProviderTypeId

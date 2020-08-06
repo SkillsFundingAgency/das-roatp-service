@@ -77,6 +77,7 @@
     <Build Include="Tables\OrganisationCategory.sql" />
     <Build Include="Tables\OrganisationCategoryOrgTypeProviderType.sql" />
     <Build Include="Tables\OrganisationStatusEvent.sql" />
+    <Build Include="StoredProcedures\RoATP_FAT_Data_Export.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment1.sql" />
