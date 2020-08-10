@@ -11,7 +11,6 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Services
     {
         public DatabaseService()
         {
-
             Configuration = new ConfigurationBuilder()
                 .AddJsonFile("connectionStrings.Local.json")
                 .Build();
@@ -19,10 +18,15 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Services
             {
                 SqlConnectionString = Configuration.GetConnectionString("SqlConnectionStringTest")
             };
+
+            _dbName = Configuration["DatabaseName"];
+            _testDbName = Configuration["TestDatabaseName"];
         }
 
-        public IConfiguration Configuration { get; }
-        public TestWebConfiguration WebConfiguration;
+        private IConfiguration Configuration { get; }
+        private readonly string _dbName;
+        private readonly string _testDbName;
+        public readonly TestWebConfiguration WebConfiguration;
 
         public void SetupDatabase()
         {
@@ -37,7 +41,7 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Services
                 {
                     Connection = connection,
                     CommandText =
-                        $@"DBCC CLONEDATABASE ('SFA.DAS.RoatpService.Database', 'SFA.DAS.RoatpService.Database.Test'); ALTER DATABASE [SFA.DAS.RoatpService.Database.Test] SET READ_WRITE;"
+                        $@"DBCC CLONEDATABASE ('{_dbName}', '{_testDbName}'); ALTER DATABASE [{_testDbName}] SET READ_WRITE;"
                 };
                 var reader = comm.ExecuteReader();
                 reader.Close();
@@ -102,7 +106,7 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Services
                 {
                     Connection = connection,
                     CommandText =
-                        $@"if exists(select * from sys.databases where name = 'SFA.DAS.RoatpService.Database.Test') BEGIN ALTER DATABASE [SFA.DAS.RoatpService.Database.Test] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;  DROP DATABASE [SFA.DAS.RoatpService.Database.Test]; END"
+                        $@"if exists(select * from sys.databases where name = '{_testDbName}') BEGIN ALTER DATABASE [{_testDbName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;  DROP DATABASE [{_testDbName}]; END"
                 };
                 var reader = comm.ExecuteReader();
                 reader.Close();

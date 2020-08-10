@@ -139,6 +139,7 @@ namespace SFA.DAS.RoATPService.Application.Api.StartupConfiguration
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient(x => Configuration);
             services.AddTransient<IDownloadRegisterRepository, DownloadRegisterRepository>();
+            services.AddTransient<IFatDataExportRepository, FatDataExportRepository>();
             services.AddTransient<ILookupDataRepository, LookupDataRepository>();
             services.AddTransient<IOrganisationRepository, OrganisationRepository>();
             services.AddTransient<IDuplicateCheckRepository, DuplicateCheckRepository>();

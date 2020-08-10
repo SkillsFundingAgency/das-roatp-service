@@ -24,7 +24,7 @@ namespace Tests
         {
             var webAssembly = typeof(SearchController).GetTypeInfo().Assembly;
 
-            var controllers = webAssembly.DefinedTypes.Where(c => c.BaseType == typeof(Controller)).ToList();
+            var controllers = webAssembly.DefinedTypes.Where(c => c.BaseType == typeof(Controller) || c.BaseType == typeof(ControllerBase)).ToList();
 
             foreach (var controller in controllers.Where(c => !_controllersThatDoNotRequireAuthorize.Contains(c.Name)))
             {
