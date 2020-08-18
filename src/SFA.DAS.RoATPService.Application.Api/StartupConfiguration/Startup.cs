@@ -61,6 +61,9 @@ namespace SFA.DAS.RoATPService.Application.Api.StartupConfiguration
         {
             try
             {
+                var audiences = Configuration.ApiAuthentication.Audience.Split(',');
+
+
                 services.AddAuthentication(o => { o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme; })
                     .AddJwtBearer(o =>
                     {
@@ -68,11 +71,7 @@ namespace SFA.DAS.RoATPService.Application.Api.StartupConfiguration
                         o.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                         {
                             RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
-                            ValidAudiences = new List<string>
-                            {
-                                Configuration.ApiAuthentication.Audience,
-                                Configuration.ApiAuthentication.ClientId
-                            }
+                            ValidAudiences = Configuration.ApiAuthentication.Audience.Split(',')
                         };
                         o.Events = new JwtBearerEvents()
                         {
