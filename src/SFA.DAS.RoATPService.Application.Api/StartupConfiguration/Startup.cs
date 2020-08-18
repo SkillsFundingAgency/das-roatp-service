@@ -61,9 +61,6 @@ namespace SFA.DAS.RoATPService.Application.Api.StartupConfiguration
         {
             try
             {
-                var audiences = Configuration.ApiAuthentication.Audience.Split(',');
-
-
                 services.AddAuthentication(o => { o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme; })
                     .AddJwtBearer(o =>
                     {
