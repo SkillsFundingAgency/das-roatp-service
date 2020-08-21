@@ -12,7 +12,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 namespace SFA.DAS.RoATPService.Application.Api.Controllers
 {
     [ApiController]
-    [Authorize(Roles = "RoATPServiceInternalAPI")]
+    [Authorize(Roles = "RoATPServiceInternalAPI, FATDataExport")]
     [Route("api/v1/fat-data-export")]
     public class FatDataExportController : ControllerBase
     {
