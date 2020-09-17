@@ -1,4 +1,4 @@
-﻿using System.Net.Http;
+using System.Net.Http;
 using System.Reflection;
 using Microsoft.AspNetCore.Http;
 using SFA.DAS.RoATPService.Api.Client;
@@ -151,10 +151,9 @@ namespace SFA.DAS.RoATPService.Application.Api.StartupConfiguration
             services.AddTransient<IOrganisationSearchValidator, OrganisationSearchValidator>();
             services.AddTransient<IMapCreateOrganisationRequestToCommand, MapCreateOrganisationRequestToCommand>();
             services.AddTransient<ITextSanitiser, TextSanitiser>();
-            services.AddTransient<IUkrlpApiClient, UkrlpApiClient>();
+            services.AddHttpClient<IUkrlpApiClient, UkrlpApiClient>();
             services.AddTransient<IAuditLogService, AuditLogService>();
             services.AddTransient<IOrganisationStatusManager, OrganisationStatusManager>();        
-            services.AddTransient<HttpClient>();
             services.AddTransient<IUkrlpSoapSerializer, UkrlpSoapSerializer>();
             services.AddTransient<IEventsRepository, EventsRepository>();
 
