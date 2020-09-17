@@ -1,4 +1,4 @@
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Reflection;
 using Microsoft.AspNetCore.Http;
 using SFA.DAS.RoATPService.Api.Client;
@@ -10,6 +10,8 @@ using SFA.DAS.RoATPService.Application.Mappers;
 using SFA.DAS.RoATPService.Application.Services;
 using SFA.DAS.RoATPService.Application.Validators;
 using SFA.DAS.RoATPService.Data.Helpers;
+using SFA.DAS.RoATPService.Infrastructure.ExternalServices;
+using SFA.DAS.RoATPService.Infrastructure.Interfaces;
 
 namespace SFA.DAS.RoATPService.Application.Api.StartupConfiguration
 {
@@ -157,6 +159,9 @@ namespace SFA.DAS.RoATPService.Application.Api.StartupConfiguration
             services.AddTransient<IUkrlpSoapSerializer, UkrlpSoapSerializer>();
             services.AddTransient<IEventsRepository, EventsRepository>();
 
+            services.AddTransient<IAzureClientCredentialHelper, AzureClientCredentialHelper>();
+            services.AddHttpClient<IProvideFeedbackService, ProvideFeedbackService>();
+            
             services.AddMediatR(typeof(GetProviderTypesHandler).GetTypeInfo().Assembly);
         }
 
