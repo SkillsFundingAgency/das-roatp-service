@@ -10,7 +10,7 @@ using SFA.DAS.RoATPService.Settings;
 
 namespace SFA.DAS.RoATPService.Infrastructure.ExternalServices
 {
-    public class ProvideFeedbackService
+    public class ProvideFeedbackService : IProvideFeedbackService
     {
         private readonly IWebConfiguration _configuration;
         private readonly HttpClient _client;
@@ -32,7 +32,7 @@ namespace SFA.DAS.RoATPService.Infrastructure.ExternalServices
             
             response.EnsureSuccessStatusCode();
             var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<IEnumerable<EmployerFeedbackSourceDto>>(json);
+            return JsonConvert.DeserializeObject<List<EmployerFeedbackSourceDto>>(json);
         }
 
         private async Task AddAuthHeader()
