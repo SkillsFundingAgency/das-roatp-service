@@ -29,8 +29,8 @@ namespace SFA.DAS.RoATPService.Data
                     connection.Open();
                 }
 
-                return (await connection.QueryAsync(FatDataExportStoredProcedure, 
-                    commandType: CommandType.StoredProcedure)).OfType<FatDataExportDto>().ToList();
+                return (await connection.QueryAsync<FatDataExportDto>(FatDataExportStoredProcedure, 
+                    commandType: CommandType.StoredProcedure)).ToList();
             }
         }
     }

@@ -4,7 +4,7 @@ namespace SFA.DAS.RoATPService.Domain.Models.FatDataExport
 {
     public class FatDataExport
     {
-        public int UkPrn { get; set; }
+        public long UkPrn { get; set; }
         public DateTime StatusDate { get; set; }
         public int StatusId { get; set; }
         public int OrganisationTypeId { get; set; }
