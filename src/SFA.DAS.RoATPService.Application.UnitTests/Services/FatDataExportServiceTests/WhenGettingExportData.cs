@@ -65,8 +65,8 @@ namespace SFA.DAS.RoATPService.Application.UnitTests.Services.FatDataExportServi
             var actualDataExport = actual.FirstOrDefault(c => c.UkPrn.Equals(ukPrn));
             Assert.IsNotNull(actualDataExport);
             actualDataExport.Feedback.Total.Should().Be(serviceData.Count);
-            actualDataExport.Feedback.FeedbackRating.ContainsKey("Good").Should().BeTrue();
-            actualDataExport.Feedback.FeedbackRating["Good"].Should().Be(serviceData.Count);
+            actualDataExport.Feedback.FeedbackRating.SingleOrDefault(c=>c.Key.Equals("Good")).Should().NotBeNull();
+            actualDataExport.Feedback.FeedbackRating.SingleOrDefault(c=>c.Key.Equals("Good")).Value.Should().Be(serviceData.Count);
         }
 
         [Test, MoqAutoData]

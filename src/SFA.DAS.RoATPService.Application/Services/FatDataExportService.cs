@@ -52,11 +52,11 @@ namespace SFA.DAS.RoATPService.Application.Services
             return fatDataExports;
         }
 
-        private static Dictionary<string, int> GroupFeedbackAndCount(IEnumerable<EmployerFeedbackSourceDto> filteredFeedBack)
+        private static List<KeyValuePair<string, int>> GroupFeedbackAndCount(IEnumerable<EmployerFeedbackSourceDto> filteredFeedBack)
         {
             return filteredFeedBack
                 .GroupBy(c=>c.ProviderRating)
-                .ToDictionary(c=>c.Key, val=>val.Count());
+                .ToDictionary(c=>c.Key, val=>val.Count()).ToList();
         }
 
         private static List<ProviderAttribute> GroupProviderAttributesAndCountStrengthsAndWeaknesses(IEnumerable<EmployerFeedbackSourceDto> filteredFeedBack)
