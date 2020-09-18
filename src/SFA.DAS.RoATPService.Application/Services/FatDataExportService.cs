@@ -8,7 +8,7 @@ using SFA.DAS.RoATPService.Infrastructure.Interfaces;
 
 namespace SFA.DAS.RoATPService.Application.Services
 {
-    public class FatDataExportService
+    public class FatDataExportService : IFatDataExportService
     {
         private readonly IFatDataExportRepository _repository;
         private readonly IProvideFeedbackService _service;
