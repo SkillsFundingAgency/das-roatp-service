@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SFA.DAS.RoATPService.Domain.Models.FatDataExport;
 
 namespace SFA.DAS.RoATPService.Application.Interfaces
 {
-    public interface IFatDataExportRepository
+    public interface IFatDataExportService
     {
-        Task<IEnumerable<FatDataExportDto>> GetFatDataExport();
+        Task<IEnumerable<FatDataExport>> GetData();
     }
 }

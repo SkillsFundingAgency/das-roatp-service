@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using SFA.DAS.RoATPService.Application.Interfaces;
+using SFA.DAS.RoATPService.Domain.Models.FatDataExport;
 using SFA.DAS.RoATPService.Settings;
 
 namespace SFA.DAS.RoATPService.Data
@@ -19,7 +20,7 @@ namespace SFA.DAS.RoATPService.Data
             _configuration = configuration;
         }
 
-        public async Task<IEnumerable<object>> GetFatDataExport()
+        public async Task<IEnumerable<FatDataExportDto>> GetFatDataExport()
         {
             using (var connection = new SqlConnection(_configuration.SqlConnectionString))
             {
@@ -28,8 +29,8 @@ namespace SFA.DAS.RoATPService.Data
                     connection.Open();
                 }
 
-                return (await connection.QueryAsync(FatDataExportStoredProcedure, 
-                    commandType: CommandType.StoredProcedure)).OfType<IDictionary<string, object>>().ToList();
+                return (await connection.QueryAsync<FatDataExportDto>(FatDataExportStoredProcedure, 
+                    commandType: CommandType.StoredProcedure)).ToList();
             }
         }
     }

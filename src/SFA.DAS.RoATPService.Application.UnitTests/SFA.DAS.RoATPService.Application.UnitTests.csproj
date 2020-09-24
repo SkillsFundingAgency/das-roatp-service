@@ -12,10 +12,12 @@
     <PackageReference Include="nunit" Version="3.10.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
+    <PackageReference Include="SFA.DAS.Testing.AutoFixture" Version="3.0.106" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SFA.DAS.RoATPService.Application\SFA.DAS.RoATPService.Application.csproj" />
+    <ProjectReference Include="..\SFA.DAS.RoATPService.Infrastructure\SFA.DAS.RoATPService.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

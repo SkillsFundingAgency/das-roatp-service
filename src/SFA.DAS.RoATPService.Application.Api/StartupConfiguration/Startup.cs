@@ -10,6 +10,8 @@ using SFA.DAS.RoATPService.Application.Mappers;
 using SFA.DAS.RoATPService.Application.Services;
 using SFA.DAS.RoATPService.Application.Validators;
 using SFA.DAS.RoATPService.Data.Helpers;
+using SFA.DAS.RoATPService.Infrastructure.ExternalServices;
+using SFA.DAS.RoATPService.Infrastructure.Interfaces;
 
 namespace SFA.DAS.RoATPService.Application.Api.StartupConfiguration
 {
@@ -151,13 +153,18 @@ namespace SFA.DAS.RoATPService.Application.Api.StartupConfiguration
             services.AddTransient<IOrganisationSearchValidator, OrganisationSearchValidator>();
             services.AddTransient<IMapCreateOrganisationRequestToCommand, MapCreateOrganisationRequestToCommand>();
             services.AddTransient<ITextSanitiser, TextSanitiser>();
-            services.AddTransient<IUkrlpApiClient, UkrlpApiClient>();
+            services.AddHttpClient<IUkrlpApiClient, UkrlpApiClient>();
             services.AddTransient<IAuditLogService, AuditLogService>();
             services.AddTransient<IOrganisationStatusManager, OrganisationStatusManager>();        
-            services.AddTransient<HttpClient>();
             services.AddTransient<IUkrlpSoapSerializer, UkrlpSoapSerializer>();
             services.AddTransient<IEventsRepository, EventsRepository>();
 
+            services.AddTransient<IAzureClientCredentialHelper, AzureClientCredentialHelper>();
+            services.AddHttpClient<IProvideFeedbackService, ProvideFeedbackService>(
+                options=> options.Timeout = TimeSpan.FromMinutes(1)
+                );
+            services.AddTransient<IFatDataExportService, FatDataExportService>();
+            
             services.AddMediatR(typeof(GetProviderTypesHandler).GetTypeInfo().Assembly);
         }
 
