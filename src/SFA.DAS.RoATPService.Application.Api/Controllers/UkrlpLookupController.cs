@@ -51,9 +51,9 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
             return Ok(providerData);
         }
         
-        [Route("lookup/many/{ukprns}")]
+        [Route("lookup/many")]
         [HttpGet]
-        public async Task<IActionResult> UkrlpGetAll(List<long> ukprns)
+        public async Task<IActionResult> UkrlpGetAll([FromQuery]List<long> ukprns)
         {
             UkprnLookupResponse providerData;
 
