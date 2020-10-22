@@ -50,6 +50,30 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
             }
             return Ok(providerData);
         }
+        
+        [Route("lookup/many/{ukprns}")]
+        [HttpGet]
+        public async Task<IActionResult> UkrlpGetAll(List<long> ukprns)
+        {
+            UkprnLookupResponse providerData;
+
+            try
+            {
+                providerData = await _retryPolicy.ExecuteAsync(context => _apiClient.GetListOfTrainingProviders(ukprns), new Context());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Unable to retrieve results from UKRLP", ex);
+                providerData = new UkprnLookupResponse
+                {
+                    Success = false,
+                    Results = new List<ProviderDetails>()
+                };
+            }
+            return Ok(providerData);
+        }
+
+
 
         private AsyncRetryPolicy GetRetryPolicy()
         {
