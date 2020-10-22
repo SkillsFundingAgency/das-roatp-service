@@ -1,25 +1,26 @@
-﻿namespace SFA.DAS.RoATPService.Api.Client
+﻿using System.Linq;
+
+namespace SFA.DAS.RoATPService.Api.Client
 {
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Text;
     using System.Threading.Tasks;
-    using AutoMapper;
     using global::AutoMapper;
     using Interfaces;
     using Microsoft.Extensions.Logging;
-    using SFA.DAS.RoATPService.Api.Client.Models.Ukrlp;
-    using SFA.DAS.RoATPService.Settings;
+    using Models.Ukrlp;
+    using Settings;
 
     public class UkrlpApiClient : IUkrlpApiClient
     {
         private readonly ILogger<UkrlpApiClient> _logger;
 
-        private IWebConfiguration _config;
+        private readonly IWebConfiguration _config;
 
-        private HttpClient _httpClient;
+        private readonly HttpClient _httpClient;
 
-        private IUkrlpSoapSerializer _serializer;
+        private readonly IUkrlpSoapSerializer _serializer;
 
         public UkrlpApiClient(ILogger<UkrlpApiClient> logger, IWebConfiguration config, HttpClient httpClient, IUkrlpSoapSerializer serializer)
         {
@@ -27,6 +28,14 @@
             _config = config;
             _httpClient = httpClient;
             _serializer = serializer;
+        }
+
+        public async Task<UkprnLookupResponse> GetListOfTrainingProviders(List<long> ukprns)
+        {
+            var request = _serializer.BuildGetAllUkrlpSoapRequest(ukprns,_config.UkrlpApiAuthentication.StakeholderId,
+                _config.UkrlpApiAuthentication.QueryId);
+
+            return await GetUkprnLookupResponse(request);
         }
 
         public async Task<UkprnLookupResponse> GetTrainingProviderByUkprn(long ukprn)
@@ -38,6 +47,11 @@
             var request = _serializer.BuildUkrlpSoapRequest(ukprn, _config.UkrlpApiAuthentication.StakeholderId,
                 _config.UkrlpApiAuthentication.QueryId);
 
+            return await GetUkprnLookupResponse(request);
+        }
+
+        private async Task<UkprnLookupResponse> GetUkprnLookupResponse(string request)
+        {
             var requestMessage =
                 new HttpRequestMessage(HttpMethod.Post, _config.UkrlpApiAuthentication.ApiBaseAddress)
                 {
@@ -56,19 +70,13 @@
                 return await Task.FromResult(failureResponse);
             }
 
-            string soapXml = await responseMessage.Content.ReadAsStringAsync();
+            var soapXml = await responseMessage.Content.ReadAsStringAsync();
             var matchingProviderRecords = _serializer.DeserialiseMatchingProviderRecordsResponse(soapXml);
-
-            ProviderDetails providerDetails = null;
 
             if (matchingProviderRecords != null)
             {
-                providerDetails = Mapper.Map<ProviderDetails>(matchingProviderRecords);
+                var result = matchingProviderRecords.Select(Mapper.Map<ProviderDetails>).ToList();
 
-                var result = new List<ProviderDetails>
-                {
-                    providerDetails
-                };
                 var resultsFound = new UkprnLookupResponse
                 {
                     Success = true,
@@ -85,7 +93,6 @@
                 };
                 return await Task.FromResult(noResultsFound);
             }
-
         }
     }
 }
