@@ -11,7 +11,7 @@ using SFA.DAS.RoATPService.Api.Client.Models.Ukrlp;
 
 namespace SFA.DAS.RoATPService.Application.Api.Controllers
 {
-    [Authorize(Roles = "RoATPServiceInternalAPI")]
+    [Authorize(Roles = "RoATPServiceInternalAPI,FATDataExport")]
     [Route("api/v1/ukrlp")]
     public class UkrlpLookupController : Controller
     {
