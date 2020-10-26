@@ -11,7 +11,7 @@ using SFA.DAS.RoATPService.Api.Client.Models.Ukrlp;
 
 namespace SFA.DAS.RoATPService.Application.Api.Controllers
 {
-    [Authorize(Roles = "RoATPServiceInternalAPI")]
+    [Authorize(Roles = "RoATPServiceInternalAPI,FATDataExport")]
     [Route("api/v1/ukrlp")]
     public class UkrlpLookupController : Controller
     {
@@ -50,6 +50,30 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
             }
             return Ok(providerData);
         }
+        
+        [Route("lookup/many")]
+        [HttpGet]
+        public async Task<IActionResult> UkrlpGetAll([FromQuery]List<long> ukprns)
+        {
+            UkprnLookupResponse providerData;
+
+            try
+            {
+                providerData = await _retryPolicy.ExecuteAsync(context => _apiClient.GetListOfTrainingProviders(ukprns), new Context());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Unable to retrieve results from UKRLP", ex);
+                providerData = new UkprnLookupResponse
+                {
+                    Success = false,
+                    Results = new List<ProviderDetails>()
+                };
+            }
+            return Ok(providerData);
+        }
+
+
 
         private AsyncRetryPolicy GetRetryPolicy()
         {

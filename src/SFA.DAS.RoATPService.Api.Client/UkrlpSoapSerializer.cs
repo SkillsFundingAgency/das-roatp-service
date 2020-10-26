@@ -1,6 +1,7 @@
 ﻿using SFA.DAS.RoATPService.Api.Client.Interfaces;
 using SFA.DAS.RoATPService.Api.Client.Models.Ukrlp;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml.XPath;
@@ -9,6 +10,21 @@ namespace SFA.DAS.RoATPService.Api.Client
 {
     public class UkrlpSoapSerializer : IUkrlpSoapSerializer
     {
+        public string BuildGetAllUkrlpSoapRequest(List<long> ukprns, string stakeholderId, string queryId)
+        {
+            var selectionCriteriaElement = new XElement("SelectionCriteria",
+                new XElement("UnitedKingdomProviderReferenceNumberList", ukprns
+                    .Select(ukprn => new XElement("UnitedKingdomProviderReferenceNumber", new XText(ukprn.ToString())))
+                    .ToArray()),
+                new XElement("StakeholderId", stakeholderId),
+                new XElement("CriteriaCondition", new XText("OR")),
+                new XElement("ApprovedProvidersOnly", "No"),
+                new XElement("ProviderStatus", "A")
+            );
+            
+            return BuildSoapRequest(queryId, selectionCriteriaElement);
+        }
+        
         public string BuildUkrlpSoapRequest(long ukprn, string stakeholderId, string queryId)
         {
             var selectionCriteriaElement = new XElement("SelectionCriteria",
@@ -20,6 +36,11 @@ namespace SFA.DAS.RoATPService.Api.Client
                 new XElement("ProviderStatus", "A")
             );
 
+            return BuildSoapRequest(queryId, selectionCriteriaElement);
+        }
+
+        private static string BuildSoapRequest(string queryId, XElement selectionCriteriaElement)
+        {
             var queryIdElement = new XElement(XName.Get("QueryId"), new XText(queryId));
 
             XNamespace soapenv = "http://schemas.xmlsoap.org/soap/envelope/";
@@ -40,51 +61,57 @@ namespace SFA.DAS.RoATPService.Api.Client
             return soapEnvelope.ToString();
         }
 
-        public MatchingProviderRecords DeserialiseMatchingProviderRecordsResponse(string soapXml)
+        public List<MatchingProviderRecords> DeserialiseMatchingProviderRecordsResponse(string soapXml)
         {
             var soapDocument = XDocument.Parse(soapXml);
-            var queryResponse = soapDocument.XPathSelectElement("//MatchingProviderRecords");
+            var queryResponses = soapDocument.XPathSelectElements("//MatchingProviderRecords");
 
-            if (queryResponse == null)
+            if (queryResponses == null)
             {
                 return null;
             }
 
-            // UKRLP SOAP service doesn't return contacts and verification details arrays in a 
-            // wrapping tag, so can't serialize using XmlArray
-            var matchingRecordsSerializer = new XmlSerializer(typeof(MatchingProviderRecords));
-            var contactSerializer = new XmlSerializer(typeof(ProviderContactStructure));
-            var verificationDetailsSerializer = new XmlSerializer(typeof(VerificationDetailsStructure));
+            var matches = new List<MatchingProviderRecords>();
 
-            MatchingProviderRecords matchingProviderRecords =
-                (MatchingProviderRecords) matchingRecordsSerializer.Deserialize(queryResponse.CreateReader());
-
-            var contactElements = queryResponse.Descendants(XName.Get("ProviderContact"));
-            if (contactElements != null)
+            foreach (var queryResponse in queryResponses)
             {
-                matchingProviderRecords.ProviderContacts = new List<ProviderContactStructure>();
-                foreach (var contactElement in contactElements)
-                {
-                    var contact =
-                        (ProviderContactStructure) contactSerializer.Deserialize(contactElement.CreateReader());
-                    matchingProviderRecords.ProviderContacts.Add(contact);
-                }
-            }
+                // UKRLP SOAP service doesn't return contacts and verification details arrays in a 
+                // wrapping tag, so can't serialize using XmlArray
+                var matchingRecordsSerializer = new XmlSerializer(typeof(MatchingProviderRecords));
+                var contactSerializer = new XmlSerializer(typeof(ProviderContactStructure));
+                var verificationDetailsSerializer = new XmlSerializer(typeof(VerificationDetailsStructure));
 
-            var verificationElements = queryResponse.Descendants(XName.Get("VerificationDetails"));
-            if (verificationElements != null)
-            {
-                matchingProviderRecords.VerificationDetails = new List<VerificationDetailsStructure>();
-                foreach (var verificationElement in verificationElements)
-                {
-                    var verification =
-                        (VerificationDetailsStructure) verificationDetailsSerializer.Deserialize(verificationElement
-                            .CreateReader());
-                    matchingProviderRecords.VerificationDetails.Add(verification);
-                }
-            }
+                MatchingProviderRecords matchingProviderRecords =
+                    (MatchingProviderRecords) matchingRecordsSerializer.Deserialize(queryResponse.CreateReader());
 
-            return matchingProviderRecords;
+                var contactElements = queryResponse.Descendants(XName.Get("ProviderContact"));
+                if (contactElements != null)
+                {
+                    matchingProviderRecords.ProviderContacts = new List<ProviderContactStructure>();
+                    foreach (var contactElement in contactElements)
+                    {
+                        var contact =
+                            (ProviderContactStructure) contactSerializer.Deserialize(contactElement.CreateReader());
+                        matchingProviderRecords.ProviderContacts.Add(contact);
+                    }
+                }
+
+                var verificationElements = queryResponse.Descendants(XName.Get("VerificationDetails"));
+                if (verificationElements != null)
+                {
+                    matchingProviderRecords.VerificationDetails = new List<VerificationDetailsStructure>();
+                    foreach (var verificationElement in verificationElements)
+                    {
+                        var verification =
+                            (VerificationDetailsStructure) verificationDetailsSerializer.Deserialize(verificationElement
+                                .CreateReader());
+                        matchingProviderRecords.VerificationDetails.Add(verification);
+                    }
+                }
+                matches.Add(matchingProviderRecords);
+            }
+            
+            return matches;
         }
     }
 }

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoMapper;
 
 namespace SFA.DAS.RoATPService.Api.Client.IntegrationTests
@@ -63,7 +65,7 @@ namespace SFA.DAS.RoATPService.Api.Client.IntegrationTests
             matchResult.ContactDetails.FirstOrDefault(x => x.ContactType == "L").Should().NotBeNull();
             matchResult.VerificationDate.Should().NotBeNull();
             matchResult.VerificationDetails
-                .FirstOrDefault(x => x.VerificationAuthority == "Sole Trader or Non-limited Partnership")
+                .FirstOrDefault(x => x.VerificationAuthority == "Charity Commission")
                 .Should().NotBeNull();
             matchResult.ProviderAliases.Count.Should().Be(1);
         }
@@ -112,6 +114,21 @@ namespace SFA.DAS.RoATPService.Api.Client.IntegrationTests
 
             result.Should().NotBeNull();
             result.Results.Count.Should().Be(0);
+        }
+
+        [Test]
+        public async Task Then_Returns_Multiple_Ukprns()
+        {
+            //Arrange
+            var ukprns = new List<long> {10012385, 10006287};
+            var client = new UkrlpApiClient(_logger.Object, _config.Object, new HttpClient(),
+                new UkrlpSoapSerializer());
+            
+            //Act
+            var result = await client.GetListOfTrainingProviders(ukprns);
+
+            result.Results.Count.Should().Be(2);
+            result.Results.Select(c => c.UKPRN).Should().Contain(ukprns.Select(c=>c.ToString()));
         }
     }
 }
