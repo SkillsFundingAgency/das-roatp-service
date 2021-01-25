@@ -10,6 +10,7 @@ namespace SFA.DAS.RoATPService.Domain.Models.FatDataExport
         public int OrganisationTypeId { get; set; }
         public int ProviderTypeId { get; set; }
         public FatProviderFeedbackData Feedback { get ; set ; }
+        public string LegalName { get ; set ; }
 
         public static implicit operator FatDataExport(FatDataExportDto source)
         {
@@ -19,7 +20,8 @@ namespace SFA.DAS.RoATPService.Domain.Models.FatDataExport
                 StatusId = source.StatusId,
                 UkPrn = source.UkPrn,
                 OrganisationTypeId = source.OrganisationTypeId,
-                ProviderTypeId = source.ProviderTypeId
+                ProviderTypeId = source.ProviderTypeId,
+                LegalName = source.LegalName
             };
         }
     }
