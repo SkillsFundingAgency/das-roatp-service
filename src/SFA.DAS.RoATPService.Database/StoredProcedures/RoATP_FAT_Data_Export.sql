@@ -6,7 +6,8 @@ SELECT
 	o.StatusDate,
 	o.StatusId,
 	o.OrganisationTypeId,
-	o.ProviderTypeId
+	o.ProviderTypeId,
+    o.LegalName
 	FROM Organisations o
 	ORDER BY o.LegalName ASC
 END
