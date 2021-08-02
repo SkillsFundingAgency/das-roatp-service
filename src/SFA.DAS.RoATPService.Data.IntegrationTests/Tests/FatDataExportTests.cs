@@ -42,7 +42,7 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Tests
                     new ProviderTypeModel {Id = 4, Status = "4", ProviderType = "4", CreatedAt = DateTime.Now, CreatedBy = "TestSystem" }
                 });
 
-            _repository = new FatDataExportRepository(new DatabaseService().WebConfiguration);
+            _repository = new FatDataExportRepository(new DatabaseService().DbConnectionHelper);
         }
 
         [Test]

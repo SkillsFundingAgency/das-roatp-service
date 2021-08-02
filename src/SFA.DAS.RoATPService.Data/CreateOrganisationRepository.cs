@@ -1,34 +1,28 @@
-﻿using System;
-using System.Data;
-using System.Data.SqlClient;
-using System.Threading.Tasks;
-using Dapper;
-using SFA.DAS.RoatpService.Data.DapperTypeHandlers;
-using SFA.DAS.RoATPService.Application.Commands;
-using SFA.DAS.RoATPService.Application.Interfaces;
-using SFA.DAS.RoATPService.Domain;
-using SFA.DAS.RoATPService.Settings;
-
-namespace SFA.DAS.RoATPService.Data
+﻿namespace SFA.DAS.RoATPService.Data
 {
+    using System;
+    using System.Threading.Tasks;
+    using Dapper;
+    using SFA.DAS.RoatpService.Data.DapperTypeHandlers;
+    using SFA.DAS.RoATPService.Application.Commands;
+    using SFA.DAS.RoATPService.Application.Interfaces;
+    using SFA.DAS.RoATPService.Domain;
+    using SFA.DAS.RoATPService.Infrastructure.Interfaces;
+
     public class CreateOrganisationRepository: ICreateOrganisationRepository
     {
+        private readonly IDbConnectionHelper _dbConnectionHelper;
 
-        private readonly IWebConfiguration _configuration;
-
-        public CreateOrganisationRepository(IWebConfiguration configuration)
+        public CreateOrganisationRepository(IDbConnectionHelper dbConnectionHelper)
         {
-            _configuration = configuration;
+            _dbConnectionHelper = dbConnectionHelper;
             SqlMapper.AddTypeHandler(typeof(OrganisationData), new OrganisationDataHandler());
         }
 
         public async Task<Guid?> CreateOrganisation(CreateOrganisationCommand command)
         {
-            using (var connection = new SqlConnection(_configuration.SqlConnectionString))
+            using (var connection = _dbConnectionHelper.GetDatabaseConnection())
             {
-                if (connection.State != ConnectionState.Open)
-                    await connection.OpenAsync();
-
                 var startDate = command.StartDate;
                 var organisationId = Guid.NewGuid();
                 var createdAt = DateTime.Now;
@@ -79,9 +73,8 @@ namespace SFA.DAS.RoATPService.Data
                         command.StatusDate,
                         organisationData
                     });
-                var success = await Task.FromResult(organisationsCreated > 0);
 
-                if (success)
+                if (organisationsCreated > 0)
                     return organisationId;
 
                 return null;

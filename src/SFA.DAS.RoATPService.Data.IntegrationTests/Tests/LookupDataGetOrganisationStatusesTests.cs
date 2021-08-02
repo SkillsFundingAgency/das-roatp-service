@@ -26,7 +26,7 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Tests
         [OneTimeSetUp]
         public void Before_the_tests()
         {
-            _lookupRepository = new LookupDataRepository(_databaseService.WebConfiguration, _cacheHelper);
+            _lookupRepository = new LookupDataRepository(_databaseService.DbConnectionHelper, _cacheHelper);
             _organisationValidator = new OrganisationValidator(null, _lookupRepository, null);
             _organisationStatusId1 = 10;
             _organisationStatusId2 = 20;

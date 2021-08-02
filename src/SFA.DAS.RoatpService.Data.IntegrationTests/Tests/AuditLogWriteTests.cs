@@ -36,7 +36,7 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Tests
             _fieldChanged = "trading name 1";
             _previousValue = "Trainer Trading Name";
             _newValue = "ANDERSON TRAINING LTD";
-            _repository = new UpdateOrganisationRepository(_databaseService.WebConfiguration);
+            _repository = new UpdateOrganisationRepository(_databaseService.DbConnectionHelper);
             var auditData = new AuditData
             {
                 OrganisationId =_organisationId,

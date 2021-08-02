@@ -40,8 +40,8 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Tests
             _newApplicationDeterminedDate = DateTime.Today.AddDays(-1);
             _organisationUkprn = 11114433;
             _organisationId = Guid.NewGuid();
-            _updateOrganisationRepository = new UpdateOrganisationRepository(_databaseService.WebConfiguration);
-            _repository = new OrganisationRepository(_databaseService.WebConfiguration);
+            _updateOrganisationRepository = new UpdateOrganisationRepository(_databaseService.DbConnectionHelper);
+            _repository = new OrganisationRepository(_databaseService.DbConnectionHelper);
             _status = new OrganisationStatusModel { Id = _organisationStatusId, Status = "Live", CreatedAt = DateTime.Now, CreatedBy = "TestSystem" };
             OrganisationStatusHandler.InsertRecord(_status);
             _providerType = new ProviderTypeModel { Id = _providerTypeId, ProviderType = "provider type 10", Description = "provider type description", CreatedAt = DateTime.Now, CreatedBy = "TestSystem", Status = "Live" };

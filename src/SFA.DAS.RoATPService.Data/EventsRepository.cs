@@ -1,29 +1,24 @@
-﻿using System;
-using System.Data;
-using System.Data.SqlClient;
-using System.Threading.Tasks;
-using Dapper;
-using SFA.DAS.RoATPService.Application.Interfaces;
-using SFA.DAS.RoATPService.Settings;
-
-namespace SFA.DAS.RoATPService.Data
+﻿namespace SFA.DAS.RoATPService.Data
 {
+    using System;
+    using System.Threading.Tasks;
+    using Dapper;
+    using SFA.DAS.RoATPService.Application.Interfaces;
+    using SFA.DAS.RoATPService.Infrastructure.Interfaces;
+
     public class EventsRepository : IEventsRepository
     {
-        private readonly IWebConfiguration _configuration;
+        private readonly IDbConnectionHelper _dbConnectionHelper;
 
-        public EventsRepository(IWebConfiguration configuration)
+        public EventsRepository(IDbConnectionHelper dbConnectionHelper)
         {
-            _configuration = configuration;
+            _dbConnectionHelper = dbConnectionHelper;
         }
 
         public async Task<bool> AddOrganisationStatusEvents(long ukprn, int organisationStatusId, DateTime createdOn)
         {
-            using (var connection = new SqlConnection(_configuration.SqlConnectionString))
+            using (var connection = _dbConnectionHelper.GetDatabaseConnection())
             {
-                if (connection.State != ConnectionState.Open)
-                    await connection.OpenAsync();
-
                 var sql = $@"INSERT INTO [dbo].[OrganisationStatusEvent]
                                     ([OrganisationStatusId]
                                     ,[CreatedOn]
@@ -38,18 +33,15 @@ namespace SFA.DAS.RoATPService.Data
                         createdOn,
                         ukprn
                     });
-                var success = await Task.FromResult(eventsCreated > 0);
-                return success;
+
+                return eventsCreated > 0;
             }
         }
 
         public async Task<bool> AddOrganisationStatusEventsFromOrganisationId(Guid organisationId, int organisationStatusId, DateTime createdOn)
         {
-            using (var connection = new SqlConnection(_configuration.SqlConnectionString))
+            using (var connection = _dbConnectionHelper.GetDatabaseConnection())
             {
-                if (connection.State != ConnectionState.Open)
-                    await connection.OpenAsync();
-
                 var sql = $@"INSERT INTO [dbo].[OrganisationStatusEvent]
                                     ([OrganisationStatusId]
                                     ,[CreatedOn]
@@ -64,8 +56,8 @@ namespace SFA.DAS.RoATPService.Data
                         createdOn,
                         organisationId
                     });
-                var success = await Task.FromResult(eventsCreated > 0);
-                return success;
+
+                return eventsCreated > 0;
             }
         }
     }

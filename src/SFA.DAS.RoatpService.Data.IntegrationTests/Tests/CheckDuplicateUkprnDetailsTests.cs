@@ -23,7 +23,6 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Tests
         private long _organisationUkprn;
         private string _legalName;
         private Guid _organisationId;
-        private ILogger<DuplicateCheckRepository> _logger;
 
         [OneTimeSetUp]
         public void setup_organisation_is_added()
@@ -34,7 +33,7 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Tests
             _organisationUkprn = 11114433;
             _legalName = "Legal name 1";
             _organisationId = Guid.NewGuid();
-            _repository = new DuplicateCheckRepository(_databaseService.WebConfiguration, _logger);
+            _repository = new DuplicateCheckRepository(_databaseService.DbConnectionHelper);
             _status1 = new OrganisationStatusModel { Id = _organisationStatusId1, Status = "Live", CreatedAt = DateTime.Now, CreatedBy = "TestSystem" };
             OrganisationStatusHandler.InsertRecord(_status1);
             _providerType1 = new ProviderTypeModel { Id = _providerTypeId1, ProviderType = "provider type 10", Description = "provider type description", CreatedAt = DateTime.Now, CreatedBy = "TestSystem", Status = "Live" };

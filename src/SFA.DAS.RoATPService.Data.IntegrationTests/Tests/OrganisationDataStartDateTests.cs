@@ -28,7 +28,7 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Tests
             _organisationStatusId1 = 1;
             _providerTypeId1 = ProviderType.MainProvider;
             _organisationTypeId1 = 100;
-            _repository = new CreateOrganisationRepository(_databaseService.WebConfiguration);
+            _repository = new CreateOrganisationRepository(_databaseService.DbConnectionHelper);
             _status1 = new OrganisationStatusModel { Id = _organisationStatusId1, Status = "Live", CreatedAt = DateTime.Now, CreatedBy = "TestSystem" };
             OrganisationStatusHandler.InsertRecord(_status1);
             _providerType1 = new ProviderTypeModel { Id = _providerTypeId1, ProviderType = "provider type 10", Description = "provider type description", CreatedAt = DateTime.Now, CreatedBy = "TestSystem", Status = "Live" };

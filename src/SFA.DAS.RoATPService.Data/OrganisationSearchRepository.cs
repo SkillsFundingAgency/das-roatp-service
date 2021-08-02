@@ -1,26 +1,24 @@
 ﻿namespace SFA.DAS.RoATPService.Data
 {
     using System;
-    using System.Data;
-    using System.Data.SqlClient;
     using System.Linq;
     using System.Threading.Tasks;
     using Application.Interfaces;
     using Dapper;
-    using Domain;
+    using SFA.DAS.RoATPService.Domain;
     using Microsoft.Extensions.Configuration;
-    using Settings;
     using SFA.DAS.RoatpService.Data.DapperTypeHandlers;
     using SFA.DAS.RoATPService.Api.Types.Models;
+    using SFA.DAS.RoATPService.Infrastructure.Interfaces;
 
     public class OrganisationSearchRepository : IOrganisationSearchRepository
     {
-        private IWebConfiguration _webConfiguration;
-        private IConfiguration _appConfiguration;
+        private readonly IDbConnectionHelper _dbConnectionHelper;
+        private readonly IConfiguration _appConfiguration;
 
-        public OrganisationSearchRepository(IWebConfiguration webConfiguration, IConfiguration appConfiguration)
+        public OrganisationSearchRepository(IDbConnectionHelper dbConnectionHelper, IConfiguration appConfiguration)
         {
-            _webConfiguration = webConfiguration;
+            _dbConnectionHelper = dbConnectionHelper;
             _appConfiguration = appConfiguration;
             SqlMapper.AddTypeHandler(typeof(OrganisationData), new OrganisationDataHandler());
         }
@@ -29,18 +27,13 @@
         {
             long ukPrnValue = Convert.ToInt64(ukPrn);
 
-            var connectionString = _webConfiguration.SqlConnectionString;
-
-            using (var connection = new SqlConnection(connectionString))
+            using (var connection = _dbConnectionHelper.GetDatabaseConnection())
             {
-                if (connection.State != ConnectionState.Open)
-                    await connection.OpenAsync();
-
-                var sql = $"select * from [Organisations] o " +
-                          "inner join ProviderTypes pt on o.ProviderTypeId = pt.Id  " +
-                          "inner join OrganisationTypes ot on o.OrganisationTypeId = ot.Id " +
-                          "inner join OrganisationStatus os on o.StatusId = os.Id " +
-                          "where UKPRN = @ukPrnValue";
+                const string sql = "select * from [Organisations] o " +
+                                   "inner join ProviderTypes pt on o.ProviderTypeId = pt.Id  " +
+                                   "inner join OrganisationTypes ot on o.OrganisationTypeId = ot.Id " +
+                                   "inner join OrganisationStatus os on o.StatusId = os.Id " +
+                                   "where UKPRN = @ukPrnValue";
 
                 var organisations = await connection.QueryAsync<Organisation, ProviderType, OrganisationType,
                     OrganisationStatus, Organisation>
@@ -57,7 +50,8 @@
                     SearchResults = organisations,
                     TotalCount = organisations.Count()
                 };
-                return await Task.FromResult(searchResults);
+
+                return searchResults;
             }
          }
 
@@ -66,23 +60,18 @@
             int rowLimit = 5;
             int.TryParse(_appConfiguration["OrganisationSearchResultsLimit"], out rowLimit);
 
-            var connectionString = _webConfiguration.SqlConnectionString;
-
             var organisationNameFilter = $"%{organisationName}%";
        
-            using (var connection = new SqlConnection(connectionString))
+            using (var connection = _dbConnectionHelper.GetDatabaseConnection())
             {
-                if (connection.State != ConnectionState.Open)
-                    await connection.OpenAsync();
-
-                var sql = $"select top (@rowLimit) * from [Organisations] o " +
-                            "inner join ProviderTypes pt on o.ProviderTypeId = pt.Id " +
-                            "inner join OrganisationTypes ot on o.OrganisationTypeId = ot.Id " +
-                            "inner join OrganisationStatus os on o.StatusId = os.Id " +
-                            "where o.LegalName LIKE @organisationNameFilter " +
-                            "order by legalname asc; " +
-                            "select count(*) from[Organisations] " +
-                            "where LegalName like @organisationNameFilter";
+                const string sql = "select top (@rowLimit) * from [Organisations] o " +
+                                   "inner join ProviderTypes pt on o.ProviderTypeId = pt.Id " +
+                                   "inner join OrganisationTypes ot on o.OrganisationTypeId = ot.Id " +
+                                   "inner join OrganisationStatus os on o.StatusId = os.Id " +
+                                   "where o.LegalName LIKE @organisationNameFilter " +
+                                   "order by legalname asc; " +
+                                   "select count(*) from[Organisations] " +
+                                   "where LegalName like @organisationNameFilter";
                 var searchQuery = await connection.QueryMultipleAsync
                     (sql, new { rowLimit, organisationNameFilter });
 
@@ -104,7 +93,7 @@
                     TotalCount = resultCount
                 };
 
-                return await Task.FromResult(searchResult);
+                return searchResult;
             }
         }
     }
