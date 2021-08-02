@@ -241,7 +241,7 @@
                     "update [Organisations] set OrganisationData = JSON_MODIFY(OrganisationData, '$.ApplicationDeterminedDate', @applicationDeterminedDateValue), UpdatedBy = @updatedBy, UpdatedAt = @updatedAt " +
                     "WHERE Id = @organisationId";
 
-                int recordsAffected = await connection.ExecuteAsync(updateSql, new { applicationDeterminedDateValue = applicationDeterminedDateValue, organisationId, updatedBy, updatedAt });
+                int recordsAffected = await connection.ExecuteAsync(updateSql, new { applicationDeterminedDateValue, organisationId, updatedBy, updatedAt });
 
                 return recordsAffected > 0;
             }
