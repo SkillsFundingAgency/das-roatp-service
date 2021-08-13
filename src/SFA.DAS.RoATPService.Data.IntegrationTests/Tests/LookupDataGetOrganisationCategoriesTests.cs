@@ -27,7 +27,7 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Tests
         [OneTimeSetUp]
         public void Before_the_tests()
         {
-            _lookupRepository = new LookupDataRepository(_databaseService.WebConfiguration, null);
+            _lookupRepository = new LookupDataRepository(_databaseService.DbConnectionHelper, null);
 
             _providerTypeId1 = 1;
             _providerTypeId2 = 2;

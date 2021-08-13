@@ -1,36 +1,26 @@
 ﻿namespace SFA.DAS.RoATPService.Data
 {
     using System;
-    using System.Data;
-    using System.Data.SqlClient;
     using System.Linq;
     using System.Threading.Tasks;
     using Application.Interfaces;
     using Dapper;
-    using Microsoft.Extensions.Logging;
-    using Settings;
     using SFA.DAS.RoATPService.Api.Types.Models;
+    using SFA.DAS.RoATPService.Infrastructure.Interfaces;
 
     public class DuplicateCheckRepository : IDuplicateCheckRepository
     {
-        private IWebConfiguration _configuration;
-        private ILogger<DuplicateCheckRepository> _logger;
+        private readonly IDbConnectionHelper _dbConnectionHelper;
 
-        public DuplicateCheckRepository(IWebConfiguration configuration, ILogger<DuplicateCheckRepository> logger)
+        public DuplicateCheckRepository(IDbConnectionHelper dbConnectionHelper)
         {
-            _configuration = configuration;
-            _logger = logger;
+            _dbConnectionHelper = dbConnectionHelper;
         }
 
         public async Task<DuplicateCheckResponse> DuplicateUKPRNExists(Guid organisationId, long ukprn)
         {
-            var connectionString = _configuration.SqlConnectionString;
-
-            using (var connection = new SqlConnection(connectionString))
+            using (var connection = _dbConnectionHelper.GetDatabaseConnection())
             {
-                if (connection.State != ConnectionState.Open)
-                    await connection.OpenAsync();
-
                 var sql = "select LegalName AS DuplicateOrganisationName, " +
                           "CASE WHEN LegalName IS NOT NULL THEN 1 ELSE 0 END AS DuplicateFound, " +
                           "Id AS DuplicateOrganisationId " +
@@ -51,13 +41,8 @@
 
         public async Task<DuplicateCheckResponse> DuplicateCompanyNumberExists(Guid organisationId, string companyNumber)
         {
-            var connectionString = _configuration.SqlConnectionString;
-
-            using (var connection = new SqlConnection(connectionString))
+            using (var connection = _dbConnectionHelper.GetDatabaseConnection())
             {
-                if (connection.State != ConnectionState.Open)
-                    await connection.OpenAsync();
-
                 var sql = "select LegalName FROM [Organisations] " +
                           "WHERE JSON_VALUE(OrganisationData, '$.CompanyNumber') = @companyNumber " +
                           "AND Id != @organisationId";
@@ -65,7 +50,7 @@
 
                 DuplicateCheckResponse response = new DuplicateCheckResponse
                 {
-                    DuplicateFound = !String.IsNullOrWhiteSpace(duplicateLegalName),
+                    DuplicateFound = !string.IsNullOrWhiteSpace(duplicateLegalName),
                     DuplicateOrganisationName = duplicateLegalName
                 };
                 return response;
@@ -74,13 +59,8 @@
 
         public async Task<DuplicateCheckResponse> DuplicateCharityNumberExists(Guid organisationId, string charityNumber)
         {
-            var connectionString = _configuration.SqlConnectionString;
-
-            using (var connection = new SqlConnection(connectionString))
+            using (var connection = _dbConnectionHelper.GetDatabaseConnection())
             {
-                if (connection.State != ConnectionState.Open)
-                    await connection.OpenAsync();
-
                 var sql = "select LegalName FROM [Organisations] " +
                           "WHERE JSON_VALUE(OrganisationData, '$.CharityNumber') = @charityNumber " +
                           "AND Id != @organisationId";
@@ -88,7 +68,7 @@
 
                 DuplicateCheckResponse response = new DuplicateCheckResponse
                 {
-                    DuplicateFound = !String.IsNullOrWhiteSpace(duplicateLegalName),
+                    DuplicateFound = !string.IsNullOrWhiteSpace(duplicateLegalName),
                     DuplicateOrganisationName = duplicateLegalName
                 };
                 return response;

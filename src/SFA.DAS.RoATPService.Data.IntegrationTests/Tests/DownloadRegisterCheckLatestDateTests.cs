@@ -35,7 +35,7 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Tests
             _legalName = "Legal name 1";
             _organisationId = Guid.NewGuid();
             _organisationId2 = Guid.NewGuid();
-            _repository = new DownloadRegisterRepository(_databaseService.WebConfiguration);
+            _repository = new DownloadRegisterRepository(_databaseService.DbConnectionHelper);
             OrganisationStatusHandler.InsertRecords(
                 new List<OrganisationStatusModel>
                 {

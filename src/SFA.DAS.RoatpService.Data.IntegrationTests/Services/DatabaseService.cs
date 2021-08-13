@@ -4,6 +4,7 @@ using System.Linq;
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using SFA.DAS.RoatpService.Data.IntegrationTests.Models;
+using SFA.DAS.RoATPService.Infrastructure.Database;
 
 namespace SFA.DAS.RoatpService.Data.IntegrationTests.Services
 {
@@ -14,32 +15,34 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Services
             Configuration = new ConfigurationBuilder()
                 .AddJsonFile("connectionStrings.Local.json")
                 .Build();
+
             WebConfiguration = new TestWebConfiguration
             {
                 SqlConnectionString = Configuration.GetConnectionString("SqlConnectionStringTest")
             };
 
-            _dbName = Configuration["DatabaseName"];
-            _testDbName = Configuration["TestDatabaseName"];
+            DbConnectionHelper = new DbConnectionHelper(WebConfiguration, new TestHostingEnvironment());
         }
 
-        private IConfiguration Configuration { get; }
-        private readonly string _dbName;
-        private readonly string _testDbName;
-        public readonly TestWebConfiguration WebConfiguration;
+        private readonly IConfiguration Configuration;
+        private readonly TestWebConfiguration WebConfiguration;
+        public readonly DbConnectionHelper DbConnectionHelper;
+
+        private string _dbName => Configuration["DatabaseName"];
+        private string _testDbName => Configuration["TestDatabaseName"];
 
         public void SetupDatabase()
         {
             DropDatabase();
 
-            using (var connection = new SqlConnection(Configuration.GetConnectionString("SqlConnectionString")))
+            using (var connection = DbConnectionHelper.GetDatabaseConnection())
             {
                 if (connection.State != ConnectionState.Open)
                     connection.Open();
 
                 var comm = new SqlCommand
                 {
-                    Connection = connection,
+                    Connection = connection as SqlConnection,
                     CommandText =
                         $@"DBCC CLONEDATABASE ('{_dbName}', '{_testDbName}'); ALTER DATABASE [{_testDbName}] SET READ_WRITE;"
                 };
@@ -50,7 +53,7 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Services
 
         public void Execute(string sql)
         {
-            using (var connection = new SqlConnection(Configuration.GetConnectionString("SqlConnectionStringTest")))
+            using (var connection = DbConnectionHelper.GetDatabaseConnection())
             {
                 if (connection.State != ConnectionState.Open)
                     connection.Open();
@@ -61,7 +64,7 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Services
 
         public T Get<T>(string sql)
         {
-            using (var connection = new SqlConnection(Configuration.GetConnectionString("SqlConnectionStringTest")))
+            using (var connection = DbConnectionHelper.GetDatabaseConnection())
             {
                 if (connection.State != ConnectionState.Open)
                     connection.Open();
@@ -73,7 +76,7 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Services
 
         public object ExecuteScalar(string sql)
         {
-            using (var connection = new SqlConnection(Configuration.GetConnectionString("SqlConnectionStringTest")))
+            using (var connection = DbConnectionHelper.GetDatabaseConnection())
             {
                 if (connection.State != ConnectionState.Open)
                     connection.Open();
@@ -86,7 +89,7 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Services
         
         public void Execute(string sql, TestModel model)
         {
-            using (var connection = new SqlConnection(Configuration.GetConnectionString("SqlConnectionStringTest")))
+            using (var connection = DbConnectionHelper.GetDatabaseConnection())
             {
                 if (connection.State != ConnectionState.Open)
                     connection.Open();
@@ -97,14 +100,14 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Services
 
         public void DropDatabase()
         {
-            using (var connection = new SqlConnection(Configuration.GetConnectionString("SqlConnectionString")))
+            using (var connection = DbConnectionHelper.GetDatabaseConnection())
             {
                 if (connection.State != ConnectionState.Open)
                     connection.Open();
 
                 var comm = new SqlCommand
                 {
-                    Connection = connection,
+                    Connection = connection as SqlConnection,
                     CommandText =
                         $@"if exists(select * from sys.databases where name = '{_testDbName}') BEGIN ALTER DATABASE [{_testDbName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;  DROP DATABASE [{_testDbName}]; END"
                 };

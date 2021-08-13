@@ -105,7 +105,7 @@ namespace SFA.DAS.RoATPService.Infrastructure.UnitTests.ExternalServices
         }
         
         [Test, MoqAutoData]
-        public async Task Then_If_Returns_Bad_Request_An_Exception_Is_Thrown(
+        public void Then_If_Returns_Bad_Request_An_Exception_Is_Thrown(
             WebConfiguration webConfiguration,
             Mock<IAzureClientCredentialHelper> azureClientCredentialHelper)
         {

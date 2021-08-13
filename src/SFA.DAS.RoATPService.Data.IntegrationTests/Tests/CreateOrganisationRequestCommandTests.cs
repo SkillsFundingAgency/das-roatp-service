@@ -36,7 +36,7 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Tests
         public void Before_the_tests()
         {
             _organisationTypeId1 = 1;
-            _repository = new OrganisationRepository(_databaseService.WebConfiguration);
+            _repository = new OrganisationRepository(_databaseService.DbConnectionHelper);
             _statusActive = new OrganisationStatusModel {Id = _organisationStatusIdActive, Status = "Live", CreatedAt = DateTime.Now,CreatedBy="TestSystem"};
             _statusOnboarding = new OrganisationStatusModel { Id = _organisationStatusIdOnboarding, Status = "Live", CreatedAt = DateTime.Now, CreatedBy = "TestSystem" };
             OrganisationStatusHandler.InsertRecord(_statusActive);

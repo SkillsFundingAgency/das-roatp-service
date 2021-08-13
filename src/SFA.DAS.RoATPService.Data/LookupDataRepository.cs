@@ -1,30 +1,22 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
-using System.Runtime.Caching;
-using SFA.DAS.RoATPService.Data.Helpers;
-
-namespace SFA.DAS.RoATPService.Data
+﻿namespace SFA.DAS.RoATPService.Data
 {
     using System.Collections.Generic;
-    using System.Data;
-    using System.Data.SqlClient;
     using System.Threading.Tasks;
     using Application.Interfaces;
     using Dapper;
-    using Microsoft.Extensions.Logging;
-    using Settings;
     using SFA.DAS.RoATPService.Domain;
+    using System.Linq;
+    using SFA.DAS.RoATPService.Data.Helpers;
+    using SFA.DAS.RoATPService.Infrastructure.Interfaces;
 
     public class LookupDataRepository : ILookupDataRepository
     {
-        private readonly IWebConfiguration _configuration;
-
+        private readonly IDbConnectionHelper _dbConnectionHelper;
         private readonly ICacheHelper _cacheHelper;
 
-        public LookupDataRepository(IWebConfiguration configuration, ICacheHelper cacheHelper)
+        public LookupDataRepository(IDbConnectionHelper dbConnectionHelper, ICacheHelper cacheHelper)
         {
-            _configuration = configuration;
+            _dbConnectionHelper = dbConnectionHelper;
             _cacheHelper = cacheHelper;
         }
 
@@ -34,14 +26,11 @@ namespace SFA.DAS.RoATPService.Data
 
             if (results != null)
             {
-                return await Task.FromResult(results.ToList());
+                return results.ToList();
             }
 
-            using (var connection = new SqlConnection(_configuration.SqlConnectionString))
+            using (var connection = _dbConnectionHelper.GetDatabaseConnection())
             {
-                if (connection.State != ConnectionState.Open)
-                    await connection.OpenAsync();
-
                 var sql = $"select Id, ProviderType AS [Type], Description, " +
                           "CreatedAt, CreatedBy, UpdatedAt, UpdatedBy, Status " +
                           "from [ProviderTypes] " +
@@ -50,8 +39,7 @@ namespace SFA.DAS.RoATPService.Data
                 var providerTypes = await connection.QueryAsync<ProviderType>(sql);
                 _cacheHelper.Cache(providerTypes);
 
-
-                return await Task.FromResult(providerTypes);
+                return providerTypes;
             }
         }
 
@@ -60,14 +48,11 @@ namespace SFA.DAS.RoATPService.Data
             var results = _cacheHelper.Get<ProviderType>();
             if (results != null)
             {
-                return await Task.FromResult(results.FirstOrDefault(x => x.Id == providerTypeId));
+                return results.FirstOrDefault(x => x.Id == providerTypeId);
             }
 
-            using (var connection = new SqlConnection(_configuration.SqlConnectionString))
+            using (var connection = _dbConnectionHelper.GetDatabaseConnection())
             {
-                if (connection.State != ConnectionState.Open)
-                    await connection.OpenAsync();
-
                 var sql = $"select Id, ProviderType AS [Type], Description, " +
                           "CreatedAt, CreatedBy, UpdatedAt, UpdatedBy, Status " +
                           "from [ProviderTypes] " +
@@ -75,7 +60,7 @@ namespace SFA.DAS.RoATPService.Data
 
                 var providerTypes = await connection.QueryAsync<ProviderType>(sql, new {providerTypeId});
               
-                return await Task.FromResult(providerTypes.FirstOrDefault());
+                return providerTypes.FirstOrDefault();
             }
         }
 
@@ -85,14 +70,11 @@ namespace SFA.DAS.RoATPService.Data
 
             if (results != null)
             {
-                return await Task.FromResult(results);
+                return results;
             }
 
-            using (var connection = new SqlConnection(_configuration.SqlConnectionString))
+            using (var connection = _dbConnectionHelper.GetDatabaseConnection())
             {
-                if (connection.State != ConnectionState.Open)
-                    await connection.OpenAsync();
-
                 var sql =
                     $"select ot.Id, ot.Type, ot.Description, ot.CreatedBy, ot.CreatedAt, ot.UpdatedBy, ot.UpdatedAt, ot.Status "
                     + "from [OrganisationTypes] ot " +
@@ -100,7 +82,8 @@ namespace SFA.DAS.RoATPService.Data
 
                 var organisationTypes = await connection.QueryAsync<OrganisationType>(sql);
                 _cacheHelper.Cache(organisationTypes);
-                return await Task.FromResult(organisationTypes);
+
+                return organisationTypes;
             }
         }
 
@@ -116,22 +99,18 @@ namespace SFA.DAS.RoATPService.Data
 
             if (results != null)
             {
-                return await Task.FromResult(results);
+                return results;
             }
 
-            var connectionString = _configuration.SqlConnectionString;
-
-            using (var connection = new SqlConnection(connectionString))
+            using (var connection = _dbConnectionHelper.GetDatabaseConnection())
             {
-                if (connection.State != ConnectionState.Open)
-                    await connection.OpenAsync();
-
                 var sql = "select * FROM [OrganisationStatus] " +
                           "order by Id";
 
                 var organisationStatuses = await connection.QueryAsync<OrganisationStatus>(sql);
                 _cacheHelper.Cache(organisationStatuses);
-                return await Task.FromResult(organisationStatuses);
+
+                return organisationStatuses;
             }
         }
 
@@ -148,21 +127,19 @@ namespace SFA.DAS.RoATPService.Data
             var results = _cacheHelper.Get<RemovedReason>();
             if (results != null)
             {
-                return await Task.FromResult(results);
+                return results;
             }
   
-            using (var connection = new SqlConnection(_configuration.SqlConnectionString))
+            using (var connection = _dbConnectionHelper.GetDatabaseConnection())
             {
-                if (connection.State != ConnectionState.Open)
-                    await connection.OpenAsync();
-
                 var sql = "select Id, RemovedReason as [Reason], Status, Description, CreatedAt, " +
                           "CreatedBy, UpdatedAt, UpdatedBy FROM [RemovedReasons] " +
                           "ORDER BY Id";
 
                 var removedReasons = await connection.QueryAsync<RemovedReason>(sql);
                 _cacheHelper.Cache(removedReasons);
-                return await Task.FromResult(removedReasons);
+
+                return removedReasons;
             }
         }
 
@@ -177,13 +154,11 @@ namespace SFA.DAS.RoATPService.Data
             var results = _cacheHelper.Get<ProviderTypeOrganisationType>();
             if (results != null)
             {
-                return await Task.FromResult(results);
+                return results;
             }
-            using (var connection = new SqlConnection(_configuration.SqlConnectionString))
-            {
-                if (connection.State != ConnectionState.Open)
-                    await connection.OpenAsync();
 
+            using (var connection = _dbConnectionHelper.GetDatabaseConnection())
+            {
                 var sql = "select Id, ProviderTypeId, OrganisationTypeId, CreatedAt, " +
                           "CreatedBy, UpdatedAt, UpdatedBy FROM [ProviderTypeOrganisationTypes] " +
                           "ORDER BY Id";
@@ -191,7 +166,7 @@ namespace SFA.DAS.RoATPService.Data
                 var providerTypeOrganisationTypes = await connection.QueryAsync<ProviderTypeOrganisationType>(sql);
                 _cacheHelper.Cache(providerTypeOrganisationTypes);
 
-                return await Task.FromResult(providerTypeOrganisationTypes);
+                return providerTypeOrganisationTypes;
             }
         }
 
@@ -200,13 +175,11 @@ namespace SFA.DAS.RoATPService.Data
             var results = _cacheHelper.Get<ProviderTypeOrganisationStatus>();
             if (results != null)
             {
-                return await Task.FromResult(results);
+                return results;
             }
-            using (var connection = new SqlConnection(_configuration.SqlConnectionString))
-            {
-                if (connection.State != ConnectionState.Open)
-                    await connection.OpenAsync();
 
+            using (var connection = _dbConnectionHelper.GetDatabaseConnection())
+            {
                 var sql = "select Id, ProviderTypeId, OrganisationStatusId, CreatedAt, " +
                           "CreatedBy, UpdatedAt, UpdatedBy FROM [ProviderTypeOrganisationStatus] " +
                           "ORDER BY Id";
@@ -214,7 +187,7 @@ namespace SFA.DAS.RoATPService.Data
                 var providerTypeOrganisationStatuses = await connection.QueryAsync<ProviderTypeOrganisationStatus>(sql);
                 _cacheHelper.Cache(providerTypeOrganisationStatuses);
 
-                return await Task.FromResult(providerTypeOrganisationStatuses);
+                return providerTypeOrganisationStatuses;
             }
         }
 
@@ -222,7 +195,9 @@ namespace SFA.DAS.RoATPService.Data
         {
             var organisationTypes = await GetOrganisationTypes();
             if (providerTypeId == null)
+            {
                 return organisationTypes;
+            }
 
             var providerTypeOrganisationTypes = await GetProviderTypeOrganisationTypes();
 
@@ -236,11 +211,8 @@ namespace SFA.DAS.RoATPService.Data
         public async Task<IEnumerable<OrganisationType>> GetOrganisationTypesForProviderTypeIdCategoryId(
             int providerTypeId, int categoryId)
         {
-            using (var connection = new SqlConnection(_configuration.SqlConnectionString))
+            using (var connection = _dbConnectionHelper.GetDatabaseConnection())
             {
-                if (connection.State != ConnectionState.Open)
-                    await connection.OpenAsync();
-
                 var sql = $@"select id, Type,Description, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy, Status
                                     from organisationTypes where id in
                                     (select organisationTypeId from OrganisationCategoryOrgTypeProviderType 
@@ -250,29 +222,25 @@ namespace SFA.DAS.RoATPService.Data
                 var organisationTypes =
                     await connection.QueryAsync<OrganisationType>(sql, new {providerTypeId, categoryId});
 
-                return await Task.FromResult(organisationTypes);
+                return organisationTypes;
             }
         }
 
         public async Task<IEnumerable<int>> GetValidOrganisationCategoryIds()
         {
-            using (var connection = new SqlConnection(_configuration.SqlConnectionString))
+            using (var connection = _dbConnectionHelper.GetDatabaseConnection())
             {
-                if (connection.State != ConnectionState.Open)
-                    await connection.OpenAsync();
-
                 var sql = $@"select id from OrganisationCategory";
 
                 var validCategoryIds = await connection.QueryAsync<int>(sql);
 
-                return await Task.FromResult(validCategoryIds);
+                return validCategoryIds;
             }
         }
 
         public async Task<IEnumerable<OrganisationStatus>>
             GetOrganisationStatusesForProviderTypeId(int? providerTypeId)
             {
-
                 var organisationStatuses = await GetOrganisationStatuses();
                 if (providerTypeId == null)
                     return organisationStatuses;
@@ -287,11 +255,8 @@ namespace SFA.DAS.RoATPService.Data
 
             public async Task<IEnumerable<OrganisationCategory>> GetOrganisationCategories(int providerTypeId)
             {
-                using (var connection = new SqlConnection(_configuration.SqlConnectionString))
+                using (var connection = _dbConnectionHelper.GetDatabaseConnection())
                 {
-                    if (connection.State != ConnectionState.Open)
-                        await connection.OpenAsync();
-
                     var sql =
                         $@"select id,category, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy, Status from organisationCategory where id in
                             (select distinct OrganisationCategoryId from OrganisationCategoryOrgTypeProviderType where ProviderTypeId = @providerTypeId)";
@@ -299,7 +264,7 @@ namespace SFA.DAS.RoATPService.Data
                     var organisationTypes =
                         await connection.QueryAsync<OrganisationCategory>(sql, new {providerTypeId});
 
-                    return await Task.FromResult(organisationTypes);
+                    return organisationTypes;
                 }
             }
         }

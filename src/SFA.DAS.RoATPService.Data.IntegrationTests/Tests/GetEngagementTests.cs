@@ -42,7 +42,7 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Tests
             event5CreatedOn = DateTime.Today.AddDays(-4);
             event6CreatedOn = DateTime.Today.AddDays(-5);
 
-            _repository = new OrganisationRepository(_databaseService.WebConfiguration);
+            _repository = new OrganisationRepository(_databaseService.DbConnectionHelper);
 
             OrganisationStatusHandler.InsertRecord(new OrganisationStatusModel { Id = OrganisationStatus.Active, CreatedAt = DateTime.Now, CreatedBy = "system", Status = "Active", EventDescription = "ACTIVE" });
             OrganisationStatusHandler.InsertRecord(new OrganisationStatusModel { Id = OrganisationStatus.Onboarding, CreatedAt = DateTime.Now, CreatedBy = "system", Status = "Onboarding", EventDescription = "INITIATED" });

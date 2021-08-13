@@ -1,34 +1,29 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
-using Dapper;
-using SFA.DAS.RoATPService.Application.Interfaces;
-using SFA.DAS.RoATPService.Domain.Models.FatDataExport;
-using SFA.DAS.RoATPService.Settings;
-
-namespace SFA.DAS.RoATPService.Data
+﻿namespace SFA.DAS.RoATPService.Data
 {
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Dapper;
+    using SFA.DAS.RoATPService.Application.Interfaces;
+    using SFA.DAS.RoATPService.Domain.Models.FatDataExport;
+    using SFA.DAS.RoATPService.Infrastructure.Interfaces;
+
     public class FatDataExportRepository : IFatDataExportRepository
     {
-        private readonly IWebConfiguration _configuration;
         private const string FatDataExportStoredProcedure = "[dbo].[RoATP_FAT_Data_Export]";
 
-        public FatDataExportRepository(IWebConfiguration configuration)
+        private readonly IDbConnectionHelper _dbConnectionHelper;
+
+        public FatDataExportRepository(IDbConnectionHelper dbConnectionHelper)
         {
-            _configuration = configuration;
+            _dbConnectionHelper = dbConnectionHelper;
         }
 
         public async Task<IEnumerable<FatDataExportDto>> GetFatDataExport()
         {
-            using (var connection = new SqlConnection(_configuration.SqlConnectionString))
+            using (var connection = _dbConnectionHelper.GetDatabaseConnection())
             {
-                if (connection.State != ConnectionState.Open)
-                {
-                    connection.Open();
-                }
-
                 return (await connection.QueryAsync<FatDataExportDto>(FatDataExportStoredProcedure, 
                     commandType: CommandType.StoredProcedure)).ToList();
             }

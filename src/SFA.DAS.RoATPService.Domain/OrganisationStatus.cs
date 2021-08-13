@@ -3,7 +3,6 @@
     public class OrganisationStatus : BaseEntity
     {
         public int Id { get; set; }
-        public string Status { get; set; }
 
         public const int Removed = 0;
         public const int Active = 1;

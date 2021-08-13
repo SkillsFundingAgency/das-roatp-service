@@ -35,6 +35,7 @@ namespace SFA.DAS.RoATPService.Application.Api.StartupConfiguration
     using Microsoft.Extensions.Logging;
     using Middleware;
     using Settings;
+    using SFA.DAS.RoATPService.Infrastructure.Database;
     using Swashbuckle.AspNetCore.Swagger;
 
     public class Startup
@@ -159,6 +160,7 @@ namespace SFA.DAS.RoATPService.Application.Api.StartupConfiguration
             services.AddTransient<IUkrlpSoapSerializer, UkrlpSoapSerializer>();
             services.AddTransient<IEventsRepository, EventsRepository>();
 
+            services.AddTransient<IDbConnectionHelper, DbConnectionHelper>();
             services.AddTransient<IAzureClientCredentialHelper, AzureClientCredentialHelper>();
             services.AddHttpClient<IProvideFeedbackService, ProvideFeedbackService>(
                 options=> options.Timeout = TimeSpan.FromMinutes(1)

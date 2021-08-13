@@ -42,8 +42,8 @@
             _organisationUkprn = 11114433;
             _legalName = "Legal name 1";
             _organisationId = Guid.NewGuid();
-            _updateOrganisationRepository = new UpdateOrganisationRepository(_databaseService.WebConfiguration);
-            _repository = new OrganisationRepository(_databaseService.WebConfiguration);
+            _updateOrganisationRepository = new UpdateOrganisationRepository(_databaseService.DbConnectionHelper);
+            _repository = new OrganisationRepository(_databaseService.DbConnectionHelper);
             _status1 = new OrganisationStatusModel { Id = _organisationStatusId1, Status = "Live", CreatedAt = DateTime.Now, CreatedBy = "TestSystem" };
             OrganisationStatusHandler.InsertRecord(_status1);
             _status2 = new OrganisationStatusModel { Id = _organisationStatusId0, Status = "Live", CreatedAt = DateTime.Now, CreatedBy = "TestSystem" };
