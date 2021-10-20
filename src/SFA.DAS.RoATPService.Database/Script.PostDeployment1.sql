@@ -676,3 +676,55 @@ UPDATE OrganisationTypes SET [Type] = 'An Apprenticeship Training Provider' WHER
 UPDATE OrganisationTypes SET [Type] = 'An Apprenticeship Training Agency' WHERE Id = 18
 UPDATE OrganisationTypes SET [Type] = 'An employer training apprentices in other organisations' WHERE Id = 19
 UPDATE OrganisationTypes SET [Type] = 'None of the above' WHERE Id = 20
+
+
+-- APR-2747 adding Rail franchise to OrganisationTypes etc
+SET IDENTITY_INSERT OrganisationTypes ON
+
+if not exists(select * from OrganisationTypes where id=21)
+	insert into OrganisationTypes(id,Type,Status,CreatedAt,CreatedBy) values(21,'Rail franchise','Live',GETUTCDATE(),'System')
+SET IDENTITY_INSERT OrganisationTypes OFF
+
+
+if not exists(select * from [ProviderTypeOrganisationTypes] where OrganisationTypeId=21)
+BEGIN
+  
+INSERT INTO [dbo].[ProviderTypeOrganisationTypes]
+        ([ProviderTypeId] ,[OrganisationTypeId],[CreatedAt],[CreatedBy],[Status])
+    VALUES (1,21,GETUTCDATE(),'System','Live')
+	
+INSERT INTO [dbo].[ProviderTypeOrganisationTypes]
+        ([ProviderTypeId] ,[OrganisationTypeId],[CreatedAt],[CreatedBy],[Status])
+    VALUES (2,21,GETUTCDATE(),'System','Live')  
+	 
+INSERT INTO [dbo].[ProviderTypeOrganisationTypes]
+        ([ProviderTypeId] ,[OrganisationTypeId],[CreatedAt],[CreatedBy],[Status])
+    VALUES (3,21,GETUTCDATE(),'System','Live')
+	 
+END 
+
+
+
+SET IDENTITY_INSERT OrganisationCategory ON
+if not exists(select * from OrganisationCategory where id=21)
+	insert into OrganisationCategory(id,Category,Status,CreatedAt,CreatedBy) values(21,'Rail franchise','Live',GETUTCDATE(),'System')
+SET IDENTITY_INSERT OrganisationCategory OFF
+
+
+
+if not exists(select * from [OrganisationCategoryOrgTypeProviderType] where OrganisationTypeId=21)
+  BEGIN
+
+	INSERT INTO [dbo].[OrganisationCategoryOrgTypeProviderType]
+			   ([OrganisationTypeId] ,[OrganisationCategoryId],[ProviderTypeId],[CreatedAt],[CreatedBy] ,[Status])
+		 VALUES (21,21,1,GETUTCDATE(),'System','Live')
+
+	INSERT INTO [dbo].[OrganisationCategoryOrgTypeProviderType]
+			   ([OrganisationTypeId] ,[OrganisationCategoryId],[ProviderTypeId],[CreatedAt],[CreatedBy] ,[Status])
+		 VALUES (21,21,2,GETUTCDATE(),'System','Live')
+
+	INSERT INTO [dbo].[OrganisationCategoryOrgTypeProviderType]
+			   ([OrganisationTypeId] ,[OrganisationCategoryId],[ProviderTypeId],[CreatedAt],[CreatedBy] ,[Status])
+		 VALUES (21,21,2,GETUTCDATE(),'System','Live')
+
+ END
