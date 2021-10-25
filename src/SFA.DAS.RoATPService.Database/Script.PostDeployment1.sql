@@ -683,11 +683,10 @@ SET IDENTITY_INSERT OrganisationTypes ON
 
 if not exists(select * from OrganisationTypes where id=21)
 	insert into OrganisationTypes(id,Type,Status,CreatedAt,CreatedBy) values(21,'Rail franchise','Live',GETUTCDATE(),'System')
-SET IDENTITY_INSERT OrganisationTypes OFF
-
 
 if not exists(select * from OrganisationTypes where id=22)
 	insert into OrganisationTypes(id,Type,Status,CreatedAt,CreatedBy) values(22,'Group training association','Live',GETUTCDATE(),'System')
+
 SET IDENTITY_INSERT OrganisationTypes OFF
 
 
