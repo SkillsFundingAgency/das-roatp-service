@@ -747,7 +747,7 @@ if not exists(select * from [OrganisationCategoryOrgTypeProviderType] where Orga
 
 	INSERT INTO [dbo].[OrganisationCategoryOrgTypeProviderType]
 			   ([OrganisationTypeId] ,[OrganisationCategoryId],[ProviderTypeId],[CreatedAt],[CreatedBy] ,[Status])
-		 VALUES (21,21,2,GETUTCDATE(),'System','Live')
+		 VALUES (21,21,3,GETUTCDATE(),'System','Live')
 
  END
 
@@ -761,6 +761,6 @@ if not exists(select * from [OrganisationCategoryOrgTypeProviderType] where Orga
 
 	INSERT INTO [dbo].[OrganisationCategoryOrgTypeProviderType]
 			   ([OrganisationTypeId] ,[OrganisationCategoryId],[ProviderTypeId],[CreatedAt],[CreatedBy] ,[Status])
-		 VALUES (22,22,2,GETUTCDATE(),'System','Live')
+		 VALUES (22,22,3,GETUTCDATE(),'System','Live')
 
  END
