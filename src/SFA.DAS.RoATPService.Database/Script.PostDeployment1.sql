@@ -729,7 +729,7 @@ if not exists(select * from OrganisationCategory where id=21)
 	insert into OrganisationCategory(id,Category,Status,CreatedAt,CreatedBy) values(21,'Rail franchise','Live',GETUTCDATE(),'System')
 
 if not exists(select * from OrganisationCategory where id=22)
-	insert into OrganisationCategory(id,Category,Status,CreatedAt,CreatedBy) values(22,'Group training association','Live',GETUTCDATE(),'System')
+	insert into OrganisationCategory(id,Category,Status,CreatedAt,CreatedBy) values(22,'A Group Training Association','Live',GETUTCDATE(),'System')
 SET IDENTITY_INSERT OrganisationCategory OFF
 
 
