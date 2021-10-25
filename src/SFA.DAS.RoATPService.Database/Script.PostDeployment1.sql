@@ -678,11 +678,16 @@ UPDATE OrganisationTypes SET [Type] = 'An employer training apprentices in other
 UPDATE OrganisationTypes SET [Type] = 'None of the above' WHERE Id = 20
 
 
--- APR-2747 adding Rail franchise to OrganisationTypes etc
+-- APR-2747 adding Rail franchise and Group Training Association to OrganisationTypes etc
 SET IDENTITY_INSERT OrganisationTypes ON
 
 if not exists(select * from OrganisationTypes where id=21)
 	insert into OrganisationTypes(id,Type,Status,CreatedAt,CreatedBy) values(21,'Rail franchise','Live',GETUTCDATE(),'System')
+SET IDENTITY_INSERT OrganisationTypes OFF
+
+
+if not exists(select * from OrganisationTypes where id=22)
+	insert into OrganisationTypes(id,Type,Status,CreatedAt,CreatedBy) values(22,'Group training association','Live',GETUTCDATE(),'System')
 SET IDENTITY_INSERT OrganisationTypes OFF
 
 
@@ -705,9 +710,27 @@ END
 
 
 
+if not exists(select * from [ProviderTypeOrganisationTypes] where OrganisationTypeId=22)
+BEGIN
+  
+INSERT INTO [dbo].[ProviderTypeOrganisationTypes]
+        ([ProviderTypeId] ,[OrganisationTypeId],[CreatedAt],[CreatedBy],[Status])
+    VALUES (1,22,GETUTCDATE(),'System','Live')
+	 
+INSERT INTO [dbo].[ProviderTypeOrganisationTypes]
+        ([ProviderTypeId] ,[OrganisationTypeId],[CreatedAt],[CreatedBy],[Status])
+    VALUES (3,22,GETUTCDATE(),'System','Live')
+	 
+END 
+
+
+
 SET IDENTITY_INSERT OrganisationCategory ON
 if not exists(select * from OrganisationCategory where id=21)
 	insert into OrganisationCategory(id,Category,Status,CreatedAt,CreatedBy) values(21,'Rail franchise','Live',GETUTCDATE(),'System')
+
+if not exists(select * from OrganisationCategory where id=22)
+	insert into OrganisationCategory(id,Category,Status,CreatedAt,CreatedBy) values(22,'Group training association','Live',GETUTCDATE(),'System')
 SET IDENTITY_INSERT OrganisationCategory OFF
 
 
@@ -726,5 +749,19 @@ if not exists(select * from [OrganisationCategoryOrgTypeProviderType] where Orga
 	INSERT INTO [dbo].[OrganisationCategoryOrgTypeProviderType]
 			   ([OrganisationTypeId] ,[OrganisationCategoryId],[ProviderTypeId],[CreatedAt],[CreatedBy] ,[Status])
 		 VALUES (21,21,2,GETUTCDATE(),'System','Live')
+
+ END
+
+
+ if not exists(select * from [OrganisationCategoryOrgTypeProviderType] where OrganisationTypeId=22)
+  BEGIN
+
+	INSERT INTO [dbo].[OrganisationCategoryOrgTypeProviderType]
+			   ([OrganisationTypeId] ,[OrganisationCategoryId],[ProviderTypeId],[CreatedAt],[CreatedBy] ,[Status])
+		 VALUES (22,22,1,GETUTCDATE(),'System','Live')
+
+	INSERT INTO [dbo].[OrganisationCategoryOrgTypeProviderType]
+			   ([OrganisationTypeId] ,[OrganisationCategoryId],[ProviderTypeId],[CreatedAt],[CreatedBy] ,[Status])
+		 VALUES (22,22,2,GETUTCDATE(),'System','Live')
 
  END
