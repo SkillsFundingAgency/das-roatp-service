@@ -25,8 +25,6 @@ namespace SFA.DAS.RoATPService.Application.Handlers
         private readonly IProviderTypeValidator _providerTypeValidator;
         private readonly ITextSanitiser _textSanitiser;
 
-        private const string FieldChanged = "Application Determined Date";
-
         public UpdateOrganisationHandler(ILogger<UpdateOrganisationHandler> logger,
             IOrganisationValidator validator, IUpdateOrganisationRepository updateOrganisationRepository, IAuditLogService auditLogService, IOrganisationValidator organisationValidator, IProviderTypeValidator providerTypeValidator, ITextSanitiser textSanitiser)
         {
@@ -95,11 +93,6 @@ namespace SFA.DAS.RoATPService.Application.Handlers
             auditChangesMade = _auditLogService.AuditTradingName(request.OrganisationId, request.Username, request.TradingName);
             if (auditChangesMade.ChangesMade)
                 auditChanges.Add(auditChangesMade);
-            //
-            // auditChangesMade =
-            //     _auditLogService.AuditOrganisationType(request.OrganisationId, request.Username, request.OrganisationTypeId);
-            // if (auditChangesMade.ChangesMade)
-            //     auditChanges.Add(auditChangesMade);
 
             auditChangesMade = _auditLogService.AuditProviderType(request.OrganisationId, request.Username,
                 request.ProviderTypeId, request.OrganisationTypeId);
