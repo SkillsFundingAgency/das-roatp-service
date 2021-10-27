@@ -93,7 +93,7 @@ namespace SFA.DAS.RoATPService.Application.Validators
 
         public bool IsValidApplicationDeterminedDate(DateTime? applicationDeterminedDate)
         {
-            return applicationDeterminedDate.HasValue && applicationDeterminedDate.Value > DateTime.MinValue && applicationDeterminedDate.Value <= DateTime.Today;
+            return applicationDeterminedDate.HasValue && applicationDeterminedDate.Value > DateTime.MinValue && applicationDeterminedDate.Value < DateTime.Today.AddDays(1);
         }
 
         public bool IsValidStatus(OrganisationStatus status)
