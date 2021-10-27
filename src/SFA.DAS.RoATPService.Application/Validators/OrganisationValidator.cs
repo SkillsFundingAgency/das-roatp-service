@@ -1,4 +1,7 @@
-﻿namespace SFA.DAS.RoATPService.Application.Validators
+﻿using SFA.DAS.RoATPService.Application.Commands;
+using SFA.DAS.RoATPService.Application.Types;
+
+namespace SFA.DAS.RoATPService.Application.Validators
 {
     using Api.Types.Models;
     using Domain;
@@ -27,6 +30,19 @@
         public bool IsValidOrganisationId(Guid organisationId)
         {
             return organisationId != Guid.Empty;
+        }
+
+        public bool IsValidUpdateOrganisation(UpdateOrganisationCommand command)
+        {
+
+                return (IsValidLegalName(command.LegalName)
+                        && IsValidTradingName(command.TradingName)
+                        && IsValidProviderTypeId(command.ProviderTypeId)
+                        && IsValidOrganisationTypeId(command.OrganisationTypeId)
+                        && IsValidApplicationDeterminedDate(command.ApplicationDeterminedDate)
+                        && IsValidCompanyNumber(command.CompanyNumber)
+                        && IsValidCharityNumber(command.CharityNumber));
+            
         }
 
         public bool IsValidProviderType(ProviderType providerType)
@@ -188,6 +204,43 @@
             return string.IsNullOrEmpty(charityNumber)
                 ? new DuplicateCheckResponse { DuplicateFound = false, DuplicateOrganisationName = "" }
                 : _duplicateCheckRepository.DuplicateCharityNumberExists(organisationId, charityNumber).Result;
+        }
+
+        public ValidationErrorMessage ValidateOrganisation(UpdateOrganisationCommand command)
+        {
+         
+                if (IsValidUpdateOrganisation(command)) return new ValidationErrorMessage();
+
+                var invalidOrganisationError = "Invalid Organisation data";
+                if (!IsValidLegalName(command.LegalName))
+                    invalidOrganisationError = $"{invalidOrganisationError}: Invalid Legal Name [{command.LegalName}]";
+
+                if (!IsValidTradingName(command.TradingName))
+                    invalidOrganisationError = $"{invalidOrganisationError}: Invalid Trading Name [{command.TradingName}]";
+
+                if (!IsValidProviderTypeId(command.ProviderTypeId))
+                    invalidOrganisationError =
+                        $"{invalidOrganisationError}: Invalid Provider Type Id [{command.ProviderTypeId}]";
+
+                if (!IsValidOrganisationTypeId(command.OrganisationTypeId))
+                    invalidOrganisationError =
+                        $"{invalidOrganisationError}: Invalid Organisation Type Id [{command.OrganisationTypeId}]";
+
+
+                if (!IsValidCompanyNumber(command.CompanyNumber))
+                    invalidOrganisationError = $"{invalidOrganisationError}: Invalid company number [{command.CompanyNumber}]";
+
+                if (!IsValidApplicationDeterminedDate(command.ApplicationDeterminedDate))
+                    invalidOrganisationError =
+                        $"{invalidOrganisationError}: Invalid Application Determined Date [{command.ApplicationDeterminedDate}]";
+
+                if (!IsValidCharityNumber(command.CharityNumber))
+                    invalidOrganisationError =
+                        $"{invalidOrganisationError}: Invalid charity registration number [{command.CharityNumber}]";
+
+
+                return new ValidationErrorMessage { Message = invalidOrganisationError };
+            
         }
 
         DuplicateCheckResponse IOrganisationValidator.DuplicateUkprnInAnotherOrganisation(long ukprn, Guid organisationId)
