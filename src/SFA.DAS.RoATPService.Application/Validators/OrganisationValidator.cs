@@ -34,15 +34,13 @@ namespace SFA.DAS.RoATPService.Application.Validators
 
         public bool IsValidUpdateOrganisation(UpdateOrganisationCommand command)
         {
-
-                return (IsValidLegalName(command.LegalName)
-                        && IsValidTradingName(command.TradingName)
-                        && IsValidProviderTypeId(command.ProviderTypeId)
-                        && IsValidOrganisationTypeId(command.OrganisationTypeId)
-                        && IsValidApplicationDeterminedDate(command.ApplicationDeterminedDate)
-                        && IsValidCompanyNumber(command.CompanyNumber)
-                        && IsValidCharityNumber(command.CharityNumber));
-            
+            return (IsValidLegalName(command.LegalName)
+                    && IsValidTradingName(command.TradingName)
+                    && IsValidProviderTypeId(command.ProviderTypeId)
+                    && IsValidOrganisationTypeId(command.OrganisationTypeId)
+                    && IsValidApplicationDeterminedDate(command.ApplicationDeterminedDate)
+                    && IsValidCompanyNumber(command.CompanyNumber)
+                    && IsValidCharityNumber(command.CharityNumber));
         }
 
         public bool IsValidProviderType(ProviderType providerType)
@@ -208,8 +206,7 @@ namespace SFA.DAS.RoATPService.Application.Validators
 
         public ValidationErrorMessage ValidateOrganisation(UpdateOrganisationCommand command)
         {
-         
-                if (IsValidUpdateOrganisation(command)) return new ValidationErrorMessage();
+            if (IsValidUpdateOrganisation(command)) return new ValidationErrorMessage();
 
                 var invalidOrganisationError = "Invalid Organisation data";
                 if (!IsValidLegalName(command.LegalName))
@@ -238,9 +235,7 @@ namespace SFA.DAS.RoATPService.Application.Validators
                     invalidOrganisationError =
                         $"{invalidOrganisationError}: Invalid charity registration number [{command.CharityNumber}]";
 
-
                 return new ValidationErrorMessage { Message = invalidOrganisationError };
-            
         }
 
         DuplicateCheckResponse IOrganisationValidator.DuplicateUkprnInAnotherOrganisation(long ukprn, Guid organisationId)

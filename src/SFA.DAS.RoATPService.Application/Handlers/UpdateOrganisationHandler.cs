@@ -70,7 +70,6 @@ namespace SFA.DAS.RoATPService.Application.Handlers
             
             await _updateOrganisationRepository.WriteFieldChangesToAuditLog(auditChanges);
             
-
             return true;
         }
     }

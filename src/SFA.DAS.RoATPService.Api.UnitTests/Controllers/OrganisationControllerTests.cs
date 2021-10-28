@@ -29,7 +29,6 @@ namespace SFA.DAS.RoATPService.Api.UnitTests.Controllers
             _mediator.Setup(x => x.Send(It.IsAny<UpdateOrganisationRequest>(), It.IsAny<CancellationToken>())).ReturnsAsync(true);
             await _controller.Update(new UpdateOrganisationRequest());
             _mediator.Verify(x=>x.Send(It.IsAny<UpdateOrganisationRequest>(),It.IsAny<CancellationToken>()),Times.Once);
-
         }
     }
 }

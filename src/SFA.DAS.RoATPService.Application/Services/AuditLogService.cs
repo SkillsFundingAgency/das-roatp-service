@@ -349,7 +349,6 @@ namespace SFA.DAS.RoATPService.Application.Services
             return null;
         }
 
-
         public AuditData AuditOrganisationStatus(Guid organisationId, string updatedBy, int newOrganisationStatusId, int? newRemovedReasonId)
         {
             var auditData = new AuditData { FieldChanges = new List<AuditLogEntry>(), OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };

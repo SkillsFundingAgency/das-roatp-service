@@ -27,8 +27,6 @@ namespace SFA.DAS.RoATPService.Data
             SqlMapper.AddTypeHandler(typeof(OrganisationData), new OrganisationDataHandler());
         }
 
-
-
         public async Task<bool> UpdateOrganisation(UpdateOrganisationCommand command)
         {
             var organisationId = command.OrganisationId;

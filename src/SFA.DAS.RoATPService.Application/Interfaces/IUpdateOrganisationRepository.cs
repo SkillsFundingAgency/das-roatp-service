@@ -24,7 +24,6 @@ namespace SFA.DAS.RoATPService.Application.Interfaces
         Task<bool> WriteFieldChangesToAuditLog(AuditData auditFieldChanges);
         Task<bool> UpdateCharityNumber(Guid organisationId, string charityNumber, string updatedBy);
         Task<bool> UpdateApplicationDeterminedDate(Guid organisationId, DateTime applicationDeterminedDate, string updatedBy);
-
         Task<bool> UpdateOrganisation(UpdateOrganisationCommand command);
     }
 }
