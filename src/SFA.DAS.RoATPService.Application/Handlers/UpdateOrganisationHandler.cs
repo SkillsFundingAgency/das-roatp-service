@@ -58,17 +58,35 @@ namespace SFA.DAS.RoATPService.Application.Handlers
             var errorMessage = _organisationValidator.ValidateOrganisation(command);
 
             if (!string.IsNullOrEmpty(errorMessage?.Message))
+            {
+                _logger.LogInformation($@"Update organisation for Organisation ID [{request.OrganisationId}] failed validation because {errorMessage.Message}");
                 throw new BadRequestException(errorMessage.Message);
+            }
 
             var auditChanges = _auditLogService.AuditOrganisation(command);
 
-            if (auditChanges is null) return true;
+            if (auditChanges is null)
+            {
+                _logger.LogInformation($@"Update organisation for Organisation ID [{request.OrganisationId}] not applied as no differences found");
+                return true;
+            }
             
             var success = await _updateOrganisationRepository.UpdateOrganisation(command);
 
-            if (!success) return false;
+            if (!success)
+            {
+                _logger.LogInformation($@"Update organisation for Organisation ID [{request.OrganisationId}] not applied as no update made on an existing record");
+                return false;
+            }
+
+            var fieldsAuditWritten= await _updateOrganisationRepository.WriteFieldChangesToAuditLog(auditChanges);
+            if (!fieldsAuditWritten)
+            {
+                _logger.LogInformation($@"Update organisation  audit for Organisation ID [{request.OrganisationId}] not applied as no insertion made on Audit table");
+                return await Task.FromResult(false);
+            }
+
             
-            await _updateOrganisationRepository.WriteFieldChangesToAuditLog(auditChanges);
             
             return true;
         }

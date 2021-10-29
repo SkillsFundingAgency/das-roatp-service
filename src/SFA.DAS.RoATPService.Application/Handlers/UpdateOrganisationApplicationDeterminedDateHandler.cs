@@ -42,6 +42,7 @@
 
             if (!auditRecord.ChangesMade)
             {
+                _logger.LogInformation($@"Update organisation application determined date for Organisation ID [{request.OrganisationId}] not applied as no differences found between dates (date [{request.ApplicationDeterminedDate}])");
                 return await Task.FromResult(false);
             }
 
@@ -49,10 +50,19 @@
 
             if (!success)
             {
+                _logger.LogInformation($@"Update organisation application determined date for Organisation ID [{request.OrganisationId}] not applied as no update made on an existing record");
                 return await Task.FromResult(false);
             }
 
-            return await _updateOrganisationRepository.WriteFieldChangesToAuditLog(auditRecord);
+           var fieldsAuditWritten = await _updateOrganisationRepository.WriteFieldChangesToAuditLog(auditRecord);
+
+           if (!fieldsAuditWritten)
+           {
+               _logger.LogInformation($@"Update organisation application determined date audit for Organisation ID [{request.OrganisationId}] not applied as no insertion made on Audit table");
+               return await Task.FromResult(false);
+           }
+
+           return true;
         }
     }
 }
