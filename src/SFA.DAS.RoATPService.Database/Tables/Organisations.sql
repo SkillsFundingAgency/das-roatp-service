@@ -1,9 +1,9 @@
 ﻿CREATE TABLE [dbo].[Organisations](
 	[Id] [uniqueidentifier] NOT NULL,
 	[CreatedAt] DATETIME2 NOT NULL, 
-    [CreatedBy] NVARCHAR(30) NOT NULL, 
+    [CreatedBy] NVARCHAR(256) NOT NULL, 
     [UpdatedAt] DATETIME2 NULL, 
-    [UpdatedBy] NVARCHAR(30) NULL, 
+    [UpdatedBy] NVARCHAR(256) NULL, 
     [StatusId] INT NOT NULL, 
 	[ProviderTypeId] INT NOT NULL,
 	[OrganisationTypeId] int NOT NULL,  
