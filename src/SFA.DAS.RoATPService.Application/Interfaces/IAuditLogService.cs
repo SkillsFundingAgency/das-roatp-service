@@ -1,4 +1,7 @@
 ﻿using System;
+using SFA.DAS.RoATPService.Api.Types.Models;
+using SFA.DAS.RoATPService.Application.Commands;
+using SFA.DAS.RoATPService.Application.Types;
 
 namespace SFA.DAS.RoATPService.Application.Interfaces
 {
@@ -25,5 +28,6 @@ namespace SFA.DAS.RoATPService.Application.Interfaces
         AuditData AuditProviderType(Guid organisationId, string updatedBy, int newProviderTypeId, int newOrganisationTypeId);
         AuditData AuditCharityNumber(Guid organisationId, string updatedBy, string charityNumber);
         AuditData AuditApplicationDeterminedDate(Guid organisationId, string updatedBy, DateTime applicationDeterminedDate);
+        AuditData AuditOrganisation(UpdateOrganisationCommand command);
     }
 }

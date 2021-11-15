@@ -1,4 +1,6 @@
-﻿namespace SFA.DAS.RoATPService.Data
+﻿using SFA.DAS.RoATPService.Application.Commands;
+
+namespace SFA.DAS.RoATPService.Data
 {
     using System;
     using System.Data;
@@ -25,7 +27,33 @@
             SqlMapper.AddTypeHandler(typeof(OrganisationData), new OrganisationDataHandler());
         }
 
-          
+        public async Task<bool> UpdateOrganisation(UpdateOrganisationCommand command)
+        {
+            var organisationId = command.OrganisationId;
+            var providerTypeId = command.ProviderTypeId;
+            var organisationTypeId = command.OrganisationTypeId;
+            var legalName = command.LegalName;
+            var tradingName = command.TradingName;
+            var companyNumber = command.CompanyNumber;
+            var charityNumber = command.CharityNumber;
+            var updatedBy = command.Username;
+            var applicationDeterminedDateValue = command.ApplicationDeterminedDate.ToString(RoatpDateTimeFormat);
+
+            using (var connection = _dbConnectionHelper.GetDatabaseConnection())
+            {
+                var updatedAt = DateTime.Now;
+
+                const string sql = "update [Organisations] SET LegalName = @legalName,organisationTypeId=@organisationTypeId, providerTypeId=@providerTypeId, tradingName= @tradingName," +
+                                   " OrganisationData = JSON_MODIFY(JSON_MODIFY(JSON_MODIFY(OrganisationData, '$.ApplicationDeterminedDate', @applicationDeterminedDateValue),'$.CompanyNumber',@companyNumber),'$.CharityNumber',@CharityNumber), " +
+                                   " UpdatedBy = @updatedBy, UpdatedAt = @updatedAt " +
+                                   " WHERE Id = @organisationId";
+                int recordsAffected = await connection.ExecuteAsync(sql, new { legalName, organisationTypeId,providerTypeId,tradingName,companyNumber,
+                                                            charityNumber, applicationDeterminedDateValue, updatedBy, updatedAt, organisationId });
+
+                return recordsAffected > 0;
+            }
+        }
+
         public async Task<bool> UpdateLegalName(Guid organisationId, string legalName, string updatedBy)
         {            
             using (var connection = _dbConnectionHelper.GetDatabaseConnection())

@@ -1,4 +1,6 @@
 ﻿using SFA.DAS.RoATPService.Api.Types.Models;
+using SFA.DAS.RoATPService.Application.Commands;
+using SFA.DAS.RoATPService.Application.Types;
 
 namespace SFA.DAS.RoATPService.Application.Validators
 {
@@ -9,6 +11,7 @@ namespace SFA.DAS.RoATPService.Application.Validators
     public interface IOrganisationValidator
     {
         bool IsValidOrganisationId(Guid organisationId);
+        bool IsValidUpdateOrganisation(UpdateOrganisationCommand command);
         bool IsValidProviderType(ProviderType providerType);
         bool IsValidProviderTypeId(int providerTypeId);
         bool IsValidUKPRN(long ukPrn);
@@ -17,6 +20,7 @@ namespace SFA.DAS.RoATPService.Application.Validators
         bool IsValidStatusDate(DateTime statusDate);
 
         bool IsValidApplicationDeterminedDate(DateTime? applicationDeterminedDate);
+
 
         bool IsValidStatus(OrganisationStatus status);
         bool IsValidStatusId(int statusId);
@@ -30,6 +34,6 @@ namespace SFA.DAS.RoATPService.Application.Validators
         DuplicateCheckResponse DuplicateUkprnInAnotherOrganisation(long ukprn, Guid organisationId);
         DuplicateCheckResponse DuplicateCompanyNumberInAnotherOrganisation(string companyNumber, Guid organisationId);
         DuplicateCheckResponse DuplicateCharityNumberInAnotherOrganisation(string charityNumber, Guid organisationId);
-
+        ValidationErrorMessage ValidateOrganisation(UpdateOrganisationCommand command);
     }
 }

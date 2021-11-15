@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using KellermanSoftware.CompareNetObjects;
+using SFA.DAS.RoATPService.Application.Commands;
 using SFA.DAS.RoATPService.Application.Interfaces;
+using SFA.DAS.RoATPService.Application.Types;
 using SFA.DAS.RoATPService.Domain;
 using SFA.DAS.RoATPService.Settings;
 
@@ -292,6 +294,59 @@ namespace SFA.DAS.RoATPService.Application.Services
                 auditData.FieldChanges.Add(entry);
             }
             return auditData;
+        }
+
+        public AuditData AuditOrganisation(UpdateOrganisationCommand command)
+        {
+            var auditChanges = new List<AuditData>();
+            var auditChangesMade = AuditLegalName(command.OrganisationId, command.Username, command.LegalName);
+
+            if (auditChangesMade.ChangesMade)
+            {
+                auditChanges.Add(auditChangesMade);
+            }
+
+            auditChangesMade = AuditTradingName(command.OrganisationId, command.Username, command.TradingName);
+            if (auditChangesMade.ChangesMade)
+                auditChanges.Add(auditChangesMade);
+
+            auditChangesMade = AuditProviderType(command.OrganisationId, command.Username,
+                command.ProviderTypeId, command.OrganisationTypeId);
+            if (auditChangesMade.ChangesMade)
+                auditChanges.Add(auditChangesMade);
+
+            auditChangesMade = AuditCompanyNumber(command.OrganisationId, command.Username, command.CompanyNumber);
+            if (auditChangesMade.ChangesMade)
+                auditChanges.Add(auditChangesMade);
+
+            auditChangesMade = AuditCharityNumber(command.OrganisationId, command.Username, command.CharityNumber);
+            if (auditChangesMade.ChangesMade)
+                auditChanges.Add(auditChangesMade);
+
+            auditChangesMade = AuditApplicationDeterminedDate(command.OrganisationId, command.Username,
+                command.ApplicationDeterminedDate);
+            if (auditChangesMade.ChangesMade)
+                auditChanges.Add(auditChangesMade);
+
+            var auditDetailsReturned = new AuditData { FieldChanges = new List<AuditLogEntry>() };
+            if (auditChanges.Any())
+            {
+                auditDetailsReturned.OrganisationId = command.OrganisationId;
+                auditDetailsReturned.UpdatedAt = DateTime.Now;
+                auditDetailsReturned.UpdatedBy = command.Username;
+
+                foreach (var auditChange in auditChanges)
+                {
+                    foreach (var fieldChange in auditChange.FieldChanges)
+                    {
+                        auditDetailsReturned.FieldChanges.Add(fieldChange);
+                    }
+                }
+
+                return auditDetailsReturned;
+            }
+
+            return null;
         }
 
         public AuditData AuditOrganisationStatus(Guid organisationId, string updatedBy, int newOrganisationStatusId, int? newRemovedReasonId)
