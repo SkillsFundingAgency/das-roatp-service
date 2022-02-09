@@ -2,6 +2,9 @@
 
 ##  Register of Apprenticeship Training Providers (RoATP) API
 
+> **Note:**  
+> das-roatp-service repo and contained apps are being deprecated in favour of das-roatp-api 
+
 ### Developer Setup
 
 #### Requirements
