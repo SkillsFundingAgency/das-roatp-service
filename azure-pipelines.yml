@@ -15,6 +15,16 @@ variables:
     value: 'release'
   - name: buildPlatform
     value: 'anycpu'
+  - group: 'BUILD Management Resources'
+
+resources:
+  repositories:
+  - repository: self
+  - repository: das-platform-building-blocks
+    type: github
+    name: SkillsFundingAgency/das-platform-building-blocks
+    ref: refs/tags/0.4.37
+    endpoint: SkillsFundingAgency
 
 pool:
   name: 'DAS - Continuous Integration'
@@ -29,16 +39,14 @@ steps:
     updateAssemblyInfo: true
 
 - task: SonarCloudPrepare@1
-  displayName: 'Prepare Sonarcloud analysis configuration'
+  displayName: Prepare SonarCloud analysis configuration
+  condition: and(succeeded(), or(in(variables['Build.SourceBranch'], 'refs/heads/master', 'refs/heads/main'), eq(variables['Build.Reason'], 'PullRequest')))
   inputs:
-    SonarCloud: "$(SonarCloudConnectionId)"
-    organization: "$(SonarCloudOrganisationKey)"
-    scannerMode: 'MSBuild'
+    SonarCloud: ESFA - SonarCloud
+    organization: $(SonarCloudOrganisationKey)
+    scannerMode: MSBuild
     projectName: "$(Build.DefinitionName)"
-    projectKey: "$(sonarCloudProjectKey)"
-    extraProperties: |
-      sonar.pullrequest.provider=GitHub
-      sonar.pullrequest.github.repository=$(Build.Repository.Name)
+    projectKey: SkillsFundingAgency_das-roatp-service
 
 - task: DotNetCoreCLI@2
   displayName: dot restore
@@ -52,7 +60,7 @@ steps:
   inputs:
     projects: 'src/**/*.csproj'
     arguments: '--configuration $(buildConfiguration)  --no-restore'
-    
+
 - task: DotNetCoreCLI@2
   displayName: dotnet test
   inputs:
@@ -61,10 +69,12 @@ steps:
     arguments: '--configuration $(buildConfiguration) --no-build'
 
 - task: SonarCloudAnalyze@1
-  displayName: 'Run SonarCloud analysis'
-    
+  displayName: Run SonarCloud analysis
+  condition: and(succeeded(), or(in(variables['Build.SourceBranch'], 'refs/heads/master', 'refs/heads/main'), eq(variables['Build.Reason'], 'PullRequest')))
+
 - task: SonarCloudPublish@1
-  displayName: 'Publish results on build summary'
+  displayName: Publish SonarCloud analysis results on build summary
+  condition: and(succeeded(), or(in(variables['Build.SourceBranch'], 'refs/heads/master', 'refs/heads/main'), eq(variables['Build.Reason'], 'PullRequest')))
   inputs:
     pollingTimeoutSec: '300'
 
