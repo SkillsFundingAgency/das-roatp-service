@@ -67,6 +67,10 @@
             "type": "array",
             "defaultValue": [
             ]
+        },
+        "utcValue": {
+            "type": "string",
+            "defaultValue": "[utcNow('yyMMddHHmmss')]"
         }
     },
     "variables": {
@@ -88,7 +92,7 @@
         },
         {
             "apiVersion": "2020-06-01",
-            "name": "app-service-certificate",
+            "name": "[concat('app-service-certificate-', parameters('utcValue'))]",
             "resourceGroup": "[parameters('sharedEnvResourceGroup')]",
             "type": "Microsoft.Resources/deployments",
             "properties": {
@@ -112,7 +116,7 @@
         },
         {
             "apiVersion": "2020-06-01",
-            "name": "api-app-insights",
+            "name": "[concat('api-app-insights-', parameters('utcValue'))]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[variables('resourceGroupName')]",
             "properties": {
@@ -133,7 +137,7 @@
         },
         {
             "apiVersion": "2020-06-01",
-            "name": "api-app-service",
+            "name": "[concat('api-app-service-', parameters('utcValue'))]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[variables('resourceGroupName')]",
             "properties": {
@@ -168,7 +172,7 @@
                                 },
                                 {
                                     "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                                    "value": "[reference('api-app-insights').outputs.InstrumentationKey.value]"
+                                    "value": "[reference(concat('api-app-insights-', parameters('utcValue'))).outputs.InstrumentationKey.value]"
                                 },
                                 {
                                     "name": "WEBSITE_SWAP_WARMUP_PING_PATH",
@@ -196,7 +200,7 @@
                         "value": "[parameters('apiCustomHostname')]"
                     },
                     "certificateThumbprint": {
-                        "value": "[reference('app-service-certificate').outputs.certificateThumbprint.value]"
+                        "value": "[reference(concat('app-service-certificate-', parameters('utcValue'))).outputs.certificateThumbprint.value]"
                     },
                     "ipSecurityRestrictions": {
                         "value": "[parameters('appServiceAllowedIPs')]"
@@ -206,7 +210,7 @@
         },
         {
             "apiVersion": "2020-06-01",
-            "name": "roatp-sql-database",
+            "name": "[concat('roatp-sql-database-', parameters('utcValue'))]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('sharedEnvResourceGroup')]",
             "properties": {
