@@ -151,8 +151,11 @@ BEGIN
 	(9, 'Live', 'Non-direct delivery in 12 month period', 'System', SYSDATETIME()),
 	(10, 'Live', 'Provider error', 'System', SYSDATETIME()),
 	(11, 'Live', 'Provider request', 'System', SYSDATETIME()),
-	(12, 'Live', 'Other', 'System', SYSDATETIME())
-
+	(12, 'Live', 'Other', 'System', SYSDATETIME()),
+	(13, 'Live', 'No delivery in a 6 month period', 'System', SYSDATETIME()),
+	(14, 'Live', '2 insufficient progress Ofsted monitoring', 'System', SYSDATETIME()),
+	(15, 'Live', 'Failed RoATP refresh application', 'System', SYSDATETIME()),
+	(16, 'Live', 'Did not re-apply when requested', 'System', SYSDATETIME())
 	SET IDENTITY_INSERT dbo.RemovedReasons OFF
 	
 END
