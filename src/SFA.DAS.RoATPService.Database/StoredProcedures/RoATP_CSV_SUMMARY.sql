@@ -9,19 +9,17 @@ SELECT ukprn AS UKPRN,
 	 CASE ISNULL(tradingName,'') WHEN '' THEN ''
 	 ELSE ' T/A ' + tradingName
 	 END AS 'Organisation Name',
- pt.ProviderType AS 'Provider type',
+ pt.ProviderType AS 'Application type',
+ ot.Type AS 'Organisation type',
  CASE JSON_VALUE(OrganisationData,'$.NonLevyContract')
 	WHEN 'true' THEN 'Y' ELSE 'N' END  AS 'Contracted to deliver to non-levied employers',
- CASE JSON_VALUE(OrganisationData,'$.ParentCompanyGuarantee')
-	WHEN 'true' THEN 'Y' ELSE 'N' END AS 'Parent company guarantee',
- CASE JSON_VALUE(OrganisationData,'$.FinancialTrackRecord')
-	WHEN 'true' THEN 'N' ELSE 'Y' END AS 'New Organisation without financial track record',
  CONVERT(VARCHAR(10),CONVERT(DATE,JSON_VALUE(OrganisationData,'$.StartDate')), 111) AS  'Start Date',
  CASE StatusId WHEN 0 THEN CONVERT(VARCHAR(10),StatusDate,111) ELSE NULL END AS 'End Date',
  CASE StatusId WHEN 2 THEN CONVERT(VARCHAR(10),StatusDate,111) ELSE NULL END AS 'Provider not currently starting new apprentices',
  CONVERT(VARCHAR(10),CONVERT(DATE,JSON_VALUE(OrganisationData,'$.ApplicationDeterminedDate')), 111) AS  'Application Determined Date'
  FROM organisations o 
  LEFT OUTER JOIN providerTypes pt ON o.ProviderTypeId = pt.Id
+ LEFT OUTER JOIN OrganisationTypes ot ON o.OrganisationTypeId = ot.Id
 	 WHERE o.StatusId IN (0,1,2) -- exclude on-boarding
 	 AND ukprn = ISNULL(@ukprn, ukprn)
 	  ORDER BY COALESCE(o.UpdatedAt, o.CreatedAt) DESC
