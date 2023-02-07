@@ -10,7 +10,6 @@ SELECT ukprn AS UKPRN,
 	 ELSE ' T/A ' + tradingName
 	 END AS 'Organisation Name',
  pt.ProviderType AS 'Application type',
- ot.Type AS 'Organisation type',
  CASE JSON_VALUE(OrganisationData,'$.NonLevyContract')
 	WHEN 'true' THEN 'Y' ELSE 'N' END  AS 'Contracted to deliver to non-levied employers',
  CONVERT(VARCHAR(10),CONVERT(DATE,JSON_VALUE(OrganisationData,'$.StartDate')), 111) AS  'Start Date',
@@ -19,7 +18,6 @@ SELECT ukprn AS UKPRN,
  CONVERT(VARCHAR(10),CONVERT(DATE,JSON_VALUE(OrganisationData,'$.ApplicationDeterminedDate')), 111) AS  'Application Determined Date'
  FROM organisations o 
  LEFT OUTER JOIN providerTypes pt ON o.ProviderTypeId = pt.Id
- LEFT OUTER JOIN OrganisationTypes ot ON o.OrganisationTypeId = ot.Id
 	 WHERE o.StatusId IN (0,1,2) -- exclude on-boarding
 	 AND ukprn = ISNULL(@ukprn, ukprn)
 	  ORDER BY COALESCE(o.UpdatedAt, o.CreatedAt) DESC
