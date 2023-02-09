@@ -152,10 +152,25 @@ BEGIN
 	(10, 'Live', 'Provider error', 'System', SYSDATETIME()),
 	(11, 'Live', 'Provider request', 'System', SYSDATETIME()),
 	(12, 'Live', 'Other', 'System', SYSDATETIME())
-
 	SET IDENTITY_INSERT dbo.RemovedReasons OFF
 	
 END
+
+SET IDENTITY_INSERT dbo.RemovedReasons ON
+
+  if (not exists(select * from  dbo.RemovedReasons where RemovedReason = 'No delivery in a 6 month period'))
+	  insert into [RemovedReasons] ([Id], [Status], [RemovedReason], [CreatedBy], [CreatedAt]) VALUES (13, 'Live', 'No delivery in a 6 month period', 'System', SYSDATETIME());
+
+  if (not exists(select * from  dbo.RemovedReasons where RemovedReason = '2 insufficient progress Ofsted monitoring'))
+	  insert into [RemovedReasons] ([Id], [Status], [RemovedReason], [CreatedBy], [CreatedAt]) VALUES (14, 'Live', '2 insufficient progress Ofsted monitoring', 'System', SYSDATETIME());
+  
+  if (not exists(select * from  dbo.RemovedReasons where RemovedReason = 'Failed RoATP refresh application'))
+	  insert into [RemovedReasons] ([Id], [Status], [RemovedReason], [CreatedBy], [CreatedAt]) VALUES (15, 'Live', 'Failed RoATP refresh application', 'System', SYSDATETIME());
+
+  if (not exists(select * from  dbo.RemovedReasons where RemovedReason = 'Did not re-apply when requested'))
+	  insert into [RemovedReasons] ([Id], [Status], [RemovedReason], [CreatedBy], [CreatedAt]) VALUES (16, 'Live', 'Did not re-apply when requested', 'System', SYSDATETIME());
+
+SET IDENTITY_INSERT dbo.RemovedReasons OFF
 
 IF NOT EXISTS (SELECT 1 FROM dbo.OrganisationStatus)
 BEGIN
