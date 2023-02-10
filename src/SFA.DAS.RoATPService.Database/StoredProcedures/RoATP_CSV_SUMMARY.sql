@@ -9,7 +9,7 @@ SELECT ukprn AS UKPRN,
 	 CASE ISNULL(tradingName,'') WHEN '' THEN ''
 	 ELSE ' T/A ' + tradingName
 	 END AS 'Organisation Name',
- pt.ProviderType AS 'Application type',
+ pt.ProviderType AS 'Application Type',
  CASE JSON_VALUE(OrganisationData,'$.NonLevyContract')
 	WHEN 'true' THEN 'Y' ELSE 'N' END  AS 'Contracted to deliver to non-levied employers',
  CONVERT(VARCHAR(10),CONVERT(DATE,JSON_VALUE(OrganisationData,'$.StartDate')), 111) AS  'Start Date',
