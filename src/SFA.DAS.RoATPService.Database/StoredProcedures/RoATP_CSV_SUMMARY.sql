@@ -9,13 +9,9 @@ SELECT ukprn AS UKPRN,
 	 CASE ISNULL(tradingName,'') WHEN '' THEN ''
 	 ELSE ' T/A ' + tradingName
 	 END AS 'Organisation Name',
- pt.ProviderType AS 'Provider type',
+ pt.ProviderType AS 'Application Type',
  CASE JSON_VALUE(OrganisationData,'$.NonLevyContract')
 	WHEN 'true' THEN 'Y' ELSE 'N' END  AS 'Contracted to deliver to non-levied employers',
- CASE JSON_VALUE(OrganisationData,'$.ParentCompanyGuarantee')
-	WHEN 'true' THEN 'Y' ELSE 'N' END AS 'Parent company guarantee',
- CASE JSON_VALUE(OrganisationData,'$.FinancialTrackRecord')
-	WHEN 'true' THEN 'N' ELSE 'Y' END AS 'New Organisation without financial track record',
  CONVERT(VARCHAR(10),CONVERT(DATE,JSON_VALUE(OrganisationData,'$.StartDate')), 111) AS  'Start Date',
  CASE StatusId WHEN 0 THEN CONVERT(VARCHAR(10),StatusDate,111) ELSE NULL END AS 'End Date',
  CASE StatusId WHEN 2 THEN CONVERT(VARCHAR(10),StatusDate,111) ELSE NULL END AS 'Provider not currently starting new apprentices',
