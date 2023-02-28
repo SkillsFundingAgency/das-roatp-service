@@ -44,7 +44,7 @@ BEGIN
 	(3, 'National College', 'System', SYSDATETIME(), 'Live'),
 	(4, 'Sixth Form College', 'System', SYSDATETIME(), 'Live'),
 	(5, 'Further Education Institute', 'System', SYSDATETIME(), 'Live'),
-	(6, 'Higher Education Institute', 'System', SYSDATETIME(), 'Live'),
+	(6, 'Higher Education Institute or university', 'System', SYSDATETIME(), 'Live'),
 	(7, 'Academy', 'System', SYSDATETIME(), 'Live'),
 	(8, 'Multi-Academy Trust', 'System', SYSDATETIME(), 'Live'),
 	(9, 'NHS Trust', 'System', SYSDATETIME(), 'Live'),
@@ -683,7 +683,7 @@ UPDATE OrganisationTypes SET [Type] = 'General Further Education College' WHERE 
 UPDATE OrganisationTypes SET [Type] = 'National College' WHERE Id = 3
 UPDATE OrganisationTypes SET [Type] = 'Sixth Form College' WHERE Id = 4
 UPDATE OrganisationTypes SET [Type] = 'Further Education Institute' WHERE Id = 5
-UPDATE OrganisationTypes SET [Type] = 'Higher Education Institute' WHERE Id = 6
+UPDATE OrganisationTypes SET [Type] = 'Higher Education Institute or university' WHERE Id = 6
 UPDATE OrganisationTypes SET [Type] = 'Multi-Academy Trust' WHERE Id = 8
 UPDATE OrganisationTypes SET [Type] = 'Non-departmental public body (NDPB)' WHERE Id = 14
 UPDATE OrganisationTypes SET [Type] = 'An Independent Training Provider' WHERE Id = 16
