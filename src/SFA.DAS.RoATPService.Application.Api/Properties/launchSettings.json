@@ -20,8 +20,8 @@
     "SFA.DAS.RoATPService.Application.Api": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:37951/",
-      "applicationUrl": "http://localhost:37951/",
+      "launchUrl": "https://localhost:37952/",
+      "applicationUrl": "https://localhost:37952;http://localhost:37951/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
