@@ -162,9 +162,6 @@ namespace SFA.DAS.RoATPService.Application.Api.StartupConfiguration
 
             services.AddTransient<IDbConnectionHelper, DbConnectionHelper>();
             services.AddTransient<IAzureClientCredentialHelper, AzureClientCredentialHelper>();
-            services.AddHttpClient<IProvideFeedbackService, ProvideFeedbackService>(
-                options=> options.Timeout = TimeSpan.FromMinutes(1)
-                );
             services.AddTransient<IFatDataExportService, FatDataExportService>();
             
             services.AddMediatR(typeof(GetProviderTypesHandler).GetTypeInfo().Assembly);
