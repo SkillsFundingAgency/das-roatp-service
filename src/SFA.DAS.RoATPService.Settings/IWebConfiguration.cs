@@ -6,6 +6,5 @@
         string SqlConnectionString { get; set; }
         string SessionRedisConnectionString { get; set; }
         UkrlpApiAuthentication UkrlpApiAuthentication { get; set; }
-        ProvideFeedbackApiConfiguration ProvideFeedbackApiConfiguration { get; set ; }
     }
 }

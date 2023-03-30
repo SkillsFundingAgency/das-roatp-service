@@ -11,6 +11,5 @@
         public string SessionRedisConnectionString { get; set; }
         
         public UkrlpApiAuthentication UkrlpApiAuthentication { get; set; }
-        public ProvideFeedbackApiConfiguration ProvideFeedbackApiConfiguration { get ; set ; }
     }
 }
