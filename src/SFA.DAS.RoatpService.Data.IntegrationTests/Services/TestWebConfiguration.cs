@@ -23,7 +23,5 @@ namespace SFA.DAS.RoatpService.Data.IntegrationTests.Services
             get => throw new NotImplementedException();
             set => throw new NotImplementedException();
         }
-
-        public ProvideFeedbackApiConfiguration ProvideFeedbackApiConfiguration { get; set; }
     }
 }
