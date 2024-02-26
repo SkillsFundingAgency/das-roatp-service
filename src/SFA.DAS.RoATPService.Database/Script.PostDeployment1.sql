@@ -164,11 +164,18 @@ SET IDENTITY_INSERT dbo.RemovedReasons ON
   if (not exists(select * from  dbo.RemovedReasons where RemovedReason = '2 insufficient progress Ofsted monitoring'))
 	  insert into [RemovedReasons] ([Id], [Status], [RemovedReason], [CreatedBy], [CreatedAt]) VALUES (14, 'Live', '2 insufficient progress Ofsted monitoring', 'System', SYSDATETIME());
   
-  if (not exists(select * from  dbo.RemovedReasons where RemovedReason = 'Failed RoATP refresh application'))
-	  insert into [RemovedReasons] ([Id], [Status], [RemovedReason], [CreatedBy], [CreatedAt]) VALUES (15, 'Live', 'Failed RoATP refresh application', 'System', SYSDATETIME());
+  if (not exists(select * from  dbo.RemovedReasons where Id=15))
+	  insert into [RemovedReasons] ([Id], [Status], [RemovedReason], [CreatedBy], [CreatedAt]) VALUES (15, 'Live', 'Failed APAR application', 'System', SYSDATETIME());
 
   if (not exists(select * from  dbo.RemovedReasons where RemovedReason = 'Did not re-apply when requested'))
 	  insert into [RemovedReasons] ([Id], [Status], [RemovedReason], [CreatedBy], [CreatedAt]) VALUES (16, 'Live', 'Did not re-apply when requested', 'System', SYSDATETIME());
+
+-- CSP-1259
+update RemovedReasons set RemovedReason  = 'Failed APAR application' where Id = 15;
+
+  if (not exists(select * from  dbo.RemovedReasons where Id=17))
+	  insert into [RemovedReasons] ([Id], [Status], [RemovedReason], [CreatedBy], [CreatedAt]) VALUES (17, 'Live', 'Gap In Provision - Condition 5 Breach', 'System', SYSDATETIME());
+-- END of CSP-1259
 
 SET IDENTITY_INSERT dbo.RemovedReasons OFF
 
