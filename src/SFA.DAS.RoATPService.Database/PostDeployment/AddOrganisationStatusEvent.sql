@@ -1,4 +1,4 @@
-﻿TRUNCATE TABLE [OrganisationStatusEvent]
+﻿GO
 
 INSERT INTO [dbo].[OrganisationStatusEvent]
            (OrganisationStatusId, CreatedOn,ProviderId)
@@ -6,4 +6,6 @@ INSERT INTO [dbo].[OrganisationStatusEvent]
 	  left outer join OrganisationStatusEvent ose on o.ukprn = ose.providerId
 	  and o.StatusId = ose.OrganisationStatusId and o.StatusDate = ose.CreatedOn
 	  where ose.ProviderId is null and ose.OrganisationStatusId is null and ose.CreatedOn is null
-	  and o.ProviderTypeId in (1,2)
+	  and o.ProviderTypeId in (1,2);
+
+Go

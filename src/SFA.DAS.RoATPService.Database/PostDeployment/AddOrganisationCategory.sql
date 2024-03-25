@@ -4,7 +4,7 @@
 	[CreatedAt] [datetime2](7),
 	[CreatedBy] [nvarchar](30),
 	[Status] [nvarchar](20)
-)
+);
 
 
 INSERT INTO #TempOrganisationCategory
@@ -17,7 +17,7 @@ INSERT INTO #TempOrganisationCategory
 	(18,'A Group Training Association',getdate(),'System','Live'),
 	(19,'Employer',getdate(),'System','Live'),
 	(3,'None of the above',getdate(),'System','Live'),
-	(21,'Rail franchise',GETUTCDATE(),'System','Live')
+	(21,'Rail franchise',GETUTCDATE(),'System','Live');
 
 SET IDENTITY_INSERT [OrganisationCategory] ON;
 MERGE [OrganisationCategory] TARGET
@@ -34,4 +34,6 @@ WHEN NOT MATCHED BY TARGET THEN
 
 SET IDENTITY_INSERT [OrganisationCategory] OFF;
 
-DROP TABLE #TempOrganisationCategory
+DROP TABLE #TempOrganisationCategory;
+
+GO

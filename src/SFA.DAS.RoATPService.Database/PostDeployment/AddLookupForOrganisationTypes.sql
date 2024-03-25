@@ -1,4 +1,5 @@
-﻿CREATE TABLE #TempOrganisationTypes(
+﻿Go
+CREATE TABLE #TempOrganisationTypes(
 	[Id] [int],
 	[Type] [nvarchar](100),
 	[Description] [nvarchar](255),
@@ -7,7 +8,7 @@
 	[UpdatedAt] [datetime2](7),
 	[UpdatedBy] [nvarchar](30),
 	[Status] [nvarchar](20)
-)
+);
 
 INSERT INTO #TempOrganisationTypes
 	([Id], [Type], [CreatedBy], [CreatedAt], [Status])
@@ -33,7 +34,7 @@ INSERT INTO #TempOrganisationTypes
 	(18, 'A Group Training Association', 'System', SYSDATETIME(), 'Live'),
 	(19, 'An employer training apprentices in other organisations', 'System', SYSDATETIME(), 'Live'),
 	(20, 'None of the above', 'System', SYSDATETIME(), 'Live'),
-	(21, 'Rail franchise','Live',GETUTCDATE(),'System')
+	(21, 'Rail franchise','Live',GETUTCDATE(),'System');
 
 SET IDENTITY_INSERT [OrganisationTypes] ON;
 MERGE [OrganisationTypes] TARGET
@@ -50,4 +51,6 @@ WHEN NOT MATCHED BY TARGET THEN
 
 SET IDENTITY_INSERT [OrganisationTypes] OFF;
 
-DROP TABLE #TempOrganisationTypes
+DROP TABLE #TempOrganisationTypes;
+
+Go

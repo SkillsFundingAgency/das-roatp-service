@@ -1,18 +1,21 @@
-﻿CREATE TABLE #TempOrganisationStatus(
+﻿Go
+
+CREATE TABLE #TempOrganisationStatus(
 	[Id] [int],
 	[Status] [nvarchar](50),
 	[CreatedBy] [nvarchar](30),
-	[CreatedAt] [datetime2](7)
-)
+	[CreatedAt] [datetime2](7),
+	EventDescription [nvarchar](20) 
+);
 
 
 INSERT INTO #TempOrganisationStatus
-	([Id], [Status], [CreatedBy], [CreatedAt])
+	([Id], [Status], [CreatedBy], [CreatedAt],[EventDescription])
 	VALUES
-	(0, 'REMOVED', 'System', SYSDATETIME()),
-	(1, 'ACTIVE', 'System', SYSDATETIME()),
-	(2, 'ACTIVENOSTARTS', 'System', SYSDATETIME()),
-	(3, 'INITIATED', 'System', getdate())
+	(0, 'Removed', 'System', SYSDATETIME(),'REMOVED'),
+	(1, 'Active', 'System', SYSDATETIME(),'ACTIVE'),
+	(2, 'Active - but not taking on apprentices', 'System', SYSDATETIME(),'ACTIVENOSTARTS'),
+	(3, 'On-boarding', 'System', getdate(),'INITIATED');
 
 	
 SET IDENTITY_INSERT [OrganisationStatus] ON;
@@ -22,11 +25,14 @@ WHEN MATCHED THEN
 	UPDATE SET
 		TARGET.[Status] = SOURCE.[Status],
 		TARGET.[CreatedBy] = SOURCE.[CreatedBy],
-		TARGET.[CreatedAt] = SOURCE.[CreatedAt]
+		TARGET.[CreatedAt] = SOURCE.[CreatedAt],
+		TARGET.[EventDescription] = SOURCE.[EventDescription]
 WHEN NOT MATCHED BY TARGET THEN 
-	INSERT ([Id], [Status], [CreatedBy], [CreatedAt])
-	VALUES (SOURCE.[Id], SOURCE.[Status], SOURCE.[CreatedBy], SOURCE.[CreatedAt]);
+	INSERT ([Id], [Status], [CreatedBy], [CreatedAt],[EventDescription])
+	VALUES (SOURCE.[Id], SOURCE.[Status], SOURCE.[CreatedBy], SOURCE.[CreatedAt], SOURCE.[EventDescription]);
 
 SET IDENTITY_INSERT [OrganisationStatus] OFF;
 
-DROP TABLE #TempOrganisationStatus
+DROP TABLE #TempOrganisationStatus;
+
+Go

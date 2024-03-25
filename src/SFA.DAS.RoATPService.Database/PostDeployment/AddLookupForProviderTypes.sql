@@ -7,7 +7,7 @@
 	[UpdatedAt] [datetime2](7),
 	[UpdatedBy] [nvarchar](30),
 	[Status] [nvarchar](20),
-)
+);
 
 
 INSERT INTO #TempProviderTypes
@@ -18,7 +18,7 @@ INSERT INTO #TempProviderTypes
 	(2,
 	'Employer provider', 'System', SYSDATETIME(), 'Live','<p>Your organisation will directly deliver training to its own employees.</p> <p>While doing this, it can also train:</p> <ul class=''govuk-list govuk-list--bullet govuk-hint''> <li>employees of connected companies or charities</li> <li>act as a subcontractor for other employer or main provider</li> </ul> <p>To be an employer provider, your organisation must be a levy-paying employer.</p>'),
 	(3,
-	'Supporting provider', 'System', SYSDATETIME(), 'Live','<p>Your organisation will act as a subcontractor for main and employer providers to train apprentices up to a maximum of &pound;500,000 per year.</p> <p>If your organisation is new on the register, it will be limited to &pound;100,000 in its first year.</p>')
+	'Supporting provider', 'System', SYSDATETIME(), 'Live','<p>Your organisation will act as a subcontractor for main and employer providers to train apprentices up to a maximum of &pound;500,000 per year.</p> <p>If your organisation is new on the register, it will be limited to &pound;100,000 in its first year.</p>');
 
 SET IDENTITY_INSERT [ProviderTypes] ON;
 MERGE [ProviderTypes] TARGET
@@ -36,4 +36,5 @@ WHEN NOT MATCHED BY TARGET THEN
 
 SET IDENTITY_INSERT [ProviderTypes] OFF;
 
-DROP TABLE #TempProviderTypes
+DROP TABLE #TempProviderTypes;
+Go

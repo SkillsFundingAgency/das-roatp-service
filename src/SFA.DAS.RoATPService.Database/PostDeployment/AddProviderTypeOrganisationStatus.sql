@@ -5,7 +5,7 @@
 	[CreatedAt] [datetime2](7),
 	[CreatedBy] [nvarchar](30),
 	[Status] [nvarchar](20)
-)
+);
 
 
 INSERT INTO #TempProviderTypeOrganisationStatus
@@ -21,7 +21,7 @@ INSERT INTO #TempProviderTypeOrganisationStatus
 	(8, 2, 2, 'System', SYSDATETIME(), 'Live'),
 	(9, 3, 2, 'System', SYSDATETIME(), 'Live'),
 	(10, 1, 3, 'System', SYSDATETIME(), 'Live'),
-	(11, 2, 3, 'System', SYSDATETIME(), 'Live')
+	(11, 2, 3, 'System', SYSDATETIME(), 'Live');
 
 	
 SET IDENTITY_INSERT [ProviderTypeOrganisationStatus] ON;
@@ -40,4 +40,6 @@ WHEN NOT MATCHED BY TARGET THEN
 
 SET IDENTITY_INSERT [ProviderTypeOrganisationStatus] OFF;
 
-DROP TABLE #TempProviderTypeOrganisationStatus
+DROP TABLE #TempProviderTypeOrganisationStatus;
+
+GO

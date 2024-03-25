@@ -1,11 +1,13 @@
-﻿CREATE TABLE #TempProviderTypeOrganisationTypes(
+﻿Go
+
+CREATE TABLE #TempProviderTypeOrganisationTypes(
 	[Id] [int],
 	[ProviderTypeId] [int],
 	[OrganisationTypeId] [int],
 	[CreatedAt] [datetime2](7),
 	[CreatedBy] [nvarchar](30),
 	[Status] [nvarchar](20)
-)
+);
 
 
 INSERT INTO #TempProviderTypeOrganisationTypes
@@ -70,7 +72,7 @@ INSERT INTO #TempProviderTypeOrganisationTypes
 	(57, 2, 20, 'System', SYSDATETIME(), 'Live'),
 	(58, 1, 21, 'System', GETUTCDATE(), 'Live'),
 	(59, 2, 21, 'System', GETUTCDATE(), 'Live'),
-	(60, 3, 21, 'System', GETUTCDATE(), 'Live')
+	(60, 3, 21, 'System', GETUTCDATE(), 'Live');
 
 SET IDENTITY_INSERT [ProviderTypeOrganisationTypes] ON;
 MERGE [ProviderTypeOrganisationTypes] TARGET
@@ -88,4 +90,6 @@ WHEN NOT MATCHED BY TARGET THEN
 
 SET IDENTITY_INSERT [ProviderTypeOrganisationTypes] OFF;
 
-DROP TABLE #TempProviderTypeOrganisationTypes
+DROP TABLE #TempProviderTypeOrganisationTypes;
+
+GO

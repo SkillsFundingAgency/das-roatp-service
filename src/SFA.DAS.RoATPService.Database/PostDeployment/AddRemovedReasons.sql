@@ -4,7 +4,7 @@
 	[RemovedReason] [nvarchar](100),
 	[CreatedAt] [datetime2](7),
 	[CreatedBy] [nvarchar](30),
-)
+);
 
 
 INSERT INTO #TempRemovedReasons
@@ -26,7 +26,7 @@ INSERT INTO #TempRemovedReasons
 	(14, 'Live', '2 insufficient progress Ofsted monitoring', 'System', SYSDATETIME()),
 	(15, 'Live', 'Failed APAR application', 'System', SYSDATETIME()),
 	(16, 'Live', 'Did not re-apply when requested', 'System', SYSDATETIME()),
-	(17, 'Live', 'Gap In Provision - Condition 5 Breach', 'System', SYSDATETIME())
+	(17, 'Live', 'Gap In Provision - Condition 5 Breach', 'System', SYSDATETIME());
 
 	
 SET IDENTITY_INSERT [RemovedReasons] ON;
@@ -44,4 +44,6 @@ WHEN NOT MATCHED BY TARGET THEN
 
 SET IDENTITY_INSERT [RemovedReasons] OFF;
 
-DROP TABLE #TempRemovedReasons
+DROP TABLE #TempRemovedReasons;
+
+GO
