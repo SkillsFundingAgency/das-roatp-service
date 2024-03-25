@@ -90,14 +90,12 @@
     <None Include="PostDeployment\AddRemovedReasons.sql" />
     <None Include="PostDeployment\MapProviderTypesToOrganisationTypes.sql" />
     <None Include="PostDeployment\UpdateOrganisation.sql" />
+    <None Include="PostDeployment\UpdateTables.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="SFA.DAS.RoATPService.Database.refactorlog" />
   </ItemGroup>
   <ItemGroup>
     <PreDeploy Include="Script.PreDeployment1.sql" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="PostDeployment\UpdateTables.sql" />
   </ItemGroup>
 </Project>
