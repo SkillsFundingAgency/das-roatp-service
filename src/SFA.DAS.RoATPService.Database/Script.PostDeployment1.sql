@@ -12,3 +12,9 @@ Post-Deployment Script Template
 
 
 :r .\PostDeployment\UpdateTables.sql
+
+Go
+-- APR-474 update any non-set SourceIsUKRLP to true for Organisations.OrganisationData
+update organisations set OrganisationData = JSON_Modify(OrganisationData,'$.SourceIsUKRLP',CAST(1 as BIT)) where JSON_VALUE(OrganisationData,'$.SourceIsUKRLP') is NULL;
+
+Go

@@ -89,7 +89,6 @@
     <None Include="PostDeployment\AddProviderTypeOrganisationStatus.sql" />
     <None Include="PostDeployment\AddRemovedReasons.sql" />
     <None Include="PostDeployment\MapProviderTypesToOrganisationTypes.sql" />
-    <None Include="PostDeployment\UpdateOrganisation.sql" />
     <None Include="PostDeployment\UpdateTables.sql" />
   </ItemGroup>
   <ItemGroup>
