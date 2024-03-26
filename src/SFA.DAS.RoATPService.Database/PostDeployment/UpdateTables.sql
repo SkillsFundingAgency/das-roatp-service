@@ -17,5 +17,3 @@
 :r .\AddOrganisationCategoryOrgTypeProviderType.sql
 
 :r .\AddOrganisationStatusEvent.sql
-
-:r .\UpdateOrganisation.sql
