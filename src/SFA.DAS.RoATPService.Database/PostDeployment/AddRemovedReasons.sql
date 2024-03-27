@@ -35,9 +35,7 @@ USING #TempRemovedReasons SOURCE ON TARGET.Id=SOURCE.Id
 WHEN MATCHED THEN
 	UPDATE SET
 		TARGET.[Status] = SOURCE.[Status],
-		TARGET.[RemovedReason] = SOURCE.[RemovedReason],
-		TARGET.[CreatedBy] = SOURCE.[CreatedBy],
-		TARGET.[CreatedAt] = SOURCE.[CreatedAt]
+		TARGET.[RemovedReason] = SOURCE.[RemovedReason]
 WHEN NOT MATCHED BY TARGET THEN 
 	INSERT ([Id], [Status], [RemovedReason], [CreatedBy], [CreatedAt])
 	VALUES (SOURCE.[Id], SOURCE.[Status], SOURCE.[RemovedReason], SOURCE.[CreatedBy], SOURCE.[CreatedAt]);

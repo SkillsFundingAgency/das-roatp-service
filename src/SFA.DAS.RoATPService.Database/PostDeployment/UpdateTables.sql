@@ -6,4 +6,3 @@
 :r .\AddProviderTypeOrganisationStatus.sql
 :r .\AddOrganisationCategory.sql
 :r .\AddOrganisationCategoryOrgTypeProviderType.sql
-:r .\AddOrganisationStatusEvent.sql

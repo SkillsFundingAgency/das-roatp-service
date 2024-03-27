@@ -24,8 +24,6 @@ USING #TempOrganisationStatus SOURCE ON TARGET.Id=SOURCE.Id
 WHEN MATCHED THEN
 	UPDATE SET
 		TARGET.[Status] = SOURCE.[Status],
-		TARGET.[CreatedBy] = SOURCE.[CreatedBy],
-		TARGET.[CreatedAt] = SOURCE.[CreatedAt],
 		TARGET.[EventDescription] = SOURCE.[EventDescription]
 WHEN NOT MATCHED BY TARGET THEN 
 	INSERT ([Id], [Status], [CreatedBy], [CreatedAt],[EventDescription])

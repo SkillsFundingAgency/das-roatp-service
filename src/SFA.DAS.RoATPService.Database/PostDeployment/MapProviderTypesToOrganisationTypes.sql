@@ -81,8 +81,6 @@ WHEN MATCHED THEN
 	UPDATE SET
 		TARGET.[ProviderTypeId] = SOURCE.[ProviderTypeId],
 		TARGET.[OrganisationTypeId] = SOURCE.[OrganisationTypeId],
-		TARGET.[CreatedBy] = SOURCE.[CreatedBy],
-		TARGET.[CreatedAt] = SOURCE.[CreatedAt],
 		TARGET.[Status] = SOURCE.[Status]
 WHEN NOT MATCHED BY TARGET THEN 
 	INSERT ([Id], [ProviderTypeId], [OrganisationTypeId], [CreatedBy], [CreatedAt], [Status])

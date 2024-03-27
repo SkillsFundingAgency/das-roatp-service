@@ -25,8 +25,6 @@ USING #TempOrganisationCategory SOURCE ON TARGET.Id=SOURCE.Id
 WHEN MATCHED THEN
 	UPDATE SET
 		TARGET.[Category] = SOURCE.[Category],
-		TARGET.[CreatedAt] = SOURCE.[CreatedAt],
-		TARGET.[CreatedBy] = SOURCE.[CreatedBy],
 		TARGET.[Status] = SOURCE.[Status]
 WHEN NOT MATCHED BY TARGET THEN 
 	INSERT ([Id],[Category],[CreatedAt],[CreatedBy],[Status])

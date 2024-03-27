@@ -26,8 +26,6 @@ USING #TempProviderTypes SOURCE ON TARGET.Id=SOURCE.Id
 WHEN MATCHED THEN
 	UPDATE SET
 		TARGET.[ProviderType] = SOURCE.[ProviderType],
-		TARGET.[CreatedBy] = SOURCE.[CreatedBy],
-		TARGET.[CreatedAt] = SOURCE.[CreatedAt],
 		TARGET.[Status] = SOURCE.[Status],
 		TARGET.[Description] = SOURCE.[Description]
 WHEN NOT MATCHED BY TARGET THEN 

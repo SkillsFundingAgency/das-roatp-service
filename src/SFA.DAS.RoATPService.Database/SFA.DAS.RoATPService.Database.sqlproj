@@ -85,7 +85,6 @@
     <None Include="PostDeployment\AddOrganisationCategory.sql" />
     <None Include="PostDeployment\AddOrganisationCategoryOrgTypeProviderType.sql" />
     <None Include="PostDeployment\AddOrganisationStatus.sql" />
-    <None Include="PostDeployment\AddOrganisationStatusEvent.sql" />
     <None Include="PostDeployment\AddProviderTypeOrganisationStatus.sql" />
     <None Include="PostDeployment\AddRemovedReasons.sql" />
     <None Include="PostDeployment\MapProviderTypesToOrganisationTypes.sql" />

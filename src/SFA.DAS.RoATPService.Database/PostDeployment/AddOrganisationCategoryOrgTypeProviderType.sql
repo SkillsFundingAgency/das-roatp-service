@@ -79,8 +79,6 @@ WHEN MATCHED THEN
 		TARGET.[OrganisationCategoryId] = SOURCE.[OrganisationCategoryId],
 		TARGET.[OrganisationTypeId] = SOURCE.[OrganisationTypeId],
 		TARGET.[ProviderTypeId] = SOURCE.[ProviderTypeId],
-		TARGET.[CreatedAt] = SOURCE.[CreatedAt],
-		TARGET.[CreatedBy] = SOURCE.[CreatedBy],
 		TARGET.[Status] = SOURCE.[Status]
 WHEN NOT MATCHED BY TARGET THEN 
 	INSERT ([Id],[OrganisationCategoryId],[OrganisationTypeId],[ProviderTypeId],[CreatedAt],[CreatedBy],[Status])
