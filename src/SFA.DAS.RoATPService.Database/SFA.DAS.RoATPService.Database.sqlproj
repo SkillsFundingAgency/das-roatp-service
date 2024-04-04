@@ -61,6 +61,7 @@
     <Folder Include="Properties" />
     <Folder Include="Tables\" />
     <Folder Include="StoredProcedures" />
+    <Folder Include="PostDeployment" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\OrganisationTypes.sql" />
@@ -78,9 +79,16 @@
     <Build Include="Tables\OrganisationCategoryOrgTypeProviderType.sql" />
     <Build Include="Tables\OrganisationStatusEvent.sql" />
     <Build Include="StoredProcedures\RoATP_FAT_Data_Export.sql" />
-  </ItemGroup>
-  <ItemGroup>
     <PostDeploy Include="Script.PostDeployment1.sql" />
+    <None Include="PostDeployment\AddLookupForOrganisationTypes.sql" />
+    <None Include="PostDeployment\AddLookupForProviderTypes.sql" />
+    <None Include="PostDeployment\AddOrganisationCategory.sql" />
+    <None Include="PostDeployment\AddOrganisationCategoryOrgTypeProviderType.sql" />
+    <None Include="PostDeployment\AddOrganisationStatus.sql" />
+    <None Include="PostDeployment\AddProviderTypeOrganisationStatus.sql" />
+    <None Include="PostDeployment\AddRemovedReasons.sql" />
+    <None Include="PostDeployment\MapProviderTypesToOrganisationTypes.sql" />
+    <None Include="PostDeployment\UpdateTables.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="SFA.DAS.RoATPService.Database.refactorlog" />
