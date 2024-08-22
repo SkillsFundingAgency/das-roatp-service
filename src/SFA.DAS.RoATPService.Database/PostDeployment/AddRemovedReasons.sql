@@ -26,7 +26,8 @@ INSERT INTO #TempRemovedReasons
 	(14, 'Live', '2 insufficient progress Ofsted monitoring', 'System', SYSDATETIME()),
 	(15, 'Live', 'Failed APAR application', 'System', SYSDATETIME()),
 	(16, 'Live', 'Did not re-apply when requested', 'System', SYSDATETIME()),
-	(17, 'Live', 'Gap In Provision - Condition 5 Breach', 'System', SYSDATETIME());
+	(17, 'Live', 'Gap In Provision - Condition 5 Breach', 'System', SYSDATETIME()),
+	(18, 'Live', 'Apprenticeship Accountability Framework', 'System', SYSDATETIME());
 
 	
 SET IDENTITY_INSERT [RemovedReasons] ON;
