@@ -1,4 +1,4 @@
-# CODEOWNERS file for das-roatp-service.
-# The following users will be automatically added as Reviewers to all PRs.
-
-* @SkillsFundingAgency/das-platform-engineering
+#Changes to the following files/folders require review from listed teams
+.github/CODEOWNERS      @SkillsFundingAgency/das-platform-engineering
+/azure/                 @SkillsFundingAgency/das-platform-engineering
+azure-pipelines.yml     @SkillsFundingAgency/das-platform-engineering
