@@ -1,6 +1,6 @@
-﻿using System.Net.Http;
-using System.Reflection;
+﻿using System.Reflection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging.ApplicationInsights;
 using SFA.DAS.RoATPService.Api.Client;
 using SFA.DAS.RoATPService.Api.Client.Interfaces;
 using SFA.DAS.RoATPService.Application.Api.Helpers;
@@ -17,7 +17,6 @@ namespace SFA.DAS.RoATPService.Application.Api.StartupConfiguration
 {
     using System;
     using System.Collections.Generic;
-    using System.Data.SqlClient;
     using System.Globalization;
     using System.IO;
     using System.Threading.Tasks;
@@ -64,6 +63,13 @@ namespace SFA.DAS.RoATPService.Application.Api.StartupConfiguration
         {
             try
             {
+                services.AddApplicationInsightsTelemetry();
+                services.AddLogging(builder =>
+                {
+                    builder.AddFilter<ApplicationInsightsLoggerProvider>(string.Empty, LogLevel.Information);
+                    builder.AddFilter<ApplicationInsightsLoggerProvider>("Microsoft", LogLevel.Information);
+                });
+
                 services.AddAuthentication(o => { o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme; })
                     .AddJwtBearer(o =>
                     {
@@ -123,7 +129,7 @@ namespace SFA.DAS.RoATPService.Application.Api.StartupConfiguration
 
                 if (_env.IsDevelopment())
                 {
-                   // TestDataService.AddTestData(serviceProvider.GetService<AssessorDbContext>());
+                    // TestDataService.AddTestData(serviceProvider.GetService<AssessorDbContext>());
                 }
             }
             catch (Exception e)
@@ -156,14 +162,14 @@ namespace SFA.DAS.RoATPService.Application.Api.StartupConfiguration
             services.AddTransient<ITextSanitiser, TextSanitiser>();
             services.AddHttpClient<IUkrlpApiClient, UkrlpApiClient>();
             services.AddTransient<IAuditLogService, AuditLogService>();
-            services.AddTransient<IOrganisationStatusManager, OrganisationStatusManager>();        
+            services.AddTransient<IOrganisationStatusManager, OrganisationStatusManager>();
             services.AddTransient<IUkrlpSoapSerializer, UkrlpSoapSerializer>();
             services.AddTransient<IEventsRepository, EventsRepository>();
 
             services.AddTransient<IDbConnectionHelper, DbConnectionHelper>();
             services.AddTransient<IAzureClientCredentialHelper, AzureClientCredentialHelper>();
             services.AddTransient<IFatDataExportService, FatDataExportService>();
-            
+
             services.AddMediatR(typeof(GetProviderTypesHandler).GetTypeInfo().Assembly);
         }
 
