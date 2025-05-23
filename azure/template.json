@@ -210,6 +210,10 @@
                                 {
                                     "name": "WEBSITE_SWAP_WARMUP_PING_STATUSES",
                                     "value": "200"
+                                },
+								{
+                                    "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                                    "value": "[reference(concat(variables('apiAppServiceName'), '-application-insights-', parameters('utcValue'))).outputs.ConnectionString.value]"
                                 }
                             ]
                         }
