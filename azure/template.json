@@ -200,10 +200,6 @@
                                     "value": "[parameters('environmentName')]"
                                 },
                                 {
-                                    "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                                    "value": "[reference(concat('api-app-insights-', parameters('utcValue'))).outputs.InstrumentationKey.value]"
-                                },
-                                {
                                     "name": "WEBSITE_SWAP_WARMUP_PING_PATH",
                                     "value": "/health"
                                 },
