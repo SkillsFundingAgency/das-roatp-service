@@ -1,5 +1,4 @@
-﻿using System.Net.Http;
-using System.Reflection;
+﻿using System.Reflection;
 using Microsoft.AspNetCore.Http;
 using SFA.DAS.RoATPService.Api.Client;
 using SFA.DAS.RoATPService.Api.Client.Interfaces;
@@ -17,7 +16,6 @@ namespace SFA.DAS.RoATPService.Application.Api.StartupConfiguration
 {
     using System;
     using System.Collections.Generic;
-    using System.Data.SqlClient;
     using System.Globalization;
     using System.IO;
     using System.Threading.Tasks;
@@ -123,7 +121,7 @@ namespace SFA.DAS.RoATPService.Application.Api.StartupConfiguration
 
                 if (_env.IsDevelopment())
                 {
-                   // TestDataService.AddTestData(serviceProvider.GetService<AssessorDbContext>());
+                    // TestDataService.AddTestData(serviceProvider.GetService<AssessorDbContext>());
                 }
             }
             catch (Exception e)
@@ -156,14 +154,14 @@ namespace SFA.DAS.RoATPService.Application.Api.StartupConfiguration
             services.AddTransient<ITextSanitiser, TextSanitiser>();
             services.AddHttpClient<IUkrlpApiClient, UkrlpApiClient>();
             services.AddTransient<IAuditLogService, AuditLogService>();
-            services.AddTransient<IOrganisationStatusManager, OrganisationStatusManager>();        
+            services.AddTransient<IOrganisationStatusManager, OrganisationStatusManager>();
             services.AddTransient<IUkrlpSoapSerializer, UkrlpSoapSerializer>();
             services.AddTransient<IEventsRepository, EventsRepository>();
 
             services.AddTransient<IDbConnectionHelper, DbConnectionHelper>();
             services.AddTransient<IAzureClientCredentialHelper, AzureClientCredentialHelper>();
             services.AddTransient<IFatDataExportService, FatDataExportService>();
-            
+
             services.AddMediatR(typeof(GetProviderTypesHandler).GetTypeInfo().Assembly);
         }
 
@@ -180,6 +178,7 @@ namespace SFA.DAS.RoATPService.Application.Api.StartupConfiguration
                     .UseSwaggerUI(c =>
                     {
                         c.SwaggerEndpoint("/swagger/v1/swagger.json", "SFA.DAS.RoATPService.Application.Api v1");
+                        c.RoutePrefix = string.Empty;
                     })
                     .UseAuthentication();
 

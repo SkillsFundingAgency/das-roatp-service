@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SFA.DAS.RoATPService.Application\SFA.DAS.RoATPService.Application.csproj" />
-    <ProjectReference Include="..\SFA.DAS.RoATPService.Infrastructure\SFA.DAS.RoATPService.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
