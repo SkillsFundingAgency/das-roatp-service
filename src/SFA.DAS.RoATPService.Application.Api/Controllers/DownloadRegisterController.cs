@@ -7,18 +7,16 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
     using System.Data.SqlClient;
     using System.Net;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Authorization;
+    using Api.Helpers;
+    using Interfaces;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using OfficeOpenXml;
-    using Api.Helpers;
     using Middleware;
-    using Interfaces;
-    using Swashbuckle.AspNetCore.SwaggerGen;
+    using OfficeOpenXml;
 
-    [Authorize(Roles = "RoATPServiceInternalAPI")]
+    [ApiController]
     [Route("api/v1/download")]
-    public class DownloadRegisterController : Controller
+    public class DownloadRegisterController : ControllerBase
     {
         private readonly ILogger<DownloadRegisterController> _logger;
         private readonly IDownloadRegisterRepository _repository;
@@ -33,9 +31,9 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
         }
 
         [HttpGet("complete")]
-        [SwaggerResponse((int) HttpStatusCode.OK, Type = typeof(IEnumerable<IDictionary<string, object>>))]
-        [SwaggerResponse((int) HttpStatusCode.BadRequest, typeof(IDictionary<string, string>))]
-        [SwaggerResponse((int) HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<IDictionary<string, object>>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
+        [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
         public async Task<IActionResult> CompleteRegister()
         {
             _logger.LogInformation($"Received request to download complete register");
@@ -54,9 +52,9 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
         }
 
         [HttpGet("audit")]
-        [SwaggerResponse((int) HttpStatusCode.OK, Type = typeof(IEnumerable<IDictionary<string, object>>))]
-        [SwaggerResponse((int) HttpStatusCode.BadRequest, typeof(IDictionary<string, string>))]
-        [SwaggerResponse((int) HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<IDictionary<string, object>>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
+        [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
         public async Task<IActionResult> AuditHistory()
         {
             _logger.LogInformation($"Received request to download register audit history");
@@ -72,11 +70,11 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
                 return NoContent();
             }
         }
-        
+
         [HttpGet("roatp-summary")]
-        [SwaggerResponse((int) HttpStatusCode.OK, Type = typeof(IEnumerable<IDictionary<string, object>>))]
-        [SwaggerResponse((int) HttpStatusCode.BadRequest, typeof(IDictionary<string, string>))]
-        [SwaggerResponse((int) HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<IDictionary<string, object>>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
+        [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
         public async Task<IActionResult> RoatpSummary()
         {
             _logger.LogInformation($"Received request to download roatp summary");
@@ -94,9 +92,9 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
 
 
         [HttpGet("roatp-summary/{ukprn}")]
-        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(IEnumerable<IDictionary<string, object>>))]
-        [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(IDictionary<string, string>))]
-        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<IDictionary<string, object>>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
+        [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
         public async Task<IActionResult> RoatpSummary(string ukprn)
         {
             _logger.LogInformation($"Received request to download roatp summary for ukprn {ukprn}");
@@ -115,20 +113,20 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
             }
             catch (SqlException sqlEx)
             {
-                _logger.LogError($"Could not generate data for roatp summary due to database error",sqlEx);
+                _logger.LogError($"Could not generate data for roatp summary due to database error", sqlEx);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
 
         [HttpGet("roatp-summary/most-recent")]
-        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(DateTime?))]
-        [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(DateTime?))]
-        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(DateTime?))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(DateTime?))]
+        [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
         public async Task<IActionResult> MostRecentOrganisation()
         {
             _logger.LogInformation($"Received request to get date of most recent non-onboarding organisation change");
-           
+
             try
             {
                 return Ok(await _repository.GetLatestNonOnboardingOrganisationChangeDate());
@@ -141,9 +139,9 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
         }
 
         [HttpGet("roatp-summary-xlsx")]
-        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(IEnumerable<IDictionary<string, object>>))]
-        [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(IDictionary<string, string>))]
-        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<IDictionary<string, object>>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
+        [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
         public async Task<IActionResult> RoatpSummaryExcel()
         {
             _logger.LogInformation($"Received request to download complete register xlsx");

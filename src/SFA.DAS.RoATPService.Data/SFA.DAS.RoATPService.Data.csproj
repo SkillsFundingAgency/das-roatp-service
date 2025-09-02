@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <ProjectGuid>{D0477B70-B9C3-47E3-96D0-433D29E9B08D}</ProjectGuid>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CompareNETObjects" Version="4.57.0" />
     <PackageReference Include="Dapper" Version="1.50.5" />
-    <PackageReference Include="System.Runtime.Caching" Version="4.5.0" />
+    <PackageReference Include="System.Runtime.Caching" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>

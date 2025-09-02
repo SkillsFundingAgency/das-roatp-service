@@ -2,15 +2,13 @@
 {
     using System.Threading.Tasks;
     using MediatR;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using RoATPService.Api.Types.Models;
 
-    [Authorize(Roles = "RoATPServiceInternalAPI")]
     [Route("api/v1/lookupData")]
     [ApiController]
-    public class LookupDataController : Controller
+    public class LookupDataController : ControllerBase
     {
         private ILogger<LookupDataController> _logger;
 
@@ -35,7 +33,7 @@
         [Route("organisationTypes")]
         public async Task<IActionResult> OrganisationTypes(int providerTypeId)
         {
-            var request = new GetOrganisationTypesRequest {ProviderTypeId = providerTypeId};
+            var request = new GetOrganisationTypesRequest { ProviderTypeId = providerTypeId };
 
             return Ok(await _mediator.Send(request));
         }

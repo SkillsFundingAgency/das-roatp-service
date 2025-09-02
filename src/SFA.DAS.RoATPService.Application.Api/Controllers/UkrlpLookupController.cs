@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Polly;
@@ -11,9 +10,9 @@ using SFA.DAS.RoATPService.Api.Client.Models.Ukrlp;
 
 namespace SFA.DAS.RoATPService.Application.Api.Controllers
 {
-    [Authorize(Roles = "RoATPServiceInternalAPI,FATDataExport")]
+    [ApiController]
     [Route("api/v1/ukrlp")]
-    public class UkrlpLookupController : Controller
+    public class UkrlpLookupController : ControllerBase
     {
         private ILogger<UkrlpLookupController> _logger;
 
@@ -50,10 +49,10 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
             }
             return Ok(providerData);
         }
-        
+
         [Route("lookup/many")]
         [HttpGet]
-        public async Task<IActionResult> UkrlpGetAll([FromQuery]List<long> ukprns)
+        public async Task<IActionResult> UkrlpGetAll([FromQuery] List<long> ukprns)
         {
             UkprnLookupResponse providerData;
 

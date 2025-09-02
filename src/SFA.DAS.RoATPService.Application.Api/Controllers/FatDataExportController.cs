@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.RoATPService.Application.Api.Middleware;
 using SFA.DAS.RoATPService.Application.Interfaces;
 using SFA.DAS.RoATPService.Domain.Models.FatDataExport;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace SFA.DAS.RoATPService.Application.Api.Controllers
 {
-    [ApiController] 
-    [Authorize(Roles = "RoATPServiceInternalAPI, FATDataExport")]
+    [ApiController]
     [Route("api/v1/fat-data-export")]
     public class FatDataExportController : ControllerBase
     {
@@ -29,9 +25,9 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
         }
 
         [HttpGet("")]
-        [SwaggerResponse((int) HttpStatusCode.OK, Type = typeof(IEnumerable<FatDataExport>))]
-        [SwaggerResponse((int) HttpStatusCode.BadRequest, typeof(IDictionary<string, string>))]
-        [SwaggerResponse((int) HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<FatDataExport>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
+        [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
         public async Task<IActionResult> DataExport()
         {
             _logger.LogInformation($"Received request for FAT data export");
