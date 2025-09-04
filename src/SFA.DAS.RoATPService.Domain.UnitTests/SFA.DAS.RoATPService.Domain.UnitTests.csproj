@@ -14,7 +14,13 @@
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     </ItemGroup>
 
-    <ItemGroup>
+  <!-- Transitive Package References -->
+  <ItemGroup>
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1"/>
+  </ItemGroup>
+
+
+  <ItemGroup>
       <ProjectReference Include="..\SFA.DAS.RoATPService.Domain\SFA.DAS.RoATPService.Domain.csproj" />
     </ItemGroup>
 
