@@ -139,9 +139,8 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
         }
 
         [HttpGet("roatp-summary-xlsx")]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<IDictionary<string, object>>))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
-        [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FileContentResult))]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> RoatpSummaryExcel()
         {
             _logger.LogInformation($"Received request to download complete register xlsx");
@@ -149,6 +148,7 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
             try
             {
                 var resultsSummary = await _repository.GetRoatpSummary();
+                ExcelPackage.License.SetNonCommercialOrganization("Department for Education");
                 using (var package = new ExcelPackage())
                 {
                     var worksheetToAdd = package.Workbook.Worksheets.Add("RoATP");
