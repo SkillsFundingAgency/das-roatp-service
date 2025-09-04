@@ -50,13 +50,13 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
         }
 
 
-        [TestCase(1,1)]
-        [TestCase(2,1)]
-        [TestCase(3,1)]
+        [TestCase(1, 1)]
+        [TestCase(2, 1)]
+        [TestCase(3, 1)]
         public void Handler_retrieves_list_of_organisations_by_provider_type(int providerTypeId, int categoryId)
         {
-            _repository.Setup((x => x.GetValidOrganisationCategoryIds())).ReturnsAsync(new List<int>{categoryId});
-            var request = new GetOrganisationTypesByCategoryRequest { ProviderTypeId = providerTypeId, CategoryId = categoryId};
+            _repository.Setup((x => x.GetValidOrganisationCategoryIds())).ReturnsAsync(new List<int> { categoryId });
+            var request = new GetOrganisationTypesByCategoryRequest { ProviderTypeId = providerTypeId, CategoryId = categoryId };
 
             var result = _handler.Handle(request, new CancellationToken()).Result;
 
@@ -66,26 +66,24 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
         [TestCase(0)]
         [TestCase(-1)]
         [TestCase(4)]
-        public void Handler_returns_bad_request_for_invalid_provider_type(int providerTypeId)
+        public async Task Handler_returns_bad_request_for_invalid_provider_type(int providerTypeId)
         {
-            var request = new GetOrganisationTypesByCategoryRequest { ProviderTypeId = providerTypeId, CategoryId = 1};
+            var request = new GetOrganisationTypesByCategoryRequest { ProviderTypeId = providerTypeId, CategoryId = 1 };
 
-            Func<Task> result = async () => await
-                _handler.Handle(request, new CancellationToken());
-            result.Should().Throw<BadRequestException>();
+            Func<Task> result = () => _handler.Handle(request, new CancellationToken());
+            await result.Should().ThrowAsync<BadRequestException>();
         }
 
         [Test]
-        public void Handler_returns_server_error_for_repository_exception()
+        public async Task Handler_returns_server_error_for_repository_exception()
         {
             var request = new GetOrganisationTypesByCategoryRequest { ProviderTypeId = 1 };
 
             _repository.Setup(x => x.GetOrganisationTypesForProviderTypeIdCategoryId(It.IsAny<int>(), It.IsAny<int>()))
                 .Throws(new Exception("Unit test exception"));
 
-            Func<Task> result = async () => await
-                _handler.Handle(request, new CancellationToken());
-            result.Should().Throw<BadRequestException>();
+            Func<Task> result = () => _handler.Handle(request, new CancellationToken());
+            await result.Should().ThrowAsync<BadRequestException>();
         }
     }
 }

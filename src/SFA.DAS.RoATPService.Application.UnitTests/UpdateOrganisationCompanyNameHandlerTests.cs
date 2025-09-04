@@ -49,7 +49,7 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
         }
 
         [Test]
-        public void Handler_does_not_update_database_if_company_number_invalid()
+        public async Task Handler_does_not_update_database_if_company_number_invalid()
         {
             _validator.Setup(x => x.IsValidCompanyNumber(It.IsAny<string>())).Returns(false);
             var request = new UpdateOrganisationCompanyNumberRequest
@@ -59,9 +59,8 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
                 UpdatedBy = "unit test"
             };
 
-            Func<Task> result = async () => await
-                _handler.Handle(request, new CancellationToken());
-            result.Should().Throw<BadRequestException>();
+            Func<Task> result = () => _handler.Handle(request, new CancellationToken());
+            await result.Should().ThrowAsync<BadRequestException>();
 
             _auditLogService.Verify(x => x.AuditCompanyNumber(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
             _updateOrganisationRepository.Verify(x => x.UpdateCompanyNumber(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
@@ -69,7 +68,7 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
         }
 
         [Test]
-        public void Handler_does_not_update_database_if_company_number_duplicated()
+        public async Task Handler_does_not_update_database_if_company_number_duplicated()
         {
             var request = new UpdateOrganisationCompanyNumberRequest
             {
@@ -79,9 +78,8 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
             };
             _validator.Setup(x => x.DuplicateCompanyNumberInAnotherOrganisation(It.IsAny<string>(), It.IsAny<Guid>()))
                 .Returns(new DuplicateCheckResponse { DuplicateFound = true, DuplicateOrganisationName = "Duplicate organisation name" });
-            Func<Task> result = async () => await
-                _handler.Handle(request, new CancellationToken());
-            result.Should().Throw<BadRequestException>();
+            Func<Task> result = () => _handler.Handle(request, new CancellationToken());
+            await result.Should().ThrowAsync<BadRequestException>();
 
             _auditLogService.Verify(x => x.AuditCompanyNumber(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
             _updateOrganisationRepository.Verify(x => x.UpdateCompanyNumber(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);

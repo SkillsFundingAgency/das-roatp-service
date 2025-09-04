@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -44,7 +43,7 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
             var request = new GetEngagementsRequest { SinceEventId = 0, PageSize = 1000, PageNumber = 1 };
             var engagements = _handler.Handle(request, new CancellationToken()).Result;
 
-            engagements.Should().BeNullOrEmpty(); 
+            engagements.Should().BeNullOrEmpty();
         }
 
         [TestCase(null, null, null)]
@@ -76,16 +75,15 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
         }
 
         [Test]
-        public void Handler_returns_exception_from_repository()
+        public async Task Handler_returns_exception_from_repository()
         {
             var request = new GetEngagementsRequest { SinceEventId = 0, PageSize = 1000, PageNumber = 1 };
 
             _repository.Setup(x => x.GetEngagements(request))
                 .Throws(new Exception("Unit test exception"));
 
-            Func<Task> result = async () => await
-                _handler.Handle(request, new CancellationToken());
-            result.Should().Throw<ApplicationException>();
+            Func<Task> result = () => _handler.Handle(request, new CancellationToken());
+            await result.Should().ThrowAsync<ApplicationException>();
         }
     }
 }

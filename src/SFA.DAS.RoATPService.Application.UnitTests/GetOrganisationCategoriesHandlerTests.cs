@@ -62,26 +62,23 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
         [TestCase(0)]
         [TestCase(-1)]
         [TestCase(4)]
-        public void Handler_returns_bad_request_for_invalid_provider_type(int providerTypeId)
+        public async Task Handler_returns_bad_request_for_invalid_provider_type(int providerTypeId)
         {
             var request = new GetOrganisationCategoriesRequest { ProviderTypeId = providerTypeId };
 
-            Func<Task> result = async () => await
-                _handler.Handle(request, new CancellationToken());
-            result.Should().Throw<BadRequestException>();
+            Func<Task> result = () => _handler.Handle(request, new CancellationToken());
+            await result.Should().ThrowAsync<BadRequestException>();
         }
 
         [Test]
-        public void Handler_returns_server_error_for_repository_exception()
+        public async Task Handler_returns_server_error_for_repository_exception()
         {
             var request = new GetOrganisationCategoriesRequest { ProviderTypeId = 1 };
 
-            _repository.Setup(x => x.GetOrganisationCategories(It.IsAny<int>()))
-                .Throws(new Exception("Unit test exception"));
+            _repository.Setup(x => x.GetOrganisationCategories(It.IsAny<int>())).Throws(new Exception("Unit test exception"));
 
-            Func<Task> result = async () => await
-                _handler.Handle(request, new CancellationToken());
-            result.Should().Throw<ApplicationException>();
+            Func<Task> result = () => _handler.Handle(request, new CancellationToken());
+            await result.Should().ThrowAsync<InvalidOperationException>();
         }
     }
 }

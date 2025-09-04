@@ -1,17 +1,15 @@
 ﻿namespace SFA.DAS.RoATPService.Application.UnitTests
 {
-    using Interfaces;
-    using Moq;
-    using NUnit.Framework;
     using System;
     using System.Threading;
+    using System.Threading.Tasks;
     using Api.Types.Models;
-    using Castle.Core.Logging;
     using FluentAssertions;
     using Handlers;
+    using Interfaces;
     using Microsoft.Extensions.Logging;
-    using System.Threading.Tasks;
-    using System.Xml.XPath;
+    using Moq;
+    using NUnit.Framework;
 
     [TestFixture]
     public class DuplicateCheckHandlerTests
@@ -29,7 +27,9 @@
         {
             var response = new DuplicateCheckResponse
             {
-                DuplicateFound = true, DuplicateOrganisationName = "Legal Name", DuplicateOrganisationId = Guid.NewGuid()
+                DuplicateFound = true,
+                DuplicateOrganisationName = "Legal Name",
+                DuplicateOrganisationId = Guid.NewGuid()
             };
 
             _repository.Setup(x => x.DuplicateUKPRNExists(It.IsAny<Guid>(), It.IsAny<long>())).ReturnsAsync(response);
@@ -87,10 +87,9 @@
                 UKPRN = 10001000,
                 OrganisationId = Guid.NewGuid()
             };
-            
-            Func<Task> result = async () => await
-                handler.Handle(request, new CancellationToken());
-            result.Should().Throw<ApplicationException>();
+
+            Func<Task> result = () => handler.Handle(request, new CancellationToken());
+            result.Should().ThrowAsync<ApplicationException>();
         }
 
         [Test]
@@ -154,10 +153,9 @@
                 CompanyNumber = "10001000",
                 OrganisationId = Guid.NewGuid()
             };
-            
-            Func<Task> result = async () => await
-                handler.Handle(request, new CancellationToken());
-            result.Should().Throw<ApplicationException>();
+
+            Func<Task> result = () => handler.Handle(request, new CancellationToken());
+            result.Should().ThrowAsync<ApplicationException>();
         }
 
         [Test]
@@ -209,7 +207,7 @@
         }
 
         [Test]
-        public void Duplicate_charity_number_check_throws_exception()
+        public async Task Duplicate_charity_number_check_throws_exception()
         {
             _repository.Setup(x => x.DuplicateCharityNumberExists(It.IsAny<Guid>(), It.IsAny<string>()))
                 .Throws(new Exception("Unit test exception"));
@@ -223,9 +221,8 @@
                 OrganisationId = Guid.NewGuid()
             };
 
-            Func<Task> result = async () => await
-                handler.Handle(request, new CancellationToken());
-            result.Should().Throw<ApplicationException>();
+            Func<Task> result = () => handler.Handle(request, new CancellationToken());
+            await result.Should().ThrowAsync<ApplicationException>();
         }
     }
 }

@@ -17,7 +17,7 @@ namespace SFA.DAS.RoATPService.Api.Client.IntegrationTests
     public class UkrlpLookupTests
     {
         private Mock<ILogger<UkrlpApiClient>> _logger;
-        private Mock<WebConfiguration> _config;
+        private WebConfiguration _config;
 
         [SetUp]
         public void Before_each_test()
@@ -37,22 +37,22 @@ namespace SFA.DAS.RoATPService.Api.Client.IntegrationTests
             Mapper.AssertConfigurationIsValid();
 
             _logger = new Mock<ILogger<UkrlpApiClient>>();
-            _config = new Mock<WebConfiguration>();
-            var apiConfig = new UkrlpApiAuthentication
+            _config = new WebConfiguration()
             {
-                QueryId = "2",
-                StakeholderId = "2",
-                ApiBaseAddress = "http://webservices.ukrlp.co.uk/UkrlpProviderQueryWS6/ProviderQueryServiceV6"
+                UkrlpApiAuthentication = new UkrlpApiAuthentication
+                {
+                    QueryId = "2",
+                    StakeholderId = "2",
+                    ApiBaseAddress = "http://webservices.ukrlp.co.uk/UkrlpProviderQueryWS6/ProviderQueryServiceV6"
+                }
             };
-
-            _config.SetupGet(x => x.UkrlpApiAuthentication).Returns(apiConfig);
         }
 
         [Test]
         public void Matching_UKPRN_returns_single_result()
         {
             var ukprn = 10012385;
-            var client = new UkrlpApiClient(_logger.Object, _config.Object, new HttpClient(),
+            var client = new UkrlpApiClient(_logger.Object, _config, new HttpClient(),
                 new UkrlpSoapSerializer());
 
             var result = client.GetTrainingProviderByUkprn(ukprn).GetAwaiter().GetResult();
@@ -74,7 +74,7 @@ namespace SFA.DAS.RoATPService.Api.Client.IntegrationTests
         public void Matching_UKPRN_has_a_primary_verification_source()
         {
             var ukprn = 10006287;
-            var client = new UkrlpApiClient(_logger.Object, _config.Object, new HttpClient(),
+            var client = new UkrlpApiClient(_logger.Object, _config, new HttpClient(),
                 new UkrlpSoapSerializer());
 
             var result = client.GetTrainingProviderByUkprn(ukprn).GetAwaiter().GetResult();
@@ -93,7 +93,7 @@ namespace SFA.DAS.RoATPService.Api.Client.IntegrationTests
         {
             var ukprn = 99998888;
 
-            var client = new UkrlpApiClient(_logger.Object, _config.Object, new HttpClient(),
+            var client = new UkrlpApiClient(_logger.Object, _config, new HttpClient(),
                 new UkrlpSoapSerializer());
 
             var result = client.GetTrainingProviderByUkprn(ukprn).GetAwaiter().GetResult();
@@ -107,7 +107,7 @@ namespace SFA.DAS.RoATPService.Api.Client.IntegrationTests
         {
             var ukprn = 10019227;
 
-            var client = new UkrlpApiClient(_logger.Object, _config.Object, new HttpClient(),
+            var client = new UkrlpApiClient(_logger.Object, _config, new HttpClient(),
                 new UkrlpSoapSerializer());
 
             var result = client.GetTrainingProviderByUkprn(ukprn).GetAwaiter().GetResult();
@@ -121,7 +121,7 @@ namespace SFA.DAS.RoATPService.Api.Client.IntegrationTests
         {
             //Arrange
             var ukprns = new List<long> { 10012385, 10006287 };
-            var client = new UkrlpApiClient(_logger.Object, _config.Object, new HttpClient(),
+            var client = new UkrlpApiClient(_logger.Object, _config, new HttpClient(),
                 new UkrlpSoapSerializer());
 
             //Act

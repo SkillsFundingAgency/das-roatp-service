@@ -1,5 +1,10 @@
 ﻿namespace SFA.DAS.RoATPService.Application.UnitTests
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Api.Types.Models;
     using FluentAssertions;
     using Handlers;
     using Interfaces;
@@ -7,11 +12,6 @@
     using Moq;
     using NUnit.Framework;
     using SFA.DAS.RoATPService.Domain;
-    using System.Collections.Generic;
-    using System.Threading;
-    using Api.Types.Models;
-    using System;
-    using System.Threading.Tasks;
 
     [TestFixture]
     public class GetProviderTypesHandlerTests
@@ -44,14 +44,13 @@
         }
 
         [Test]
-        public void Handler_returns_exception_from_repository()
+        public async Task Handler_returns_exception_from_repository()
         {
             _repository.Setup(x => x.GetProviderTypes())
                 .Throws(new Exception("Unit test exception"));
 
-            Func<Task> result = async () => await
-                _handler.Handle(new GetProviderTypesRequest(), new CancellationToken());
-            result.Should().Throw<ApplicationException>();
+            Func<Task> result = () => _handler.Handle(new GetProviderTypesRequest(), new CancellationToken());
+            await result.Should().ThrowAsync<ApplicationException>();
         }
     }
 }
