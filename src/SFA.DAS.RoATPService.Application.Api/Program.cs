@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
@@ -39,7 +38,7 @@ builder.Services.AddMvc(options =>
     }
     else
     {
-        options.Conventions.Add(new AuthorizeControllerModelConvention(new List<string>()));
+        options.Conventions.Add(new AuthorizeControllerModelConvention([]));
     }
 });
 
