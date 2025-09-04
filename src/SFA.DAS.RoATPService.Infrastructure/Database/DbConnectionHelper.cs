@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using Microsoft.Data.SqlClient;
 using SFA.DAS.RoATPService.Infrastructure.Interfaces;
 using SFA.DAS.RoATPService.Settings;
 
@@ -17,7 +18,7 @@ namespace SFA.DAS.RoATPService.Infrastructure.Database
         {
             var connectionString = _configuration.SqlConnectionString;
 
-            var connection = new System.Data.SqlClient.SqlConnection(connectionString);
+            var connection = new SqlConnection(connectionString);
 
             return connection;
         }

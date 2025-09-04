@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Http;
 namespace SFA.DAS.RoATPService.Application.Api.Controllers
 {
     using System.Collections.Generic;
-    using System.Data.SqlClient;
     using System.Net;
     using System.Threading.Tasks;
     using Api.Helpers;
     using Interfaces;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Data.SqlClient;
     using Microsoft.Extensions.Logging;
     using Middleware;
     using OfficeOpenXml;
