@@ -14,11 +14,11 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
     [Route("api/v1/ukrlp")]
     public class UkrlpLookupController : ControllerBase
     {
-        private ILogger<UkrlpLookupController> _logger;
+        private readonly ILogger<UkrlpLookupController> _logger;
 
-        private IUkrlpApiClient _apiClient;
+        private readonly IUkrlpApiClient _apiClient;
 
-        private AsyncRetryPolicy _retryPolicy;
+        private readonly AsyncRetryPolicy _retryPolicy;
 
         public UkrlpLookupController(ILogger<UkrlpLookupController> logger, IUkrlpApiClient apiClient)
         {
@@ -40,7 +40,7 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Unable to retrieve results from UKRLP", ex);
+                _logger.LogError(ex, "Unable to retrieve results from UKRLP");
                 providerData = new UkprnLookupResponse
                 {
                     Success = false,
@@ -62,7 +62,7 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Unable to retrieve results from UKRLP", ex);
+                _logger.LogError(ex, "Unable to retrieve results from UKRLP");
                 providerData = new UkprnLookupResponse
                 {
                     Success = false,
@@ -85,7 +85,7 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
                     TimeSpan.FromSeconds(4)
                 }, (exception, timeSpan, retryCount, context) =>
                 {
-                    _logger.LogWarning($"Error retrieving response from UKRLP. Reason: {exception.Message}. Retrying in {timeSpan.Seconds} secs...attempt: {retryCount}");
+                    _logger.LogWarning("Error retrieving response from UKRLP. Reason: {ErrorMessage}. Retrying in {Seconds} secs...attempt: {RetryCount}", exception.Message, timeSpan.Seconds, retryCount);
                 });
         }
     }

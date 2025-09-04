@@ -28,7 +28,7 @@ public class ErrorHandlingMiddleware
         }
         catch (Exception ex)
         {
-            if (ex is ApplicationException || ex is BadRequestException)
+            if (ex is InvalidOperationException || ex is BadRequestException)
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             else if (ex is ResourceNotFoundException)
                 context.Response.StatusCode = (int)HttpStatusCode.NotFound;

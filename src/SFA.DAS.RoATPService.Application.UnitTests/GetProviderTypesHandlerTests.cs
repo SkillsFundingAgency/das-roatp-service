@@ -50,7 +50,7 @@
                 .Throws(new Exception("Unit test exception"));
 
             Func<Task> result = () => _handler.Handle(new GetProviderTypesRequest(), new CancellationToken());
-            await result.Should().ThrowAsync<ApplicationException>();
+            await result.Should().ThrowAsync<InvalidOperationException>();
         }
     }
 }

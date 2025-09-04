@@ -36,7 +36,7 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
         public async Task<IActionResult> CompleteRegister()
         {
-            _logger.LogInformation($"Received request to download complete register");
+            _logger.LogInformation("Received request to download complete register");
 
             try
             {
@@ -45,8 +45,7 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
             }
             catch (SqlException sqlEx)
             {
-                _logger.LogInformation(
-                    $"Could not generate data for complete register download due to : {sqlEx.Message}");
+                _logger.LogError(sqlEx, "Could not generate data for complete register download due to : {ErrorMessage}", sqlEx.Message);
                 return NoContent();
             }
         }
@@ -57,7 +56,7 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
         public async Task<IActionResult> AuditHistory()
         {
-            _logger.LogInformation($"Received request to download register audit history");
+            _logger.LogInformation("Received request to download register audit history");
 
             try
             {
@@ -66,7 +65,7 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
             }
             catch (SqlException sqlEx)
             {
-                _logger.LogInformation($"Could not generate data for register audit history due to : {sqlEx.Message}");
+                _logger.LogError(sqlEx, "Could not generate data for register audit history due to : {ErrorMessage}", sqlEx.Message);
                 return NoContent();
             }
         }
@@ -77,7 +76,7 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
         public async Task<IActionResult> RoatpSummary()
         {
-            _logger.LogInformation($"Received request to download roatp summary");
+            _logger.LogInformation("Received request to download roatp summary");
 
             try
             {
@@ -85,7 +84,7 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
             }
             catch (SqlException sqlEx)
             {
-                _logger.LogInformation($"Could not generate data for roatp summary due to : {sqlEx.Message}");
+                _logger.LogError(sqlEx, "Could not generate data for roatp summary due to : {ErrorMessage}", sqlEx.Message);
                 return NoContent();
             }
         }
@@ -97,13 +96,13 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
         public async Task<IActionResult> RoatpSummary(string ukprn)
         {
-            _logger.LogInformation($"Received request to download roatp summary for ukprn {ukprn}");
+            _logger.LogInformation("Received request to download roatp summary for ukprn {Ukprn}", ukprn);
 
             int ukprnAsInt = 0;
 
             if (!int.TryParse(ukprn, out ukprnAsInt) || (ukprnAsInt < 10000000 || ukprnAsInt > 99999999))
             {
-                _logger.LogError($"Could not generate data for invalid ukprn : {ukprn}");
+                _logger.LogError("Could not generate data for invalid ukprn : {Ukprn}", ukprn);
                 return BadRequest();
             }
 
@@ -113,7 +112,7 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
             }
             catch (SqlException sqlEx)
             {
-                _logger.LogError($"Could not generate data for roatp summary due to database error", sqlEx);
+                _logger.LogError(sqlEx, "Could not generate data for roatp summary due to database error");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -125,7 +124,7 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
         public async Task<IActionResult> MostRecentOrganisation()
         {
-            _logger.LogInformation($"Received request to get date of most recent non-onboarding organisation change");
+            _logger.LogInformation("Received request to get date of most recent non-onboarding organisation change");
 
             try
             {
@@ -133,7 +132,7 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Could not generate data for latest organisation date change due to database or orther internal error", ex);
+                _logger.LogError(ex, "Could not generate data for latest organisation date change due to database or other internal error");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -143,7 +142,7 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> RoatpSummaryExcel()
         {
-            _logger.LogInformation($"Received request to download complete register xlsx");
+            _logger.LogInformation("Received request to download complete register xlsx");
 
             try
             {
@@ -158,7 +157,7 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers
             }
             catch (SqlException sqlEx)
             {
-                _logger.LogInformation($"Could not generate data for roatp summary due to : {sqlEx.Message}");
+                _logger.LogError(sqlEx, "Could not generate data for roatp summary due to : {ExceptionMessage}", sqlEx.Message);
                 return NoContent();
             }
         }

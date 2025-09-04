@@ -6,10 +6,10 @@
     using System.Threading.Tasks;
     using Api.Types.Models;
     using Domain;
+    using Exceptions;
     using Interfaces;
     using MediatR;
     using Microsoft.Extensions.Logging;
-    using Exceptions;
     using Validators;
 
     public class GetOrganisationTypesHandler : IRequestHandler<GetOrganisationTypesRequest, IEnumerable<OrganisationType>>
@@ -35,7 +35,7 @@
                 throw new BadRequestException(invalidProviderTypeError);
             }
 
-            _logger.LogInformation($@"Handling Organisation Types lookup for Provider Type Id [{request.ProviderTypeId}]");
+            _logger.LogInformation("Handling Organisation Types lookup for Provider Type Id [{ProviderTypeId}]", request.ProviderTypeId);
 
             try
             {
@@ -43,8 +43,8 @@
             }
             catch (Exception ex)
             {
-                _logger.LogError("Unable to retrieve Organisation Types", ex);
-                throw new ApplicationException(ex.Message);
+                _logger.LogError(ex, "Unable to retrieve Organisation Types");
+                throw new InvalidOperationException(ex.Message);
             }
         }
     }

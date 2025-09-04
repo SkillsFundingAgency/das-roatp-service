@@ -34,10 +34,10 @@
 
             _repository.Setup(x => x.DuplicateUKPRNExists(It.IsAny<Guid>(), It.IsAny<long>())).ReturnsAsync(response);
 
-            var logger = new Mock<ILogger<DuplicateUKPRNCheckHandler>>();
-            var handler = new DuplicateUKPRNCheckHandler(logger.Object, _repository.Object);
+            var logger = new Mock<ILogger<DuplicateUkprnCheckHandler>>();
+            var handler = new DuplicateUkprnCheckHandler(logger.Object, _repository.Object);
 
-            var request = new DuplicateUKPRNCheckRequest
+            var request = new DuplicateUkprnCheckRequest
             {
                 UKPRN = 10001000,
                 OrganisationId = Guid.NewGuid()
@@ -60,10 +60,10 @@
 
             _repository.Setup(x => x.DuplicateUKPRNExists(It.IsAny<Guid>(), It.IsAny<long>())).ReturnsAsync(response);
 
-            var logger = new Mock<ILogger<DuplicateUKPRNCheckHandler>>();
-            var handler = new DuplicateUKPRNCheckHandler(logger.Object, _repository.Object);
+            var logger = new Mock<ILogger<DuplicateUkprnCheckHandler>>();
+            var handler = new DuplicateUkprnCheckHandler(logger.Object, _repository.Object);
 
-            var request = new DuplicateUKPRNCheckRequest
+            var request = new DuplicateUkprnCheckRequest
             {
                 UKPRN = 99999999,
                 OrganisationId = Guid.NewGuid()
@@ -79,17 +79,17 @@
             _repository.Setup(x => x.DuplicateUKPRNExists(It.IsAny<Guid>(), It.IsAny<long>()))
                 .Throws(new Exception("Unit test exception"));
 
-            var logger = new Mock<ILogger<DuplicateUKPRNCheckHandler>>();
-            var handler = new DuplicateUKPRNCheckHandler(logger.Object, _repository.Object);
+            var logger = new Mock<ILogger<DuplicateUkprnCheckHandler>>();
+            var handler = new DuplicateUkprnCheckHandler(logger.Object, _repository.Object);
 
-            var request = new DuplicateUKPRNCheckRequest
+            var request = new DuplicateUkprnCheckRequest
             {
                 UKPRN = 10001000,
                 OrganisationId = Guid.NewGuid()
             };
 
             Func<Task> result = () => handler.Handle(request, new CancellationToken());
-            result.Should().ThrowAsync<ApplicationException>();
+            result.Should().ThrowAsync<InvalidOperationException>();
         }
 
         [Test]
@@ -155,7 +155,7 @@
             };
 
             Func<Task> result = () => handler.Handle(request, new CancellationToken());
-            result.Should().ThrowAsync<ApplicationException>();
+            result.Should().ThrowAsync<InvalidOperationException>();
         }
 
         [Test]
@@ -222,7 +222,7 @@
             };
 
             Func<Task> result = () => handler.Handle(request, new CancellationToken());
-            await result.Should().ThrowAsync<ApplicationException>();
+            await result.Should().ThrowAsync<InvalidOperationException>();
         }
     }
 }

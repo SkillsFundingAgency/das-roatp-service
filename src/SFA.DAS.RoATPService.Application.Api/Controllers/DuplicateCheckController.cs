@@ -28,7 +28,7 @@
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
         [Route("ukprn")]
-        public async Task<IActionResult> UKPRN(DuplicateUKPRNCheckRequest request)
+        public async Task<IActionResult> UKPRN(DuplicateUkprnCheckRequest request)
         {
             return Ok(await _mediator.Send(request));
         }

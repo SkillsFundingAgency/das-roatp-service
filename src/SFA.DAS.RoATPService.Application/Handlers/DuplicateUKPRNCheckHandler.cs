@@ -8,20 +8,20 @@
     using MediatR;
     using Microsoft.Extensions.Logging;
 
-    public class DuplicateUKPRNCheckHandler : IRequestHandler<DuplicateUKPRNCheckRequest, DuplicateCheckResponse>
+    public class DuplicateUkprnCheckHandler : IRequestHandler<DuplicateUkprnCheckRequest, DuplicateCheckResponse>
     {
-        private ILogger<DuplicateUKPRNCheckHandler> _logger;
+        private readonly ILogger<DuplicateUkprnCheckHandler> _logger;
 
-        private IDuplicateCheckRepository _repository;
+        private readonly IDuplicateCheckRepository _repository;
 
-        public DuplicateUKPRNCheckHandler(ILogger<DuplicateUKPRNCheckHandler> logger,
+        public DuplicateUkprnCheckHandler(ILogger<DuplicateUkprnCheckHandler> logger,
             IDuplicateCheckRepository repository)
         {
             _logger = logger;
             _repository = repository;
         }
 
-        public async Task<DuplicateCheckResponse> Handle(DuplicateUKPRNCheckRequest request, CancellationToken cancellationToken)
+        public async Task<DuplicateCheckResponse> Handle(DuplicateUkprnCheckRequest request, CancellationToken cancellationToken)
         {
             try
             {
@@ -29,8 +29,8 @@
             }
             catch (Exception ex)
             {
-                _logger.LogError("Unable to perform UKPRN duplicate check", ex);
-                throw new ApplicationException(ex.Message);
+                _logger.LogError(ex, "Unable to perform UKPRN duplicate check");
+                throw new InvalidOperationException(ex.Message);
             }
         }
     }
