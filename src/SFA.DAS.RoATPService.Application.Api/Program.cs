@@ -9,6 +9,7 @@ using Microsoft.OpenApi.Models;
 using SFA.DAS.Api.Common.Infrastructure;
 using SFA.DAS.RoATPService.Application.Api.AppStart;
 using SFA.DAS.RoATPService.Application.Api.Extensions;
+using SFA.DAS.RoATPService.Application.Api.Middleware;
 using SFA.DAS.RoATPService.Application.AppStart;
 using SFA.DAS.Telemetry.Startup;
 
@@ -55,6 +56,8 @@ app.UseSwaggerUI(options =>
     options.SwaggerEndpoint($"/swagger/{PolicyNames.Default}/swagger.json", PolicyNames.Default);
     options.RoutePrefix = string.Empty;
 });
+
+app.UseMiddleware(typeof(ErrorHandlingMiddleware));
 
 app.UseHttpsRedirection();
 app.UseRouting();
