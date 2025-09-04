@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,7 +26,7 @@ public static class AddServiceRegistrationsExtensions
         AddMappings();
         RegisterConfigurations(services, configuration);
         AddHealthChecks(services, configuration);
-        services.AddMediatR(typeof(GetProviderTypesHandler).Assembly);
+        services.AddMediatR(c => c.RegisterServicesFromAssembly(typeof(GetProviderTypesHandler).Assembly));
 
         services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
         services.AddTransient<IDownloadRegisterRepository, DownloadRegisterRepository>();
