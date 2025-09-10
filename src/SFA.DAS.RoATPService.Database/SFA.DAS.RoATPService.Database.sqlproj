@@ -80,6 +80,9 @@
     <Build Include="Tables\OrganisationCategoryOrgTypeProviderType.sql" />
     <Build Include="Tables\OrganisationStatusEvent.sql" />
     <Build Include="StoredProcedures\RoATP_FAT_Data_Export.sql" />
+    <Build Include="Tables\ProductLine.sql" />
+    <Build Include="Tables\Product.sql" />
+    <Build Include="Tables\OrganisationProduct.sql" />
     <PostDeploy Include="Script.PostDeployment1.sql" />
     <None Include="PostDeployment\AddLookupForOrganisationTypes.sql" />
     <None Include="PostDeployment\AddLookupForProviderTypes.sql" />
@@ -90,6 +93,8 @@
     <None Include="PostDeployment\AddRemovedReasons.sql" />
     <None Include="PostDeployment\MapProviderTypesToOrganisationTypes.sql" />
     <None Include="PostDeployment\UpdateTables.sql" />
+    <None Include="PostDeployment\AddProducts.sql" />
+    <None Include="PostDeployment\AddProductLines.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="SFA.DAS.RoATPService.Database.refactorlog" />
