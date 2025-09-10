@@ -39,7 +39,7 @@ namespace SFA.DAS.RoATPService.Api.Client.IntegrationTests
             _logger = new Mock<ILogger<UkrlpApiClient>>();
             _config = new WebConfiguration()
             {
-                UkrlpApiAuthentication = new UkrlpApiAuthentication
+                UkrlpApiAuthentication = new Ukrlp.UkrlpApiConfiguration
                 {
                     QueryId = "2",
                     StakeholderId = "2",

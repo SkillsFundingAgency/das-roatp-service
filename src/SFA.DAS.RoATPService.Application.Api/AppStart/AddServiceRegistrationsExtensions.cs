@@ -2,9 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SFA.DAS.RoATPService.Api.Client;
-using SFA.DAS.RoATPService.Api.Client.AutoMapper;
-using SFA.DAS.RoATPService.Api.Client.Interfaces;
 using SFA.DAS.RoATPService.Application.Api.Helpers;
 using SFA.DAS.RoATPService.Application.Handlers;
 using SFA.DAS.RoATPService.Application.Interfaces;
@@ -16,6 +13,7 @@ using SFA.DAS.RoATPService.Data.Helpers;
 using SFA.DAS.RoATPService.Infrastructure.Database;
 using SFA.DAS.RoATPService.Infrastructure.Interfaces;
 using SFA.DAS.RoATPService.Settings;
+using SFA.DAS.RoATPService.Ukrlp;
 
 namespace SFA.DAS.RoATPService.Application.Api.AppStart;
 
@@ -26,6 +24,7 @@ public static class AddServiceRegistrationsExtensions
         AddMappings();
         RegisterConfigurations(services, configuration);
         AddHealthChecks(services, configuration);
+        RegisterUkrlpClient(services);
         services.AddMediatR(c => c.RegisterServicesFromAssembly(typeof(GetProviderTypesHandler).Assembly));
 
         services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
@@ -46,10 +45,9 @@ public static class AddServiceRegistrationsExtensions
         services.AddTransient<IOrganisationSearchValidator, OrganisationSearchValidator>();
         services.AddTransient<IMapCreateOrganisationRequestToCommand, MapCreateOrganisationRequestToCommand>();
         services.AddTransient<ITextSanitiser, TextSanitiser>();
-        services.AddHttpClient<IUkrlpApiClient, UkrlpApiClient>();
         services.AddTransient<IAuditLogService, AuditLogService>();
         services.AddTransient<IOrganisationStatusManager, OrganisationStatusManager>();
-        services.AddTransient<IUkrlpSoapSerializer, UkrlpSoapSerializer>();
+        //services.AddTransient<IUkrlpSoapSerializer, UkrlpSoapSerializer>();
         services.AddTransient<IEventsRepository, EventsRepository>();
 
         services.AddTransient<IDbConnectionHelper, DbConnectionHelper>();
@@ -62,17 +60,17 @@ public static class AddServiceRegistrationsExtensions
     {
         Mapper.Reset();
 
-        Mapper.Initialize(cfg =>
-        {
-            cfg.AddProfile<UkrlpVerificationDetailsProfile>();
-            cfg.AddProfile<UkrlpContactPersonalDetailsProfile>();
-            cfg.AddProfile<UkrlpContactAddressProfile>();
-            cfg.AddProfile<UkrlpProviderAliasProfile>();
-            cfg.AddProfile<UkrlpProviderContactProfile>();
-            cfg.AddProfile<UkrlpProviderDetailsProfile>();
-        });
+        //Mapper.Initialize(cfg =>
+        //{
+        //    cfg.AddProfile<UkrlpVerificationDetailsProfile>();
+        //    cfg.AddProfile<UkrlpContactPersonalDetailsProfile>();
+        //    cfg.AddProfile<UkrlpContactAddressProfile>();
+        //    cfg.AddProfile<UkrlpProviderAliasProfile>();
+        //    cfg.AddProfile<UkrlpProviderContactProfile>();
+        //    cfg.AddProfile<UkrlpProviderDetailsProfile>();
+        //});
 
-        Mapper.AssertConfigurationIsValid();
+        //Mapper.AssertConfigurationIsValid();
     }
 
     private static void RegisterConfigurations(IServiceCollection services, IConfiguration configuration)
@@ -81,11 +79,14 @@ public static class AddServiceRegistrationsExtensions
         configuration.Bind("RegisterAuditLogSettings", auditLogSettings);
         services.AddSingleton(auditLogSettings);
 
+        UkrlpApiConfiguration ukrlpApiConfig = configuration.GetSection("UkrlpApiAuthentication").Get<UkrlpApiConfiguration>();
+        services.AddSingleton(ukrlpApiConfig);
+
         WebConfiguration webConfiguration = new()
         {
             SqlConnectionString = configuration["SqlConnectionString"],
             SessionRedisConnectionString = configuration["SessionRedisConnectionString"],
-            UkrlpApiAuthentication = configuration.GetSection("UkrlpApiAuthentication").Get<UkrlpApiAuthentication>()
+            UkrlpApiAuthentication = ukrlpApiConfig
         };
 
         services.AddSingleton(webConfiguration);
@@ -96,5 +97,11 @@ public static class AddServiceRegistrationsExtensions
         services
             .AddHealthChecks()
             .AddSqlServer(configuration["SqlConnectionString"], name: "sql", tags: ["db", "sql"]);
+    }
+
+    private static void RegisterUkrlpClient(IServiceCollection services)
+    {
+        services.AddTransient(sp => new ProviderQueryPortTypeClient());
+        services.AddTransient<IUkrlpApiClient, UkrlpApiClient>();
     }
 }

@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.RoATPService.Api.Client.Interfaces;
 using SFA.DAS.RoATPService.Api.Client.Models.Ukrlp;
 using SFA.DAS.RoATPService.Application.Api.Controllers;
+using SFA.DAS.RoATPService.Ukrlp;
 
 namespace SFA.DAS.RoATPService.Api.UnitTests.Controllers
 {
@@ -17,7 +17,7 @@ namespace SFA.DAS.RoATPService.Api.UnitTests.Controllers
         [Test]
         public async Task When_Calling_UkrlpGetAll_Then_Returns_Data_From_Client()
         {
-            var ukprns = new List<long>{1,2,3};
+            var ukprns = new List<long> { 1, 2, 3 };
             var response = new UkprnLookupResponse
             {
                 Success = true
@@ -28,10 +28,10 @@ namespace SFA.DAS.RoATPService.Api.UnitTests.Controllers
                 .ReturnsAsync(response);
 
             var controller = new UkrlpLookupController(
-                Mock.Of<ILogger<UkrlpLookupController>>(), 
+                Mock.Of<ILogger<UkrlpLookupController>>(),
                 mockService.Object);
 
-            
+
             var result = await controller.UkrlpGetAll(ukprns) as OkObjectResult;
 
             result.Value.Should().Be(response);
@@ -48,7 +48,7 @@ namespace SFA.DAS.RoATPService.Api.UnitTests.Controllers
                 .ThrowsAsync(new Exception());
 
             var controller = new UkrlpLookupController(
-                Mock.Of<ILogger<UkrlpLookupController>>(), 
+                Mock.Of<ILogger<UkrlpLookupController>>(),
                 mockService.Object);
 
             var result = await controller.UkrlpGetAll(new List<long>()) as OkObjectResult;
