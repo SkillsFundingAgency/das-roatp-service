@@ -37,3 +37,8 @@ CREATE INDEX [IX_Organisations_LegalName] ON [dbo].[Organisations] ([LegalName])
 GO
 
 CREATE INDEX [IX_Organisations_TradingName] ON [dbo].[Organisations] ([TradingName])
+
+
+GO
+
+CREATE INDEX [IX_Organisations_StatudId] ON [dbo].[Organisations] ([StatusId]) INCLUDE ([UKPRN],[LegalName],[TradingName],[StatusDate],[OrganisationTypeId],[ProviderTypeId], [CreatedAt], [UpdatedAt])
