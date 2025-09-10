@@ -27,7 +27,6 @@ builder.Services
     .AddSwaggerGen(options =>
     {
         options.SwaggerDoc(PolicyNames.Default, new OpenApiInfo { Title = "ROATP API" });
-        options.OperationFilter<SwaggerVersionHeaderFilter>();
     });
 
 builder.Services.AddMvc(options =>
