@@ -22,8 +22,8 @@ jobs:
     inputs:
       command: publish
       publishWebProjects: false
-      projects: 'src\SFA.DAS.RoATPService.Application.Api\SFA.DAS.RoATPService.Application.Api.csproj'
-      arguments: '--configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)/publish --no-restore'
+      projects: 'src/SFA.DAS.RoATPService.Application.Api/SFA.DAS.RoATPService.Application.Api.csproj'
+      arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)/publish --no-restore'
       modifyOutputPath: true
       zipAfterPublish: true
 
