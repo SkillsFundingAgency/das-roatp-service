@@ -1,20 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
 
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoFixture.NUnit3" Version="4.8.0" />
-        <PackageReference Include="FluentAssertions" Version="5.7.0" />
-        <PackageReference Include="nunit" Version="3.12.0" />
-        <PackageReference Include="NUnit3TestAdapter" Version="3.11.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+        <PackageReference Include="AutoFixture.NUnit3" Version="4.18.1" />
+        <PackageReference Include="FluentAssertions" Version="7.2.0" />
+        <PackageReference Include="nunit" Version="3.14.0" />
+        <PackageReference Include="NUnit3TestAdapter" Version="5.1.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     </ItemGroup>
 
-    <ItemGroup>
+  <!-- Transitive Package References -->
+  <ItemGroup>
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1"/>
+  </ItemGroup>
+
+
+  <ItemGroup>
       <ProjectReference Include="..\SFA.DAS.RoATPService.Domain\SFA.DAS.RoATPService.Domain.csproj" />
     </ItemGroup>
 

@@ -9,12 +9,12 @@
     using Interfaces;
     using MediatR;
     using Microsoft.Extensions.Logging;
-    
+
     public class GetOrganisationStatusesHandler : IRequestHandler<GetOrganisationStatusesRequest, IEnumerable<OrganisationStatus>>
     {
-        private ILookupDataRepository _repository;
-        private ILogger<GetOrganisationStatusesHandler> _logger;
-        
+        private readonly ILookupDataRepository _repository;
+        private readonly ILogger<GetOrganisationStatusesHandler> _logger;
+
         public GetOrganisationStatusesHandler(ILookupDataRepository repository,
             ILogger<GetOrganisationStatusesHandler> logger)
         {
@@ -24,7 +24,7 @@
 
         public async Task<IEnumerable<OrganisationStatus>> Handle(GetOrganisationStatusesRequest request, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($@"Handling Organisation Statuses lookup");
+            _logger.LogInformation("Handling Organisation Statuses lookup");
 
             try
             {
@@ -32,8 +32,8 @@
             }
             catch (Exception ex)
             {
-                _logger.LogError("Unable to retrieve Organisation Statuses", ex);
-                throw new ApplicationException(ex.Message);
+                _logger.LogError(ex, "Unable to retrieve Organisation Statuses");
+                throw new InvalidOperationException(ex.Message);
             }
         }
     }

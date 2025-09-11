@@ -8,13 +8,13 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
     using System.Threading.Tasks;
     using Api.Types.Models;
     using Domain;
+    using Exceptions;
     using FluentAssertions;
     using Handlers;
     using Interfaces;
     using Microsoft.Extensions.Logging;
     using Moq;
     using NUnit.Framework;
-    using Exceptions;
     using Validators;
 
     [TestFixture]
@@ -74,7 +74,7 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
                 .Returns(new AuditData { FieldChanges = new List<AuditLogEntry>() });
             _auditLogService.Setup(x => x.AuditOrganisationStatus(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int?>()))
                 .Returns(new AuditData { FieldChanges = new List<AuditLogEntry>() });
-            _handler = new UpdateOrganisationStatusHandler(_logger.Object, _validator.Object, 
+            _handler = new UpdateOrganisationStatusHandler(_logger.Object, _validator.Object,
                                                            _updateRepository.Object,
                                                            _lookupDataRepository.Object, _repository.Object,
                                                            _auditLogService.Object, _eventsRepository.Object);
@@ -82,40 +82,37 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
 
         [TestCase(-1)]
         [TestCase(3)]
-        public void Handler_rejects_invalid_organisation_status(int statusId)
+        public async Task Handler_rejects_invalid_organisation_status(int statusId)
         {
             _validator.Setup(x => x.IsValidStatusId(It.IsAny<int>())).Returns(false);
 
             _request.OrganisationStatusId = statusId;
 
-            Func<Task> result = async () => await
-                _handler.Handle(_request, new CancellationToken());
-            result.Should().Throw<BadRequestException>();
+            Func<Task> result = () => _handler.Handle(_request, new CancellationToken());
+            await result.Should().ThrowAsync<BadRequestException>();
         }
 
         [TestCase(OrganisationStatus.Active)]
         [TestCase(OrganisationStatus.ActiveNotTakingOnApprentices)]
-        public void Handler_rejects_removal_reason_if_status_not_removed(int statusId)
+        public async Task Handler_rejects_removal_reason_if_status_not_removed(int statusId)
         {
             _request.OrganisationStatusId = statusId;
             _request.RemovedReasonId = 1;
 
-            Func<Task> result = async () => await
-                _handler.Handle(_request, new CancellationToken());
-            result.Should().Throw<BadRequestException>();
+            Func<Task> result = () => _handler.Handle(_request, new CancellationToken());
+            await result.Should().ThrowAsync<BadRequestException>();
         }
 
         [TestCase(-1)]
         [TestCase(3)]
-        public void Handler_rejects_organisation_status_not_appropriate_for_organisation_provider_id(int statusId)
+        public async Task Handler_rejects_organisation_status_not_appropriate_for_organisation_provider_id(int statusId)
         {
             _validator.Setup(x => x.IsValidOrganisationStatusIdForOrganisation(statusId, It.IsAny<Guid>())).Returns(false);
 
             _request.OrganisationStatusId = statusId;
 
-            Func<Task> result = async () => await
-                _handler.Handle(_request, new CancellationToken());
-            result.Should().Throw<BadRequestException>();
+            Func<Task> result = () => _handler.Handle(_request, new CancellationToken());
+            await result.Should().ThrowAsync<BadRequestException>();
         }
 
         [Test]
@@ -141,7 +138,7 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
             result.Should().BeTrue();
 
             _updateRepository.Verify(x => x.UpdateStartDate(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<string>()), Times.Never);
-            _eventsRepository.Verify(x=>x.AddOrganisationStatusEventsFromOrganisationId(It.IsAny<Guid>(), It.IsAny<int>() ,It.IsAny<DateTime>()),Times.Once);
+            _eventsRepository.Verify(x => x.AddOrganisationStatusEventsFromOrganisationId(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<DateTime>()), Times.Once);
         }
 
         [Test]
@@ -201,7 +198,7 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
         public void Handler_accepts_change_from_removed_to_different_removed_reason()
         {
             _repository.Setup(x => x.GetOrganisationStatus(It.IsAny<Guid>())).ReturnsAsync(OrganisationStatus.Removed);
-            RemovedReason existingReason = new RemovedReason{ Id = 1, Reason = "test reason" };
+            RemovedReason existingReason = new RemovedReason { Id = 1, Reason = "test reason" };
             _repository.Setup(x => x.GetRemovedReason(It.IsAny<Guid>())).ReturnsAsync(existingReason);
             _request.OrganisationStatusId = OrganisationStatus.Removed;
 
@@ -215,7 +212,7 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
             _updateRepository.Setup(x => x.UpdateRemovedReason(It.IsAny<Guid>(), It.IsAny<int?>(), It.IsAny<string>())).ReturnsAsync(true).Verifiable();
 
             var fieldChanges = new List<AuditLogEntry>();
-            fieldChanges.Add(new AuditLogEntry { FieldChanged = AuditLogField.RemovedReason, NewValue = "Breach", PreviousValue = "Other"});
+            fieldChanges.Add(new AuditLogEntry { FieldChanged = AuditLogField.RemovedReason, NewValue = "Breach", PreviousValue = "Other" });
             _auditLogService.Setup(x => x.AuditOrganisationStatus(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int?>()))
                 .Returns(new AuditData { FieldChanges = fieldChanges });
             var result = _handler.Handle(_request, new CancellationToken()).GetAwaiter().GetResult();
@@ -245,7 +242,7 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
             _updateRepository.Setup(x => x.UpdateStartDate(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<string>())).ReturnsAsync(true).Verifiable();
             var fieldChanges = new List<AuditLogEntry>();
             fieldChanges.Add(new AuditLogEntry { FieldChanged = AuditLogField.OrganisationStatus, NewValue = "Removed", PreviousValue = "Active - not taking on" });
-            fieldChanges.Add(new AuditLogEntry { FieldChanged = AuditLogField.StartDate, NewValue = null, PreviousValue = DateTime.Today.ToShortDateString()});
+            fieldChanges.Add(new AuditLogEntry { FieldChanged = AuditLogField.StartDate, NewValue = null, PreviousValue = DateTime.Today.ToShortDateString() });
             _auditLogService.Setup(x => x.AuditOrganisationStatus(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int?>()))
                 .Returns(new AuditData { FieldChanges = fieldChanges });
 
@@ -292,7 +289,7 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
             _request.RemovedReasonId = removalReasonId;
 
             _updateRepository.Setup(x =>
-                    x.UpdateRemovedReason(It.IsAny<Guid>(), It.IsAny<int?>(),  It.IsAny<string>()))
+                    x.UpdateRemovedReason(It.IsAny<Guid>(), It.IsAny<int?>(), It.IsAny<string>()))
                 .ReturnsAsync(true);
             _updateRepository.Setup(x =>
                     x.UpdateOrganisationStatus(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<string>()))

@@ -50,7 +50,7 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
             };
             _repository.Setup(x => x.OrganisationSearchByUkPrn(It.IsAny<string>())).ReturnsAsync(organisationSearchResults);
             _repository.Setup(x => x.OrganisationSearchByName(It.IsAny<string>()));
-            var organisationSearchRequest = new OrganisationSearchRequest {SearchTerm = "10001234"};
+            var organisationSearchRequest = new OrganisationSearchRequest { SearchTerm = "10001234" };
             Task<OrganisationSearchResults> searchResults =
                 _organisationSearchHandler.Handle(organisationSearchRequest, new CancellationToken());
 
@@ -77,7 +77,7 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
             _repository.Setup(x => x.OrganisationSearchByName(It.IsAny<string>())).ReturnsAsync(organisationSearchResults);
             _repository.Setup(x => x.OrganisationSearchByUkPrn(It.IsAny<string>()));
 
-            var organisationSearchRequest = new OrganisationSearchRequest {SearchTerm = "TEST"};
+            var organisationSearchRequest = new OrganisationSearchRequest { SearchTerm = "TEST" };
             Task<OrganisationSearchResults> searchResults =
                 _organisationSearchHandler.Handle(organisationSearchRequest, new CancellationToken());
 
@@ -88,14 +88,13 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
         }
 
         [Test]
-        public void Organisation_search_with_invalid_search_term()
+        public async Task Organisation_search_with_invalid_search_term()
         {
             _validator.Setup(x => x.IsValidSearchTerm(It.IsAny<string>())).Returns(false);
 
-            var organisationSearchRequest = new OrganisationSearchRequest {SearchTerm = "10001234"};
-            Func<Task> result = async () => await
-                _organisationSearchHandler.Handle(organisationSearchRequest, new CancellationToken());
-            result.Should().Throw<BadRequestException>();
+            var organisationSearchRequest = new OrganisationSearchRequest { SearchTerm = "10001234" };
+            Func<Task> result = () => _organisationSearchHandler.Handle(organisationSearchRequest, new CancellationToken());
+            await result.Should().ThrowAsync<BadRequestException>();
         }
 
         [Test]
@@ -130,10 +129,10 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
                 new Organisation {UKPRN = 10002222, LegalName = "TESTING SERVICES"}
             };
             var organisationSearchResults = new OrganisationSearchResults
-                {
-                    SearchResults = organisations,
-                    TotalCount = 2
-                };
+            {
+                SearchResults = organisations,
+                TotalCount = 2
+            };
             _repository.Setup(x => x.OrganisationSearchByName(It.IsAny<string>())).ReturnsAsync(organisationSearchResults);
             _repository.Setup(x => x.OrganisationSearchByUkPrn(It.IsAny<string>()));
 
@@ -185,7 +184,7 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
         public void Organisation_search_will_not_search_by_legal_name_if_valid_UKPRN_but_no_match_found()
         {
             _validator.Setup(x => x.IsValidUKPRN(It.IsAny<string>())).Returns(true);
-            
+
             var organisationSearchResults = new OrganisationSearchResults
             {
                 SearchResults = new List<Organisation>(),

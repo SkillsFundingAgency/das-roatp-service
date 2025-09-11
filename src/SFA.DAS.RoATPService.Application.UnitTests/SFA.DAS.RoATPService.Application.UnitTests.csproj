@@ -2,22 +2,21 @@
 
   <PropertyGroup>
     <ProjectGuid>{5740747C-1320-4F60-AE06-5C1C251931BD}</ProjectGuid>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentAssertions" Version="5.7.0" />
-    <PackageReference Include="Moq" Version="4.12.0" />
-    <PackageReference Include="nunit" Version="3.12.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.11.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-    <PackageReference Include="SFA.DAS.Testing.AutoFixture" Version="3.0.106" />
+    <PackageReference Include="FluentAssertions" Version="7.2.0" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="nunit" Version="3.14.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="5.1.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="SFA.DAS.Testing.AutoFixture" Version="17.1.146" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SFA.DAS.RoATPService.Application\SFA.DAS.RoATPService.Application.csproj" />
-    <ProjectReference Include="..\SFA.DAS.RoATPService.Infrastructure\SFA.DAS.RoATPService.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

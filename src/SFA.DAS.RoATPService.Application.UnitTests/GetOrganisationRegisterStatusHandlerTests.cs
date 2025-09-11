@@ -27,7 +27,7 @@
         {
             _repository = new Mock<IOrganisationRepository>();
 
-            _logger =new Mock<ILogger<GetOrganisationRegisterStatusHandler>>();
+            _logger = new Mock<ILogger<GetOrganisationRegisterStatusHandler>>();
 
             var validator = new OrganisationValidator(new Mock<IDuplicateCheckRepository>().Object,
                 new Mock<ILookupDataRepository>().Object, new Mock<IOrganisationRepository>().Object);
@@ -46,7 +46,7 @@
             _repository.Setup(x => x.GetOrganisationRegisterStatus(It.IsAny<string>()))
                 .ReturnsAsync(organisationRegisterStatus);
 
-            var result = _handler.Handle(new GetOrganisationRegisterStatusRequest {UKPRN = "10001234"},
+            var result = _handler.Handle(new GetOrganisationRegisterStatusRequest { UKPRN = "10001234" },
                 new CancellationToken()).GetAwaiter().GetResult();
 
             result.UkprnOnRegister.Should().BeFalse();
@@ -64,7 +64,7 @@
                 UkprnOnRegister = true,
                 OrganisationId = Guid.NewGuid(),
                 RemovedReasonId = null,
-                StatusDate = new DateTime(2018, 1, 1),
+                StatusDate = new DateTime(2018, 1, 1, 0, 0, 0, DateTimeKind.Unspecified),
                 StatusId = OrganisationStatus.Active,
                 ProviderTypeId = ProviderType.MainProvider
             };
@@ -90,7 +90,7 @@
                 UkprnOnRegister = true,
                 OrganisationId = Guid.NewGuid(),
                 RemovedReasonId = RemovedReason.Merger,
-                StatusDate = new DateTime(2018, 1, 1),
+                StatusDate = new DateTime(2018, 1, 1, 0, 0, 0, DateTimeKind.Unspecified),
                 StatusId = OrganisationStatus.Removed,
                 ProviderTypeId = ProviderType.MainProvider
             };
@@ -109,7 +109,7 @@
         }
 
         [Test]
-        public void Handler_rejects_UKPRN_containing_non_numeric_characters()
+        public async Task Handler_rejects_UKPRN_containing_non_numeric_characters()
         {
             var organisationRegisterStatus = new OrganisationRegisterStatus
             {
@@ -119,14 +119,13 @@
             _repository.Setup(x => x.GetOrganisationRegisterStatus(It.IsAny<string>()))
                 .ReturnsAsync(organisationRegisterStatus);
 
-            Func<Task> result = async () => await
-                _handler.Handle(new GetOrganisationRegisterStatusRequest { UKPRN = "1000123A" }, new CancellationToken());
-            result.Should().Throw<BadRequestException>();
+            Func<Task> result = () => _handler.Handle(new GetOrganisationRegisterStatusRequest { UKPRN = "1000123A" }, new CancellationToken());
+            await result.Should().ThrowAsync<BadRequestException>();
         }
 
         [TestCase("999999")]
         [TestCase("100000000")]
-        public void Handler_rejects_UKPRN_invalid_range(string ukprn)
+        public async Task Handler_rejects_UKPRN_invalid_range(string ukprn)
         {
             var organisationRegisterStatus = new OrganisationRegisterStatus
             {
@@ -136,9 +135,8 @@
             _repository.Setup(x => x.GetOrganisationRegisterStatus(It.IsAny<string>()))
                 .ReturnsAsync(organisationRegisterStatus);
 
-            Func<Task> result = async () => await
-                _handler.Handle(new GetOrganisationRegisterStatusRequest { UKPRN = "1000123A" }, new CancellationToken());
-            result.Should().Throw<BadRequestException>();
+            Func<Task> result = () => _handler.Handle(new GetOrganisationRegisterStatusRequest { UKPRN = "1000123A" }, new CancellationToken());
+            await result.Should().ThrowAsync<BadRequestException>();
         }
 
     }

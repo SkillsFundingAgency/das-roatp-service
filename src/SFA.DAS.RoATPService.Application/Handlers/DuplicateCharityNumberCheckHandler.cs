@@ -10,9 +10,9 @@
 
     public class DuplicateCharityNumberCheckHandler : IRequestHandler<DuplicateCharityNumberCheckRequest, DuplicateCheckResponse>
     {
-        private ILogger<DuplicateCharityNumberCheckHandler> _logger;
+        private readonly ILogger<DuplicateCharityNumberCheckHandler> _logger;
 
-        private IDuplicateCheckRepository _repository;
+        private readonly IDuplicateCheckRepository _repository;
 
         public DuplicateCharityNumberCheckHandler(ILogger<DuplicateCharityNumberCheckHandler> logger,
             IDuplicateCheckRepository repository)
@@ -29,8 +29,8 @@
             }
             catch (Exception ex)
             {
-                _logger.LogError("Unable to perform charity registration number duplicate check", ex);
-                throw new ApplicationException(ex.Message);
+                _logger.LogError(ex, "Unable to perform charity registration number duplicate check");
+                throw new InvalidOperationException(ex.Message);
             }
         }
     }

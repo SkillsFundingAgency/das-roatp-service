@@ -1,56 +1,55 @@
-﻿namespace SFA.DAS.RoATPService.Application.Api.Middleware
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using SFA.DAS.RoATPService.Application.Exceptions;
+
+namespace SFA.DAS.RoATPService.Application.Api.Middleware;
+
+public class ErrorHandlingMiddleware
 {
-    using System;
-    using System.Net;
-    using System.Threading.Tasks;
-    using Exceptions;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Serialization;
+    private readonly ILogger<ErrorHandlingMiddleware> _logger;
+    private readonly RequestDelegate _next;
 
-    public class ErrorHandlingMiddleware
+    public ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandlingMiddleware> logger)
     {
-        private readonly ILogger<ErrorHandlingMiddleware> _logger;
-        private readonly RequestDelegate _next;
+        _next = next;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        public ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandlingMiddleware> logger)
+    public async Task Invoke(HttpContext context)
+    {
+        try
         {
-            _next = next;
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            await _next.Invoke(context);
         }
-
-        public async Task Invoke(HttpContext context)
+        catch (Exception ex)
         {
-            try
+            if (ex is InvalidOperationException || ex is BadRequestException)
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            else if (ex is ResourceNotFoundException)
+                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+            else if (ex is UnauthorisedException)
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            else
             {
-                await _next.Invoke(context);
+                context.Response.StatusCode = 500;
+                _logger.LogError(ex, "Unhandled Exeption raised : {Message} : Stack Trace : {StackTrace}", ex.Message, ex.StackTrace);
             }
-            catch (Exception ex)
-            {
-                if (ex is ApplicationException || ex is BadRequestException)
-                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                else if (ex is ResourceNotFoundException)
-                    context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-                else if (ex is UnauthorisedException)
-                    context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                else
+
+            context.Response.ContentType = "application/json";
+
+            var response = new ApiResponse(context.Response.StatusCode, ex.Message);
+            var json = JsonConvert.SerializeObject(response,
+                new JsonSerializerSettings
                 {
-                    context.Response.StatusCode = 500;
-                    _logger.LogError($"Unhandled Exeption raised : {ex.Message} : Stack Trace : {ex.StackTrace}");
-                }
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                });
 
-                context.Response.ContentType = "application/json";
-
-                var response = new ApiResponse(context.Response.StatusCode, ex.Message);
-                var json = JsonConvert.SerializeObject(response,
-                    new JsonSerializerSettings
-                    {
-                        ContractResolver = new CamelCasePropertyNamesContractResolver()
-                    });
-
-                await context.Response.WriteAsync(json);
-            }
+            await context.Response.WriteAsync(json);
         }
     }
 }

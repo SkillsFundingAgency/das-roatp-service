@@ -9,12 +9,12 @@
     using Interfaces;
     using MediatR;
     using Microsoft.Extensions.Logging;
-    
+
     public class GetRemovedReasonsHandler : IRequestHandler<GetRemovedReasonsRequest, IEnumerable<RemovedReason>>
     {
-        private ILookupDataRepository _repository;
-        private ILogger<GetRemovedReasonsHandler> _logger;
-        
+        private readonly ILookupDataRepository _repository;
+        private readonly ILogger<GetRemovedReasonsHandler> _logger;
+
         public GetRemovedReasonsHandler(ILookupDataRepository repository,
             ILogger<GetRemovedReasonsHandler> logger)
         {
@@ -24,7 +24,7 @@
 
         public async Task<IEnumerable<RemovedReason>> Handle(GetRemovedReasonsRequest request, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($@"Handling Removed Reasons lookup");
+            _logger.LogInformation("Handling Removed Reasons lookup");
 
             try
             {
@@ -32,8 +32,8 @@
             }
             catch (Exception ex)
             {
-                _logger.LogError("Unable to retrieve Removed Reasons", ex);
-                throw new ApplicationException(ex.Message);
+                _logger.LogError(ex, "Unable to retrieve Removed Reasons");
+                throw new InvalidOperationException(ex.Message);
             }
         }
     }

@@ -12,8 +12,8 @@
 
     public class GetProviderTypesHandler : IRequestHandler<GetProviderTypesRequest, IEnumerable<ProviderType>>
     {
-        private ILookupDataRepository _repository;
-        private ILogger<GetProviderTypesHandler> _logger;
+        private readonly ILookupDataRepository _repository;
+        private readonly ILogger<GetProviderTypesHandler> _logger;
 
         public GetProviderTypesHandler(ILookupDataRepository repository, ILogger<GetProviderTypesHandler> logger)
         {
@@ -29,8 +29,8 @@
             }
             catch (Exception ex)
             {
-                _logger.LogError("Unable to retrieve list of provider types", ex);
-                throw new ApplicationException(ex.Message);
+                _logger.LogError(ex, "Unable to retrieve list of provider types");
+                throw new InvalidOperationException(ex.Message);
             }
         }
     }

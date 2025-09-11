@@ -29,8 +29,8 @@ namespace SFA.DAS.RoATPService.Application.Handlers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Unable to retrieve list of engagements", ex);
-                throw new ApplicationException(ex.Message);
+                _logger.LogError(ex, "Unable to retrieve list of engagements");
+                throw new InvalidOperationException(ex.Message);
             }
         }
     }

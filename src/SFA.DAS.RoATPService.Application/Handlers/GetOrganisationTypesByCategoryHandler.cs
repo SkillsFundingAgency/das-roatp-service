@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -15,7 +14,7 @@ namespace SFA.DAS.RoATPService.Application.Handlers
 {
     public class GetOrganisationTypesByCategoryHandler : IRequestHandler<GetOrganisationTypesByCategoryRequest, IEnumerable<OrganisationType>>
     {
-        
+
         private readonly ILookupDataRepository _repository;
         private readonly ILogger<GetOrganisationTypesByCategoryHandler> _logger;
         private readonly IProviderTypeValidator _providerTypeValidator;
@@ -45,7 +44,7 @@ namespace SFA.DAS.RoATPService.Application.Handlers
                 throw new BadRequestException(invalidMessage);
             }
 
-            _logger.LogInformation($@"Handling Organisation Types for a category lookup for Provider Type Id [{request.ProviderTypeId}], Category Id [{request.CategoryId}]");
+            _logger.LogInformation("Handling Organisation Types for a category lookup for Provider Type Id [{ProviderTypeId}], Category Id [{CategoryId}]", request.ProviderTypeId, request.CategoryId);
 
             try
             {
@@ -53,8 +52,8 @@ namespace SFA.DAS.RoATPService.Application.Handlers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Unable to retrieve Organisation Types for a category lookup for Provider Type Id [{request.ProviderTypeId}], Category Id [{request.CategoryId}]", ex);
-                throw new ApplicationException(ex.Message);
+                _logger.LogError(ex, "Unable to retrieve Organisation Types for a category lookup for Provider Type Id [{ProviderTypeId}], Category Id [{CategoryId}]", request.ProviderTypeId, request.CategoryId);
+                throw new InvalidOperationException(ex.Message);
             }
         }
     }

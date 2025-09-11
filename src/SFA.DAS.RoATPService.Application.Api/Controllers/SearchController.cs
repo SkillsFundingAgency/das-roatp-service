@@ -4,16 +4,14 @@
     using System.Net;
     using System.Threading.Tasks;
     using MediatR;
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Middleware;
     using RoATPService.Api.Types.Models;
-    using Swashbuckle.AspNetCore.SwaggerGen;
 
-    [Authorize(Roles = "RoATPServiceInternalAPI")]
+    [ApiController]
     [Route("api/v1/[controller]")]
-    public class SearchController : Controller
+    public class SearchController : ControllerBase
     {
         private readonly ILogger<SearchController> _logger;
         private readonly IMediator _mediator;
@@ -25,9 +23,9 @@
         }
 
         [HttpGet]
-        [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<OrganisationSearchRequest>))]
-        [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(IDictionary<string, string>))]
-        [SwaggerResponse((int)HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(List<OrganisationSearchRequest>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
+        [ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(ApiResponse))]
         public async Task<IActionResult> Index(OrganisationSearchRequest searchQuery)
         {
             return Ok(await _mediator.Send(searchQuery));

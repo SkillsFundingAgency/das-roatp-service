@@ -1,15 +1,13 @@
-﻿namespace SFA.DAS.RoATPService.Settings
+﻿using System.Text.Json.Serialization;
+
+namespace SFA.DAS.RoATPService.Settings;
+
+public class WebConfiguration
 {
-    using Newtonsoft.Json;
+    [JsonRequired]
+    public string SqlConnectionString { get; set; }
 
-    public class WebConfiguration : IWebConfiguration
-    {
-        [JsonRequired] public ApiAuthentication ApiAuthentication { get; set; }
-     
-        public string SqlConnectionString { get; set; }
+    public string SessionRedisConnectionString { get; set; }
 
-        public string SessionRedisConnectionString { get; set; }
-        
-        public UkrlpApiAuthentication UkrlpApiAuthentication { get; set; }
-    }
+    public UkrlpApiAuthentication UkrlpApiAuthentication { get; set; }
 }

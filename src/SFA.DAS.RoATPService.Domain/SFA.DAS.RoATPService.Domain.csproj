@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <ProjectGuid>{E68804D5-D5BE-40CA-A631-9B0BFD48F50A}</ProjectGuid>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
 </Project>

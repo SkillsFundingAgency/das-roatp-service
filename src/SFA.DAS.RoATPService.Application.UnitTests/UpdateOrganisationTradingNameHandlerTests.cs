@@ -6,15 +6,15 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Domain;
+    using Exceptions;
     using FluentAssertions;
+    using Handlers;
+    using Interfaces;
     using Microsoft.Extensions.Logging;
     using Moq;
     using NUnit.Framework;
-    using Exceptions;
-    using Handlers;
-    using Interfaces;
     using Validators;
-    using Domain;
 
     [TestFixture]
     public class UpdateOrganisationTradingNameHandlerTests
@@ -48,7 +48,7 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
         }
 
         [Test]
-        public void Handler_does_not_update_database_if_trading_name_invalid()
+        public async Task Handler_does_not_update_database_if_trading_name_invalid()
         {
             _validator.Setup(x => x.IsValidTradingName(It.IsAny<string>())).Returns(false);
 
@@ -59,9 +59,8 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
                 UpdatedBy = "unit test"
             };
 
-            Func<Task> result = async () => await
-                _handler.Handle(request, new CancellationToken());
-            result.Should().Throw<BadRequestException>();
+            Func<Task> result = () => _handler.Handle(request, new CancellationToken());
+            await result.Should().ThrowAsync<BadRequestException>();
 
             _auditLogService.Verify(x => x.AuditTradingName(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
             _updateRepository.Verify(x => x.UpdateTradingName(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
@@ -77,7 +76,7 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
                 OrganisationId = Guid.NewGuid(),
                 UpdatedBy = "unit test"
             };
-            
+
             var result = _handler.Handle(request, new CancellationToken()).GetAwaiter().GetResult();
             result.Should().BeFalse();
 
