@@ -7,14 +7,14 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
     using System.Threading;
     using System.Threading.Tasks;
     using Api.Types.Models;
+    using Domain;
+    using Exceptions;
     using FluentAssertions;
     using Handlers;
     using Interfaces;
     using Microsoft.Extensions.Logging;
     using Moq;
     using NUnit.Framework;
-    using Exceptions;
-    using Domain;
     using Validators;
 
     [TestFixture]
@@ -57,7 +57,7 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
         }
 
         [Test]
-        public void Handler_does_not_update_database_if_application_determined_date_invalid()
+        public async Task Handler_does_not_update_database_if_application_determined_date_invalid()
         {
             _validator.Setup(x => x.IsValidApplicationDeterminedDate(It.IsAny<DateTime?>())).Returns(false);
             var request = new UpdateOrganisationApplicationDeterminedDateRequest
@@ -67,9 +67,8 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
                 UpdatedBy = "unit test"
             };
 
-            Func<Task> result = async () => await
-                _handler.Handle(request, new CancellationToken());
-            result.Should().Throw<BadRequestException>();
+            Func<Task> result = () => _handler.Handle(request, new CancellationToken());
+            await result.Should().ThrowAsync<BadRequestException>();
 
             _auditLogService.Verify(x => x.AuditApplicationDeterminedDate(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<DateTime>()), Times.Never);
             _updateOrganisationRepository.Verify(x => x.UpdateApplicationDeterminedDate(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<string>()), Times.Never);
@@ -86,7 +85,7 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
                 OrganisationId = Guid.NewGuid(),
                 UpdatedBy = "unit test"
             };
-           
+
             var result = _handler.Handle(request, new CancellationToken()).Result;
             result.Should().BeFalse();
 

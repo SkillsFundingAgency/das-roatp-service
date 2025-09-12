@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using SFA.DAS.RoATPService.Application.Commands;
+﻿using SFA.DAS.RoATPService.Application.Commands;
 using SFA.DAS.RoATPService.Application.Services;
 using SFA.DAS.RoATPService.Application.Types;
 
@@ -9,14 +8,14 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
     using System.Threading;
     using System.Threading.Tasks;
     using Api.Types.Models;
+    using Domain;
+    using Exceptions;
     using FluentAssertions;
     using Handlers;
     using Interfaces;
     using Microsoft.Extensions.Logging;
     using Moq;
     using NUnit.Framework;
-    using Exceptions;
-    using Domain;
     using Validators;
 
     [TestFixture]
@@ -50,8 +49,8 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
             _auditData = new AuditData { };
 
             _auditLogService.Setup(x => x.AuditOrganisation(It.IsAny<UpdateOrganisationCommand>())).Returns(_auditData);
-            
-            _handler = new UpdateOrganisationHandler(_logger.Object, _updateOrganisationRepository.Object, _auditLogService.Object, _organisationValidator.Object,_textSanitiser);
+
+            _handler = new UpdateOrganisationHandler(_logger.Object, _updateOrganisationRepository.Object, _auditLogService.Object, _organisationValidator.Object, _textSanitiser);
             _request = new UpdateOrganisationRequest
             {
                 OrganisationId = Guid.NewGuid(),
@@ -68,33 +67,32 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
 
         [Test]
         public void Handler_updates_organisation_and_records_audit_history()
-        {  
+        {
             _updateOrganisationRepository.Setup(x =>
                     x.UpdateOrganisation(It.IsAny<UpdateOrganisationCommand>()))
                 .ReturnsAsync(true).Verifiable();
-            
+
             _updateOrganisationRepository.Setup(x => x.WriteFieldChangesToAuditLog(It.IsAny<AuditData>()))
                 .ReturnsAsync(true).Verifiable();
-               
+
             var result = _handler.Handle(_request, new CancellationToken()).Result;
             result.Should().BeTrue();
             _updateOrganisationRepository.VerifyAll();
             _auditLogService.Verify(x => x.AuditOrganisation(It.IsAny<UpdateOrganisationCommand>()), Times.Once);
-            _updateOrganisationRepository.Verify(x=>x.UpdateOrganisation(It.IsAny<UpdateOrganisationCommand>()),Times.Once);
+            _updateOrganisationRepository.Verify(x => x.UpdateOrganisation(It.IsAny<UpdateOrganisationCommand>()), Times.Once);
             _updateOrganisationRepository.Verify(x => x.WriteFieldChangesToAuditLog(It.IsAny<AuditData>()), Times.Once);
         }
 
         [Test]
-        public void Handler_rejects_request_with_invalid_organisation()
+        public async Task Handler_rejects_request_with_invalid_organisation()
         {
             var validationMessage = new ValidationErrorMessage { Message = "error" };
             _organisationValidator.Setup(x => x.ValidateOrganisation(It.IsAny<UpdateOrganisationCommand>()))
                 .Returns(validationMessage);
             _organisationValidator.Setup(x => x.IsValidOrganisationTypeId(It.IsAny<int>())).Returns(false);
-        
-            Func<Task> result = async () => await
-                _handler.Handle(_request, new CancellationToken());
-            result.Should().Throw<BadRequestException>();
+
+            Func<Task> result = () => _handler.Handle(_request, new CancellationToken());
+            await result.Should().ThrowAsync<BadRequestException>();
         }
 
         [Test]
@@ -117,7 +115,7 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
             _updateOrganisationRepository.Setup(x =>
                     x.UpdateOrganisation(It.IsAny<UpdateOrganisationCommand>()))
                 .ReturnsAsync(false).Verifiable();
-            
+
             var result = _handler.Handle(_request, new CancellationToken()).Result;
             result.Should().BeFalse();
             _updateOrganisationRepository.VerifyAll();

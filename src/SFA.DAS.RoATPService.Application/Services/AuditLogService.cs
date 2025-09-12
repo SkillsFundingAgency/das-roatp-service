@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using KellermanSoftware.CompareNetObjects;
 using SFA.DAS.RoATPService.Application.Commands;
 using SFA.DAS.RoATPService.Application.Interfaces;
-using SFA.DAS.RoATPService.Application.Types;
 using SFA.DAS.RoATPService.Domain;
 using SFA.DAS.RoATPService.Settings;
 
@@ -27,12 +26,12 @@ namespace SFA.DAS.RoATPService.Application.Services
 
         public async Task<AuditData> BuildListOfFieldsChanged(Organisation originalOrganisation, Organisation updatedOrganisation)
         {
-            CompareLogic organisationComparison = new CompareLogic(new ComparisonConfig
-                {
-                    CompareChildren = true,
-                    MaxDifferences = byte.MaxValue
-                }
-            );
+            CompareLogic organisationComparison = new(new ComparisonConfig
+            {
+                CompareChildren = true,
+                MaxDifferences = byte.MaxValue
+            });
+
             ComparisonResult comparisonResult = organisationComparison.Compare(originalOrganisation, updatedOrganisation);
 
             var updatedAt = updatedOrganisation.UpdatedAt ?? DateTime.Now;
@@ -45,7 +44,7 @@ namespace SFA.DAS.RoATPService.Application.Services
                 UpdatedBy = updatedBy
             };
 
-            List<AuditLogEntry> auditLogEntries = new List<AuditLogEntry>();
+            List<AuditLogEntry> auditLogEntries = [];
             foreach (var difference in comparisonResult.Differences)
             {
                 if (_settings.IgnoredFields.Contains(difference.PropertyName))
@@ -72,7 +71,7 @@ namespace SFA.DAS.RoATPService.Application.Services
                     updatedOrganisation.UpdatedBy = "System";
                 }
 
-                AuditLogEntry entry = new AuditLogEntry
+                AuditLogEntry entry = new()
                 {
                     FieldChanged = propertyName,
                     PreviousValue = difference.Object1Value,
@@ -94,15 +93,14 @@ namespace SFA.DAS.RoATPService.Application.Services
                 OrganisationId = organisationId,
                 UpdatedAt = DateTime.Now,
                 UpdatedBy = updatedBy,
-                FieldChanges = new List<AuditLogEntry>
-                {
+                FieldChanges = [
                     new AuditLogEntry
                     {
                         FieldChanged = fieldName,
                         NewValue = newValue,
                         PreviousValue = oldValue
                     }
-                }
+                ]
             };
         }
 
@@ -110,7 +108,7 @@ namespace SFA.DAS.RoATPService.Application.Services
         {
             return new AuditData
             {
-                FieldChanges = new List<AuditLogEntry>(),
+                FieldChanges = [],
                 OrganisationId = organisationId,
                 UpdatedAt = DateTime.Now,
                 UpdatedBy = updatedBy
@@ -132,7 +130,7 @@ namespace SFA.DAS.RoATPService.Application.Services
         public AuditData AuditFinancialTrackRecord(Guid organisationId, string updatedBy,
             bool newFinancialTrackRecord)
         {
-            var auditData = new AuditData { FieldChanges = new List<AuditLogEntry>(), OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
 
             var previousFinancialTrackRecord = _organisationRepository.GetFinancialTrackRecord(organisationId).Result;
 
@@ -146,14 +144,14 @@ namespace SFA.DAS.RoATPService.Application.Services
                 };
                 auditData.FieldChanges.Add(entry);
             }
-        
+
             return auditData;
         }
 
         public AuditData AuditParentCompanyGuarantee(Guid organisationId, string updatedBy, bool newParentCompanyGuarantee)
         {
-            var auditData = new AuditData { FieldChanges = new List<AuditLogEntry>(), OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
-            var previousParentCompanyGuarantee =  _organisationRepository.GetParentCompanyGuarantee(organisationId).Result;
+            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+            var previousParentCompanyGuarantee = _organisationRepository.GetParentCompanyGuarantee(organisationId).Result;
             if (previousParentCompanyGuarantee != newParentCompanyGuarantee)
             {
                 var entry = new AuditLogEntry
@@ -169,7 +167,7 @@ namespace SFA.DAS.RoATPService.Application.Services
 
         public AuditData AuditLegalName(Guid organisationId, string updatedBy, string newLegalName)
         {
-            var auditData = new AuditData { FieldChanges = new List<AuditLogEntry>(), OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
             var previousLegalName = _organisationRepository.GetLegalName(organisationId).Result;
             if (newLegalName != previousLegalName)
             {
@@ -186,7 +184,7 @@ namespace SFA.DAS.RoATPService.Application.Services
 
         public AuditData AuditTradingName(Guid organisationId, string updatedBy, string newTradingName)
         {
-            var auditData = new AuditData { FieldChanges = new List<AuditLogEntry>(), OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
             var previousTradingName = _organisationRepository.GetTradingName(organisationId).Result;
 
             if ((!(string.IsNullOrWhiteSpace(previousTradingName) && string.IsNullOrWhiteSpace(newTradingName))) && newTradingName != previousTradingName)
@@ -204,7 +202,7 @@ namespace SFA.DAS.RoATPService.Application.Services
 
         public AuditData AuditUkprn(Guid organisationId, string updatedBy, long newUkprn)
         {
-            var auditData = new AuditData { FieldChanges = new List<AuditLogEntry>(), OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
             var previousUkprn = _organisationRepository.GetUkprn(organisationId).Result;
 
             if (previousUkprn != newUkprn)
@@ -220,18 +218,18 @@ namespace SFA.DAS.RoATPService.Application.Services
             return auditData;
         }
 
-        public AuditData AuditCompanyNumber(Guid organisationId, string updatedBy, string newCompanyNumber)
+        public AuditData AuditCompanyNumber(Guid organisationId, string updatedBy, string companyNumber)
         {
-            var auditData = new AuditData { FieldChanges = new List<AuditLogEntry>(), OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
             var previousCompanyNumber = _organisationRepository.GetCompanyNumber(organisationId).Result;
 
-            if (previousCompanyNumber != newCompanyNumber)
+            if (previousCompanyNumber != companyNumber)
             {
                 var entry = new AuditLogEntry
                 {
                     FieldChanged = AuditLogField.CompanyNumber,
                     PreviousValue = previousCompanyNumber,
-                    NewValue = newCompanyNumber
+                    NewValue = companyNumber
                 };
                 auditData.FieldChanges.Add(entry);
             }
@@ -240,11 +238,11 @@ namespace SFA.DAS.RoATPService.Application.Services
 
         public AuditData AuditOrganisationType(Guid organisationId, string updatedBy, int newOrganisationTypeId)
         {
-            var auditData = new AuditData { FieldChanges = new List<AuditLogEntry>(), OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
             var previousOrganisationTypeId = _organisationRepository.GetOrganisationType(organisationId).Result;
             var organisationTypes = _lookupDataRepository.GetOrganisationTypes().Result.ToList();
-            var newOrganisationType = organisationTypes.FirstOrDefault(x => x.Id == newOrganisationTypeId)?.Type ?? "Not set";
-            var previousOrganisationType = organisationTypes.FirstOrDefault(x => x.Id == previousOrganisationTypeId)?.Type ?? "Not set";
+            var newOrganisationType = organisationTypes.Find(x => x.Id == newOrganisationTypeId)?.Type ?? "Not set";
+            var previousOrganisationType = organisationTypes.Find(x => x.Id == previousOrganisationTypeId)?.Type ?? "Not set";
 
             if (previousOrganisationTypeId != newOrganisationTypeId)
             {
@@ -260,18 +258,18 @@ namespace SFA.DAS.RoATPService.Application.Services
             return auditData;
         }
 
-        public AuditData AuditCharityNumber(Guid organisationId, string updatedBy, string newCharityNumber)
+        public AuditData AuditCharityNumber(Guid organisationId, string updatedBy, string charityNumber)
         {
-            var auditData = new AuditData { FieldChanges = new List<AuditLogEntry>(), OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
             var previousCharityNumber = _organisationRepository.GetCharityNumber(organisationId).Result;
 
-            if (previousCharityNumber != newCharityNumber)
+            if (previousCharityNumber != charityNumber)
             {
                 var entry = new AuditLogEntry
                 {
                     FieldChanged = AuditLogField.CharityNumber,
                     PreviousValue = previousCharityNumber,
-                    NewValue = newCharityNumber
+                    NewValue = charityNumber
                 };
                 auditData.FieldChanges.Add(entry);
             }
@@ -280,7 +278,7 @@ namespace SFA.DAS.RoATPService.Application.Services
 
         public AuditData AuditApplicationDeterminedDate(Guid organisationId, string updatedBy, DateTime applicationDeterminedDate)
         {
-            var auditData = new AuditData { FieldChanges = new List<AuditLogEntry>(), OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
             var previousApplicationDeterminedDate = _organisationRepository.GetApplicationDeterminedDate(organisationId).Result;
 
             if (previousApplicationDeterminedDate != applicationDeterminedDate)
@@ -328,8 +326,8 @@ namespace SFA.DAS.RoATPService.Application.Services
             if (auditChangesMade.ChangesMade)
                 auditChanges.Add(auditChangesMade);
 
-            var auditDetailsReturned = new AuditData { FieldChanges = new List<AuditLogEntry>() };
-            if (auditChanges.Any())
+            var auditDetailsReturned = new AuditData { FieldChanges = [] };
+            if (auditChanges.Count != 0)
             {
                 auditDetailsReturned.OrganisationId = command.OrganisationId;
                 auditDetailsReturned.UpdatedAt = DateTime.Now;
@@ -351,11 +349,11 @@ namespace SFA.DAS.RoATPService.Application.Services
 
         public AuditData AuditOrganisationStatus(Guid organisationId, string updatedBy, int newOrganisationStatusId, int? newRemovedReasonId)
         {
-            var auditData = new AuditData { FieldChanges = new List<AuditLogEntry>(), OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
 
-            var existingStatusId =  _organisationRepository.GetOrganisationStatus(organisationId).Result;
+            var existingStatusId = _organisationRepository.GetOrganisationStatus(organisationId).Result;
             var existingRemovedReason = _organisationRepository.GetRemovedReason(organisationId).Result;
-            var newRemovedReason = _lookupDataRepository.GetRemovedReasons().Result.FirstOrDefault(x=>x.Id == newRemovedReasonId);
+            var newRemovedReason = _lookupDataRepository.GetRemovedReasons().Result.FirstOrDefault(x => x.Id == newRemovedReasonId);
             var organisationStatuses = _lookupDataRepository.GetOrganisationStatuses().Result.ToList();
             var newStartDate = DateTime.Today;
             var existingStartDate = _organisationRepository.GetStartDate(organisationId).Result;
@@ -365,8 +363,8 @@ namespace SFA.DAS.RoATPService.Application.Services
                 var entry = new AuditLogEntry
                 {
                     FieldChanged = AuditLogField.OrganisationStatus,
-                    PreviousValue =  organisationStatuses?.FirstOrDefault(x=>x.Id == existingStatusId)?.Status,
-                    NewValue = organisationStatuses?.FirstOrDefault(x => x.Id == newOrganisationStatusId)?.Status
+                    PreviousValue = organisationStatuses.Find(x => x.Id == existingStatusId)?.Status,
+                    NewValue = organisationStatuses.Find(x => x.Id == newOrganisationStatusId)?.Status
                 };
                 auditData.FieldChanges.Add(entry);
             }
@@ -382,7 +380,7 @@ namespace SFA.DAS.RoATPService.Application.Services
                 auditData.FieldChanges.Add(entry);
             }
 
-            if (auditData.FieldChanges.Any() && UpdateStartDateRequired(existingStatusId, newOrganisationStatusId, newStartDate, existingStartDate))
+            if (auditData.FieldChanges.Count != 0 && UpdateStartDateRequired(existingStatusId, newOrganisationStatusId, newStartDate, existingStartDate))
             {
                 var entry = new AuditLogEntry
                 {
@@ -398,21 +396,21 @@ namespace SFA.DAS.RoATPService.Application.Services
 
         public AuditData AuditProviderType(Guid organisationId, string updatedBy, int newProviderTypeId, int newOrganisationTypeId)
         {
-            var auditData = new AuditData { FieldChanges = new List<AuditLogEntry>(), OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
 
-            var previousProviderTypeId =  _organisationRepository.GetProviderType(organisationId).Result;
+            var previousProviderTypeId = _organisationRepository.GetProviderType(organisationId).Result;
             var previousOrganisationTypeId = _organisationRepository.GetOrganisationType(organisationId).Result;
             var previousOrganisationStatusId = _organisationRepository.GetOrganisationStatus(organisationId).Result;
             var providerTypes = _lookupDataRepository.GetProviderTypes().Result.ToList();
             var organisationTypes = _lookupDataRepository.GetOrganisationTypes().Result.ToList();
             var organisationStatuses = _lookupDataRepository.GetOrganisationStatuses().Result.ToList();
-            var previousProviderType = providerTypes.FirstOrDefault(x => x.Id == previousProviderTypeId)?.Type ?? "not defined";
-            var newProviderType = providerTypes.FirstOrDefault(x => x.Id == newProviderTypeId)?.Type ?? "not defined";
-            var previousOrganisationType = organisationTypes.FirstOrDefault(x => x.Id == previousOrganisationTypeId)?.Type ?? "not defined";
-            var newOrganisationType = organisationTypes.FirstOrDefault(x => x.Id == newOrganisationTypeId)?.Type ?? "not defined";
+            var previousProviderType = providerTypes.Find(x => x.Id == previousProviderTypeId)?.Type ?? "not defined";
+            var newProviderType = providerTypes.Find(x => x.Id == newProviderTypeId)?.Type ?? "not defined";
+            var previousOrganisationType = organisationTypes.Find(x => x.Id == previousOrganisationTypeId)?.Type ?? "not defined";
+            var newOrganisationType = organisationTypes.Find(x => x.Id == newOrganisationTypeId)?.Type ?? "not defined";
             var previousOrganisationStatus =
-                organisationStatuses.FirstOrDefault(x => x.Id == previousOrganisationStatusId)?.Status ?? "not defined";
-            var activeOrganisationStatus = organisationStatuses.FirstOrDefault(x => x.Id == OrganisationStatus.Active)?.Status ?? "not defined";
+                organisationStatuses.Find(x => x.Id == previousOrganisationStatusId)?.Status ?? "not defined";
+            var activeOrganisationStatus = organisationStatuses.Find(x => x.Id == OrganisationStatus.Active)?.Status ?? "not defined";
             var previousStartDate = _organisationRepository.GetStartDate(organisationId).Result;
 
             if (previousOrganisationTypeId != newOrganisationTypeId)
@@ -468,7 +466,7 @@ namespace SFA.DAS.RoATPService.Application.Services
             return auditData;
         }
 
-        private bool UpdateStartDateRequired(int oldStatusId, int newStatusId, DateTime newStartDate, DateTime? existingStartDate)
+        private static bool UpdateStartDateRequired(int oldStatusId, int newStatusId, DateTime newStartDate, DateTime? existingStartDate)
         {
             if ((oldStatusId == OrganisationStatus.Removed || oldStatusId == OrganisationStatus.Onboarding) &&
                 (newStatusId == OrganisationStatus.Active || newStatusId == OrganisationStatus.ActiveNotTakingOnApprentices)

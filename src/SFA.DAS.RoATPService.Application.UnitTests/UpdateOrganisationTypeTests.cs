@@ -6,14 +6,14 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
     using System.Threading;
     using System.Threading.Tasks;
     using Api.Types.Models;
+    using Domain;
+    using Exceptions;
     using FluentAssertions;
     using Handlers;
     using Interfaces;
     using Microsoft.Extensions.Logging;
     using Moq;
     using NUnit.Framework;
-    using Exceptions;
-    using Domain;
     using Validators;
 
     [TestFixture]
@@ -50,38 +50,35 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
         }
 
         [Test]
-        public void Handler_rejects_request_with_invalid_organisation_type()
+        public async Task Handler_rejects_request_with_invalid_organisation_type()
         {
             _validator.Setup(x => x.IsValidOrganisationTypeId(It.IsAny<int>())).Returns(false);
 
-            Func<Task> result = async () => await
-                _handler.Handle(_request, new CancellationToken());
-            result.Should().Throw<BadRequestException>();
+            Func<Task> result = () => _handler.Handle(_request, new CancellationToken());
+            await result.Should().ThrowAsync<BadRequestException>();
         }
 
         [Test]
-        public void Handler_rejects_request_with_unassigned_organisation_type()
+        public async Task Handler_rejects_request_with_unassigned_organisation_type()
         {
             _request.OrganisationTypeId = OrganisationType.Unassigned;
-            Func<Task> result = async () => await
-                _handler.Handle(_request, new CancellationToken());
-            result.Should().Throw<BadRequestException>();
+            Func<Task> result = () => _handler.Handle(_request, new CancellationToken());
+            await result.Should().ThrowAsync<BadRequestException>();
         }
 
         [Test]
-        public void Handler_rejects_request_with_organisation_type_not_associated_with_organisation_provider_type()
+        public async Task Handler_rejects_request_with_organisation_type_not_associated_with_organisation_provider_type()
         {
             _validator.Setup(x => x.IsValidOrganisationTypeIdForOrganisation(It.IsAny<int>(), It.IsAny<Guid>())).Returns(false);
 
             _request.OrganisationTypeId = OrganisationType.Unassigned;
-            Func<Task> result = async () => await
-                _handler.Handle(_request, new CancellationToken());
-            result.Should().Throw<BadRequestException>();
+            Func<Task> result = () => _handler.Handle(_request, new CancellationToken());
+            await result.Should().ThrowAsync<BadRequestException>();
         }
 
         [Test]
         public void Handler_updates_organisation_type_and_records_audit_history()
-        {  
+        {
             _updateOrganisationRepository.Setup(x =>
                     x.UpdateOrganisationType(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(true).Verifiable();

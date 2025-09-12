@@ -3,7 +3,7 @@
     using System;
     using MediatR;
 
-    public class DuplicateUKPRNCheckRequest : IRequest<DuplicateCheckResponse>
+    public class DuplicateUkprnCheckRequest : IRequest<DuplicateCheckResponse>
     {
         public Guid OrganisationId { get; set; }
         public long UKPRN { get; set; }

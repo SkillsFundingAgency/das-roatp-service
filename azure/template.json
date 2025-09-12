@@ -82,7 +82,8 @@
         "resourceGroupName": "[concat(variables('resourceNamePrefix'), '-rg')]",
         "apiAppServiceName": "[concat(variables('resourceNamePrefix'), 'api-as')]",
         "databaseName": "[concat(variables('resourceNamePrefix'), '-db')]",
-        "privateLinkScopeName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-shared-ampls'))]"
+        "privateLinkScopeName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-shared-ampls'))]",
+        "configNames": "SFA.DAS.RoATPService"
     },
     "resources": [
         {
@@ -190,28 +191,44 @@
                     },
                     "appServiceAppSettings": {
                         "value": {
-                            "array": [
-                                {
-                                    "name": "ConfigurationStorageConnectionString",
-                                    "value": "[parameters('configurationStorageConnectionString')]"
-                                },
-                                {
-                                    "name": "EnvironmentName",
-                                    "value": "[parameters('environmentName')]"
-                                },
-                                {
-                                    "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                                    "value": "[reference(concat('api-app-insights-', parameters('utcValue'))).outputs.InstrumentationKey.value]"
-                                },
-                                {
-                                    "name": "WEBSITE_SWAP_WARMUP_PING_PATH",
-                                    "value": "/health"
-                                },
-                                {
-                                    "name": "WEBSITE_SWAP_WARMUP_PING_STATUSES",
-                                    "value": "200"
-                                }
-                            ]
+                          "array": [
+                              {
+                                  "name": "ConfigurationStorageConnectionString",
+                                  "value": "[parameters('configurationStorageConnectionString')]"
+                              },
+                              {
+                                  "name": "EnvironmentName",
+                                  "value": "[parameters('environmentName')]"
+                              },
+                              {
+                                  "name": "ResourceEnvironmentName",
+                                  "value": "[parameters('resourceEnvironmentName')]"
+                              },
+                              {
+                                  "name": "ConfigNames",
+                                  "value": "[variables('configNames')]"
+                              },
+                              {
+                                  "name": "Version",
+                                  "value": "1.0"
+                              },
+                              {
+                                  "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                                  "value": "[reference(concat('api-app-insights-', parameters('utcValue'))).outputs.ConnectionString.value]"
+                              },
+                              {
+                                  "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                                  "value": "[reference(concat('api-app-insights-', parameters('utcValue'))).outputs.InstrumentationKey.value]"
+                              },
+                              {
+                                  "name": "WEBSITE_SWAP_WARMUP_PING_PATH",
+                                  "value": "/health"
+                              },
+                              {
+                                  "name": "WEBSITE_SWAP_WARMUP_PING_STATUSES",
+                                  "value": "200"
+                              }
+                          ]
                         }
                     },
                     "appServiceConnectionStrings": {

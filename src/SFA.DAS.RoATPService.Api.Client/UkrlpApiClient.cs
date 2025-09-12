@@ -10,19 +10,19 @@ namespace SFA.DAS.RoATPService.Api.Client
     using Interfaces;
     using Microsoft.Extensions.Logging;
     using Models.Ukrlp;
-    using Settings;
+    using SFA.DAS.RoATPService.Settings;
 
     public class UkrlpApiClient : IUkrlpApiClient
     {
         private readonly ILogger<UkrlpApiClient> _logger;
 
-        private readonly IWebConfiguration _config;
+        private readonly WebConfiguration _config;
 
         private readonly HttpClient _httpClient;
 
         private readonly IUkrlpSoapSerializer _serializer;
 
-        public UkrlpApiClient(ILogger<UkrlpApiClient> logger, IWebConfiguration config, HttpClient httpClient, IUkrlpSoapSerializer serializer)
+        public UkrlpApiClient(ILogger<UkrlpApiClient> logger, WebConfiguration config, HttpClient httpClient, IUkrlpSoapSerializer serializer)
         {
             _logger = logger;
             _config = config;
@@ -32,7 +32,7 @@ namespace SFA.DAS.RoATPService.Api.Client
 
         public async Task<UkprnLookupResponse> GetListOfTrainingProviders(List<long> ukprns)
         {
-            var request = _serializer.BuildGetAllUkrlpSoapRequest(ukprns,_config.UkrlpApiAuthentication.StakeholderId,
+            var request = _serializer.BuildGetAllUkrlpSoapRequest(ukprns, _config.UkrlpApiAuthentication.StakeholderId,
                 _config.UkrlpApiAuthentication.QueryId);
 
             return await GetUkprnLookupResponse(request);

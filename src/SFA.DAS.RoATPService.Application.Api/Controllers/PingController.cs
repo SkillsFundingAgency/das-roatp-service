@@ -1,8 +1,11 @@
 namespace SFA.DAS.RoATPService.Application.Api.Controllers
 {
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
-    public class PingController : Controller
+    [ApiController]
+    [AllowAnonymous]
+    public class PingController : ControllerBase
     {
         [HttpGet("/Ping")]
         public IActionResult Ping()

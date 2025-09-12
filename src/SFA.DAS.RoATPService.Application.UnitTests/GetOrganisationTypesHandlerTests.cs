@@ -6,13 +6,13 @@
     using System.Threading.Tasks;
     using Api.Types.Models;
     using Domain;
+    using Exceptions;
     using FluentAssertions;
     using Handlers;
     using Interfaces;
     using Microsoft.Extensions.Logging;
     using Moq;
     using NUnit.Framework;
-    using Exceptions;
     using Validators;
 
     [TestFixture]
@@ -51,7 +51,7 @@
         [TestCase(3)]
         public void Handler_retrieves_list_of_organisations_by_provider_type(int providerTypeId)
         {
-            var request = new GetOrganisationTypesRequest {ProviderTypeId = providerTypeId};
+            var request = new GetOrganisationTypesRequest { ProviderTypeId = providerTypeId };
 
             var result = _handler.Handle(request, new CancellationToken()).Result;
 
@@ -61,26 +61,24 @@
         [TestCase(0)]
         [TestCase(-1)]
         [TestCase(4)]
-        public void Handler_returns_bad_request_for_invalid_provider_type(int providerTypeId)
+        public async Task Handler_returns_bad_request_for_invalid_provider_type(int providerTypeId)
         {
             var request = new GetOrganisationTypesRequest { ProviderTypeId = providerTypeId };
 
-            Func<Task> result = async () => await
-                _handler.Handle(request, new CancellationToken());
-            result.Should().Throw<BadRequestException>();
+            Func<Task> result = () => _handler.Handle(request, new CancellationToken());
+            await result.Should().ThrowAsync<BadRequestException>();
         }
 
         [Test]
-        public void Handler_returns_server_error_for_repository_exception()
+        public async Task Handler_returns_server_error_for_repository_exception()
         {
             var request = new GetOrganisationTypesRequest { ProviderTypeId = 1 };
 
             _repository.Setup(x => x.GetOrganisationTypesForProviderTypeId(It.IsAny<int>()))
                 .Throws(new Exception("Unit test exception"));
 
-            Func<Task> result = async () => await
-                _handler.Handle(request, new CancellationToken());
-            result.Should().Throw<ApplicationException>();
+            Func<Task> result = () => _handler.Handle(request, new CancellationToken());
+            await result.Should().ThrowAsync<InvalidOperationException>();
         }
     }
 }

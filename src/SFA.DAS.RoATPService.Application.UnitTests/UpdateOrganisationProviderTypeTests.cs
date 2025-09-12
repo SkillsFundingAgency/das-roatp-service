@@ -7,14 +7,14 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
     using System.Threading;
     using System.Threading.Tasks;
     using Api.Types.Models;
+    using Domain;
+    using Exceptions;
     using FluentAssertions;
     using Handlers;
     using Interfaces;
     using Microsoft.Extensions.Logging;
     using Moq;
     using NUnit.Framework;
-    using Exceptions;
-    using Domain;
     using Validators;
 
     [TestFixture]
@@ -37,10 +37,10 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
             _updateOrganisationRepository = new Mock<IUpdateOrganisationRepository>();
             _auditLogService = new Mock<IAuditLogService>();
             _auditLogService.Setup(x => x.CreateAuditData(It.IsAny<Guid>(), It.IsAny<string>()))
-                .Returns(new AuditData{FieldChanges = new List<AuditLogEntry>()});
+                .Returns(new AuditData { FieldChanges = new List<AuditLogEntry>() });
             _auditLogService.Setup(x => x.AuditProviderType(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(new AuditData { FieldChanges = new List<AuditLogEntry>() });
-            _handler = new UpdateOrganisationProviderTypeHandler(_logger.Object, _validator.Object, 
+            _handler = new UpdateOrganisationProviderTypeHandler(_logger.Object, _validator.Object,
                 _updateOrganisationRepository.Object, _auditLogService.Object);
             _request = new UpdateOrganisationProviderTypeRequest
             {
@@ -52,24 +52,22 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
         }
 
         [Test]
-        public void Handler_rejects_request_with_invalid_provider_type()
+        public async Task Handler_rejects_request_with_invalid_provider_type()
         {
             _validator.Setup(x => x.IsValidProviderTypeId(It.IsAny<int>())).Returns(false);
 
-            Func<Task> result = async () => await
-                _handler.Handle(_request, new CancellationToken());
-            result.Should().Throw<BadRequestException>();
+            Func<Task> result = () => _handler.Handle(_request, new CancellationToken());
+            await result.Should().ThrowAsync<BadRequestException>();
         }
 
         [Test]
-        public void Handler_rejects_request_with_invalid_organisation_type_for_provider()
+        public async Task Handler_rejects_request_with_invalid_organisation_type_for_provider()
         {
             _validator.Setup(x => x.IsValidOrganisationTypeIdForProvider(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(false);
 
-            Func<Task> result = async () => await
-                _handler.Handle(_request, new CancellationToken());
-            result.Should().Throw<BadRequestException>();
+            Func<Task> result = () => _handler.Handle(_request, new CancellationToken());
+            await result.Should().ThrowAsync<BadRequestException>();
         }
 
         [Test]

@@ -2,19 +2,19 @@
 
 namespace SFA.DAS.RoATPService.Application.UnitTests
 {
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Api.Types.Models;
+    using Domain;
+    using Exceptions;
+    using FluentAssertions;
+    using Handlers;
     using Interfaces;
     using Microsoft.Extensions.Logging;
     using Moq;
     using NUnit.Framework;
-    using Handlers;
-    using Domain;
-    using System;
-    using System.Threading;
-    using Api.Types.Models;
-    using FluentAssertions;
     using Validators;
-    using System.Threading.Tasks;
-    using Exceptions;
 
     [TestFixture]
     public class UpdateOrganisationLegalNameHandlerTests
@@ -38,7 +38,7 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
             _updateRepository.Setup(x => x.UpdateLegalName(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true).Verifiable();
             _updateRepository.Setup(x => x.WriteFieldChangesToAuditLog(It.IsAny<AuditData>())).ReturnsAsync(true).Verifiable();
             _textSanitiser = new Mock<ITextSanitiser>();
-            _textSanitiser.Setup(x=>x.SanitiseInputText(It.IsAny<string>())).Returns<string>(x => x);
+            _textSanitiser.Setup(x => x.SanitiseInputText(It.IsAny<string>())).Returns<string>(x => x);
             _auditLogService = new Mock<IAuditLogService>();
             _auditLogService.Setup(x => x.CreateAuditData(It.IsAny<Guid>(), It.IsAny<string>()))
                 .Returns(new AuditData { FieldChanges = new List<AuditLogEntry>() });
@@ -48,18 +48,19 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
         }
 
         [Test]
-        public void Handler_does_not_update_database_if_legal_name_invalid()
+        public async Task Handler_does_not_update_database_if_legal_name_invalid()
         {
             _validator.Setup(x => x.IsValidLegalName(It.IsAny<string>())).Returns(false);
 
             var request = new UpdateOrganisationLegalNameRequest
             {
-                LegalName = "legal name %%%%", OrganisationId = Guid.NewGuid(), UpdatedBy = "unit test"
+                LegalName = "legal name %%%%",
+                OrganisationId = Guid.NewGuid(),
+                UpdatedBy = "unit test"
             };
 
-            Func<Task> result = async () => await
-                _handler.Handle(request, new CancellationToken());
-            result.Should().Throw<BadRequestException>();
+            Func<Task> result = () => _handler.Handle(request, new CancellationToken());
+            await result.Should().ThrowAsync<BadRequestException>();
 
             _auditLogService.Verify(x => x.AuditLegalName(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
             _updateRepository.Verify(x => x.UpdateLegalName(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
@@ -75,7 +76,7 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
                 OrganisationId = Guid.NewGuid(),
                 UpdatedBy = "unit test"
             };
-            
+
             var result = _handler.Handle(request, new CancellationToken()).GetAwaiter().GetResult();
             result.Should().BeFalse();
 
@@ -88,7 +89,7 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
         public void Handler_does_not_write_audit_log_entry_if_save_operation_fails()
         {
             _updateRepository.Setup(x => x.UpdateLegalName(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(false).Verifiable();
-            
+
             var request = new UpdateOrganisationLegalNameRequest
             {
                 LegalName = "new legal name",
@@ -108,7 +109,7 @@ namespace SFA.DAS.RoATPService.Application.UnitTests
             _updateRepository.Verify(x => x.UpdateLegalName(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
             _updateRepository.Verify(x => x.WriteFieldChangesToAuditLog(It.IsAny<AuditData>()), Times.Never);
         }
-        
+
         [Test]
         public void Handler_writes_updated_legal_name_and_audit_log_entry_to_database()
         {
