@@ -10,6 +10,7 @@ namespace SFA.DAS.RoATPService.Application.AppStart;
 
 public static class AddAuthenticationExtension
 {
+    public const string RoATPServiceInternalAPI = "RoATPServiceInternalAPI";
     public static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         if (!configuration.IsLocalEnvironment())
@@ -21,6 +22,7 @@ public static class AddAuthenticationExtension
             var policies = new Dictionary<string, string>
             {
                 {PolicyNames.Default, PolicyNames.Default},
+                {RoATPServiceInternalAPI, RoATPServiceInternalAPI},
             };
 
             services.AddAuthentication(azureAdConfiguration, policies);
