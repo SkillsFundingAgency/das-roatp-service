@@ -21,6 +21,7 @@ builder.Services
     .AddOptions()
     .AddLogging()
     .AddApplicationInsightsTelemetry()
+    .AddOpenTelemetry(_configuration)
     .AddTelemetryNotFoundAsSuccessfulResponse()
     .AddServiceRegistrations(_configuration)
     .AddEndpointsApiExplorer()
