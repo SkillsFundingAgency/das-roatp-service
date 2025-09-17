@@ -6,3 +6,4 @@
 :r .\AddProviderTypeOrganisationStatus.sql
 :r .\AddOrganisationCategory.sql
 :r .\AddOrganisationCategoryOrgTypeProviderType.sql
+:r .\AddCourseTypes.sql
