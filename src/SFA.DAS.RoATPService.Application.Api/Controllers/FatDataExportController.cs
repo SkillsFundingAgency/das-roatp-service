@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using SFA.DAS.RoATPService.Application.Interfaces;
-using SFA.DAS.RoATPService.Domain.Models.FatDataExport;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using SFA.DAS.RoATPService.Application.Interfaces;
+using SFA.DAS.RoATPService.Domain.Models.FatDataExport;
 
 namespace SFA.DAS.RoATPService.Application.Api.Controllers;
 
@@ -18,7 +18,7 @@ public class FatDataExportController(ILogger<FatDataExportController> _logger, I
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
     public async Task<IActionResult> DataExport()
     {
-        _logger.LogInformation($"Received request for FAT data export");
+        _logger.LogInformation("Received request to get providers data for FAT");
 
         try
         {
@@ -27,8 +27,7 @@ public class FatDataExportController(ILogger<FatDataExportController> _logger, I
         }
         catch (Exception ex)
         {
-            _logger.LogInformation(
-                $"Could not generate FAT data export due to : {ex.Message}");
+            _logger.LogError(ex, "Could not generate FAT data export due to : {ErrorMessage}", ex.Message);
             return BadRequest();
         }
     }
