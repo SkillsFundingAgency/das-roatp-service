@@ -36,10 +36,6 @@ builder.Services.AddMvc(options =>
     {
         options.Filters.Add(new AllowAnonymousFilter());
     }
-    //else
-    //{
-    //    options.Filters.Add(new AuthorizeFilter("RoATPServiceInternalAPI"));
-    //}
 });
 
 var app = builder.Build();

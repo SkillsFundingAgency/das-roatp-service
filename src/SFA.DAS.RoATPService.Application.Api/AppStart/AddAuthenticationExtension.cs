@@ -16,42 +16,23 @@ public static class AddAuthenticationExtension
         if (!configuration.IsLocalEnvironment())
         {
             var apiAuthentication = configuration.GetSection("ApiAuthentication").Get<ApiAuthentication>();
-            AddOldStyleAuthentication(services, apiAuthentication);
-
-            //var azureAdConfiguration = configuration
-            //    .GetSection("AzureAd")
-            //    .Get<AzureActiveDirectoryConfiguration>()!;
-
-            //var policies = new Dictionary<string, string>
-            //{
-            //    {PolicyNames.Default, PolicyNames.Default},
-            //    {RoATPServiceInternalAPI, RoATPServiceInternalAPI},
-            //};
-
-            //services.AddAuthentication(azureAdConfiguration, policies);
+            services
+                .AddAuthentication(o => { o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme; })
+                .AddJwtBearer(o =>
+                {
+                    o.Authority = $"https://login.microsoftonline.com/{apiAuthentication.TenantId}";
+                    o.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                    {
+                        RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
+                        ValidAudiences = apiAuthentication.Audience.Split(',')
+                    };
+                    o.Events = new JwtBearerEvents()
+                    {
+                        OnTokenValidated = context => { return Task.FromResult(0); }
+                    };
+                });
         }
 
         return services;
     }
-
-    private static void AddOldStyleAuthentication(this IServiceCollection services, ApiAuthentication configuration)
-    {
-        services
-            .AddAuthentication(o => { o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme; })
-            .AddJwtBearer(o =>
-            {
-                o.Authority = $"https://login.microsoftonline.com/{configuration.TenantId}";
-                o.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-                {
-                    RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
-                    ValidAudiences = configuration.Audience.Split(',')
-                };
-                o.Events = new JwtBearerEvents()
-                {
-                    OnTokenValidated = context => { return Task.FromResult(0); }
-                };
-            });
-    }
 }
-
-
