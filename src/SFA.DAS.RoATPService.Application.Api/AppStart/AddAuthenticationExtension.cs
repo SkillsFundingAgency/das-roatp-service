@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SFA.DAS.Api.Common.AppStart;
-using SFA.DAS.Api.Common.Configuration;
-using SFA.DAS.Api.Common.Infrastructure;
 using SFA.DAS.RoATPService.Application.Api.Extensions;
 using SFA.DAS.RoATPService.Settings;
 
@@ -16,22 +13,22 @@ public static class AddAuthenticationExtension
     public const string RoATPServiceInternalAPI = "RoATPServiceInternalAPI";
     public static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
-        //var apiAuthentication = configuration.GetSection("ApiAuthentication").Get<ApiAuthentication>();
-        //AddOldStyleAuthentication(services, apiAuthentication);
         if (!configuration.IsLocalEnvironment())
         {
+            var apiAuthentication = configuration.GetSection("ApiAuthentication").Get<ApiAuthentication>();
+            AddOldStyleAuthentication(services, apiAuthentication);
 
-            var azureAdConfiguration = configuration
-                .GetSection("AzureAd")
-                .Get<AzureActiveDirectoryConfiguration>()!;
+            //var azureAdConfiguration = configuration
+            //    .GetSection("AzureAd")
+            //    .Get<AzureActiveDirectoryConfiguration>()!;
 
-            var policies = new Dictionary<string, string>
-            {
-                {PolicyNames.Default, PolicyNames.Default},
-                {RoATPServiceInternalAPI, RoATPServiceInternalAPI},
-            };
+            //var policies = new Dictionary<string, string>
+            //{
+            //    {PolicyNames.Default, PolicyNames.Default},
+            //    {RoATPServiceInternalAPI, RoATPServiceInternalAPI},
+            //};
 
-            services.AddAuthentication(azureAdConfiguration, policies);
+            //services.AddAuthentication(azureAdConfiguration, policies);
         }
 
         return services;
