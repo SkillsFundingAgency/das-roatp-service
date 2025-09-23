@@ -16,10 +16,10 @@ public static class AddAuthenticationExtension
     public const string RoATPServiceInternalAPI = "RoATPServiceInternalAPI";
     public static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
-        var apiAuthentication = configuration.GetSection("ApiAuthentication").Get<ApiAuthentication>();
+        //var apiAuthentication = configuration.GetSection("ApiAuthentication").Get<ApiAuthentication>();
+        //AddOldStyleAuthentication(services, apiAuthentication);
         if (!configuration.IsLocalEnvironment())
         {
-            AddOldStyleAuthentication(services, apiAuthentication);
 
             var azureAdConfiguration = configuration
                 .GetSection("AzureAd")

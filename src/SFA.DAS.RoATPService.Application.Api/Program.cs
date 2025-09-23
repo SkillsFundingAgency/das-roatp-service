@@ -38,7 +38,7 @@ builder.Services.AddMvc(options =>
     }
     else
     {
-        options.Conventions.Add(new AuthorizeControllerModelConvention([]));
+        options.Filters.Add(new AuthorizeFilter("RoATPServiceInternalAPI"));
     }
 });
 
