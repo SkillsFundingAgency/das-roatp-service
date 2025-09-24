@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +9,7 @@ using Microsoft.OpenApi.Models;
 using SFA.DAS.Api.Common.Infrastructure;
 using SFA.DAS.RoATPService.Application.Api.AppStart;
 using SFA.DAS.RoATPService.Application.Api.Extensions;
+using SFA.DAS.RoATPService.Application.Api.Infrastructure;
 using SFA.DAS.RoATPService.Application.Api.Middleware;
 using SFA.DAS.RoATPService.Application.AppStart;
 using SFA.DAS.Telemetry.Startup;
@@ -36,6 +38,13 @@ builder.Services.AddMvc(options =>
     {
         options.Filters.Add(new AllowAnonymousFilter());
     }
+    else
+    {
+        var policy = new AuthorizationPolicyBuilder()
+            .RequireRole(Roles.RoATPServiceInternalAPI)
+            .Build();
+        options.Filters.Add(new AuthorizeFilter(policy));
+    }
 });
 
 var app = builder.Build();
@@ -44,7 +53,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
-app.UseAuthentication();
+
+app.UseHttpsRedirection();
+app.UseRouting();
+
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
@@ -52,10 +64,10 @@ app.UseSwaggerUI(options =>
     options.RoutePrefix = string.Empty;
 });
 
-app.UseMiddleware(typeof(ErrorHandlingMiddleware));
+app.UseAuthentication();
+app.UseAuthorization();
 
-app.UseHttpsRedirection();
-app.UseRouting();
+app.UseMiddleware(typeof(ErrorHandlingMiddleware));
 
 app.UseHealthChecks("/health",
     new HealthCheckOptions
@@ -68,8 +80,6 @@ app.UseHealthChecks("/ping",
     {
         ResponseWriter = HealthCheckResponseWriter.WriteJsonResponse
     });
-
-app.UseAuthorization();
 
 if (_configuration.IsLocalEnvironment())
 {
