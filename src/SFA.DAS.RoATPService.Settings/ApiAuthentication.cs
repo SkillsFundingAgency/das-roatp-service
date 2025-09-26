@@ -1,15 +1,12 @@
-﻿namespace SFA.DAS.RoATPService.Settings
+﻿namespace SFA.DAS.RoATPService.Settings;
+
+public class ApiAuthentication : IApiAuthentication
 {
-    using Newtonsoft.Json;
+    public string ClientId { get; set; }
 
-    public class ApiAuthentication : IApiAuthentication
-    {
-        [JsonRequired] public string ClientId { get; set; }
+    public string Instance { get; set; }
 
-        [JsonRequired] public string Instance { get; set; }
+    public string TenantId { get; set; }
 
-        [JsonRequired] public string TenantId { get; set; }
-
-        [JsonRequired] public string Audience { get; set; }
-    }
+    public string Audience { get; set; }
 }

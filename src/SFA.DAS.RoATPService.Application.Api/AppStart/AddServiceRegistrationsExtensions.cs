@@ -83,6 +83,7 @@ public static class AddServiceRegistrationsExtensions
 
         WebConfiguration webConfiguration = new()
         {
+            ApiAuthentication = configuration.GetSection("ApiAuthentication").Get<ApiAuthentication>(),
             SqlConnectionString = configuration["SqlConnectionString"],
             SessionRedisConnectionString = configuration["SessionRedisConnectionString"],
             UkrlpApiAuthentication = configuration.GetSection("UkrlpApiAuthentication").Get<UkrlpApiAuthentication>()

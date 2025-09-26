@@ -1,10 +1,8 @@
-﻿using System.Text.Json.Serialization;
-
-namespace SFA.DAS.RoATPService.Settings;
+﻿namespace SFA.DAS.RoATPService.Settings;
 
 public class WebConfiguration
 {
-    [JsonRequired]
+    public ApiAuthentication ApiAuthentication { get; set; }
     public string SqlConnectionString { get; set; }
 
     public string SessionRedisConnectionString { get; set; }

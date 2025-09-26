@@ -17,7 +17,7 @@
     <ModelCollation>1033,CI</ModelCollation>
     <DefaultFileStructure>BySchemaType</DefaultFileStructure>
     <DeployToDatabase>True</DeployToDatabase>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <TargetLanguage>CS</TargetLanguage>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SqlServerVerification>False</SqlServerVerification>
@@ -25,6 +25,7 @@
     <TargetDatabaseSet>True</TargetDatabaseSet>
     <DefaultCollation>SQL_Latin1_General_CP1_CI_AS</DefaultCollation>
     <DefaultFilegroup>PRIMARY</DefaultFilegroup>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -62,6 +63,7 @@
     <Folder Include="Tables\" />
     <Folder Include="StoredProcedures" />
     <Folder Include="PostDeployment" />
+    <Folder Include="Scripts" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\OrganisationTypes.sql" />
@@ -79,6 +81,8 @@
     <Build Include="Tables\OrganisationCategoryOrgTypeProviderType.sql" />
     <Build Include="Tables\OrganisationStatusEvent.sql" />
     <Build Include="StoredProcedures\RoATP_FAT_Data_Export.sql" />
+    <Build Include="Tables\CourseTypes.sql" />
+    <Build Include="Tables\OrganisationCourseTypes.sql" />
     <PostDeploy Include="Script.PostDeployment1.sql" />
     <None Include="PostDeployment\AddLookupForOrganisationTypes.sql" />
     <None Include="PostDeployment\AddLookupForProviderTypes.sql" />
@@ -89,6 +93,8 @@
     <None Include="PostDeployment\AddRemovedReasons.sql" />
     <None Include="PostDeployment\MapProviderTypesToOrganisationTypes.sql" />
     <None Include="PostDeployment\UpdateTables.sql" />
+    <None Include="PostDeployment\AddCourseTypes.sql" />
+    <None Include="Scripts\AddApprenticeshipCourseTypeToMainAndEmployerProviders.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="SFA.DAS.RoATPService.Database.refactorlog" />

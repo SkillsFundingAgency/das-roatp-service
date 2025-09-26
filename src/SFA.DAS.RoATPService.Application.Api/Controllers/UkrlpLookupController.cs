@@ -1,92 +1,96 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
 using SFA.DAS.RoATPService.Api.Client.Interfaces;
 using SFA.DAS.RoATPService.Api.Client.Models.Ukrlp;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
 
-namespace SFA.DAS.RoATPService.Application.Api.Controllers
+namespace SFA.DAS.RoATPService.Application.Api.Controllers;
+
+[ApiController]
+[Route("api/v1/ukrlp")]
+public class UkrlpLookupController : ControllerBase
 {
-    [ApiController]
-    [Route("api/v1/ukrlp")]
-    public class UkrlpLookupController : ControllerBase
+    private readonly ILogger<UkrlpLookupController> _logger;
+
+    private readonly IUkrlpApiClient _apiClient;
+
+    private readonly AsyncRetryPolicy _retryPolicy;
+
+    public UkrlpLookupController(ILogger<UkrlpLookupController> logger, IUkrlpApiClient apiClient)
     {
-        private readonly ILogger<UkrlpLookupController> _logger;
+        _logger = logger;
+        _apiClient = apiClient;
+        _retryPolicy = GetRetryPolicy();
+    }
 
-        private readonly IUkrlpApiClient _apiClient;
+    [HttpGet]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UkprnLookupResponse))]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
+    [Route("lookup/{ukprn}")]
+    public async Task<IActionResult> UkrlpLookup(string ukprn)
+    {
+        UkprnLookupResponse providerData;
 
-        private readonly AsyncRetryPolicy _retryPolicy;
-
-        public UkrlpLookupController(ILogger<UkrlpLookupController> logger, IUkrlpApiClient apiClient)
+        long ukprnValue = Convert.ToInt64(ukprn);
+        try
         {
-            _logger = logger;
-            _apiClient = apiClient;
-            _retryPolicy = GetRetryPolicy();
+            providerData = await _retryPolicy.ExecuteAsync(context => _apiClient.GetTrainingProviderByUkprn(ukprnValue), new Context());
         }
-
-        [Route("lookup/{ukprn}")]
-        [HttpGet]
-        public async Task<IActionResult> UkrlpLookup(string ukprn)
+        catch (Exception ex)
         {
-            UkprnLookupResponse providerData;
-
-            long ukprnValue = Convert.ToInt64(ukprn);
-            try
+            _logger.LogError(ex, "Unable to retrieve results from UKRLP");
+            providerData = new UkprnLookupResponse
             {
-                providerData = await _retryPolicy.ExecuteAsync(context => _apiClient.GetTrainingProviderByUkprn(ukprnValue), new Context());
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unable to retrieve results from UKRLP");
-                providerData = new UkprnLookupResponse
-                {
-                    Success = false,
-                    Results = new List<ProviderDetails>()
-                };
-            }
-            return Ok(providerData);
+                Success = false,
+                Results = new List<ProviderDetails>()
+            };
         }
+        return Ok(providerData);
+    }
 
-        [Route("lookup/many")]
-        [HttpGet]
-        public async Task<IActionResult> UkrlpGetAll([FromQuery] List<long> ukprns)
+    [HttpGet]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UkprnLookupResponse))]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
+    [Route("lookup/many")]
+    public async Task<IActionResult> UkrlpGetAll([FromQuery] List<long> ukprns)
+    {
+        UkprnLookupResponse providerData;
+
+        try
         {
-            UkprnLookupResponse providerData;
-
-            try
-            {
-                providerData = await _retryPolicy.ExecuteAsync(context => _apiClient.GetListOfTrainingProviders(ukprns), new Context());
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unable to retrieve results from UKRLP");
-                providerData = new UkprnLookupResponse
-                {
-                    Success = false,
-                    Results = new List<ProviderDetails>()
-                };
-            }
-            return Ok(providerData);
+            providerData = await _retryPolicy.ExecuteAsync(context => _apiClient.GetListOfTrainingProviders(ukprns), new Context());
         }
-
-
-
-        private AsyncRetryPolicy GetRetryPolicy()
+        catch (Exception ex)
         {
-            return Policy
-                .Handle<Exception>()
-                .WaitAndRetryAsync(new[]
-                {
-                    TimeSpan.FromSeconds(1),
-                    TimeSpan.FromSeconds(2),
-                    TimeSpan.FromSeconds(4)
-                }, (exception, timeSpan, retryCount, context) =>
-                {
-                    _logger.LogWarning("Error retrieving response from UKRLP. Reason: {ErrorMessage}. Retrying in {Seconds} secs...attempt: {RetryCount}", exception.Message, timeSpan.Seconds, retryCount);
-                });
+            _logger.LogError(ex, "Unable to retrieve results from UKRLP");
+            providerData = new UkprnLookupResponse
+            {
+                Success = false,
+                Results = new List<ProviderDetails>()
+            };
         }
+        return Ok(providerData);
+    }
+
+
+
+    private AsyncRetryPolicy GetRetryPolicy()
+    {
+        return Policy
+            .Handle<Exception>()
+            .WaitAndRetryAsync(new[]
+            {
+                TimeSpan.FromSeconds(1),
+                TimeSpan.FromSeconds(2),
+                TimeSpan.FromSeconds(4)
+            }, (exception, timeSpan, retryCount, context) =>
+            {
+                _logger.LogWarning("Error retrieving response from UKRLP. Reason: {ErrorMessage}. Retrying in {Seconds} secs...attempt: {RetryCount}", exception.Message, timeSpan.Seconds, retryCount);
+            });
     }
 }
