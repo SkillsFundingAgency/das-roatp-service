@@ -12,11 +12,12 @@
         <PackageReference Include="nunit" Version="3.14.0" />
         <PackageReference Include="NUnit3TestAdapter" Version="5.1.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+        <PackageReference Include="SFA.DAS.Testing.AutoFixture" Version="17.1.146" />
     </ItemGroup>
 
   <!-- Transitive Package References -->
   <ItemGroup>
-    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1"/>
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
   </ItemGroup>
 
 

@@ -6,476 +6,475 @@ using KellermanSoftware.CompareNetObjects;
 using SFA.DAS.RoATPService.Application.Commands;
 using SFA.DAS.RoATPService.Application.Interfaces;
 using SFA.DAS.RoATPService.Domain;
-using SFA.DAS.RoATPService.Settings;
+using SFA.DAS.RoATPService.Domain.Configuration;
 
-namespace SFA.DAS.RoATPService.Application.Services
+namespace SFA.DAS.RoATPService.Application.Services;
+
+public class AuditLogService : IAuditLogService
 {
-    public class AuditLogService : IAuditLogService
+    private readonly RegisterAuditLogSettings _settings;
+    private readonly IOrganisationRepository _organisationRepository;
+    private readonly ILookupDataRepository _lookupDataRepository;
+    private readonly IOrganisationStatusManager _organisationStatusManager;
+    public AuditLogService(RegisterAuditLogSettings settings, IOrganisationRepository organisationRepository, ILookupDataRepository lookupDataRepository, IOrganisationStatusManager organisationStatusManager)
     {
-        private readonly RegisterAuditLogSettings _settings;
-        private readonly IOrganisationRepository _organisationRepository;
-        private readonly ILookupDataRepository _lookupDataRepository;
-        private readonly IOrganisationStatusManager _organisationStatusManager;
-        public AuditLogService(RegisterAuditLogSettings settings, IOrganisationRepository organisationRepository, ILookupDataRepository lookupDataRepository, IOrganisationStatusManager organisationStatusManager)
+        _settings = settings;
+        _organisationRepository = organisationRepository;
+        _lookupDataRepository = lookupDataRepository;
+        _organisationStatusManager = organisationStatusManager;
+    }
+
+    public async Task<AuditData> BuildListOfFieldsChanged(Organisation originalOrganisation, Organisation updatedOrganisation)
+    {
+        CompareLogic organisationComparison = new(new ComparisonConfig
         {
-            _settings = settings;
-            _organisationRepository = organisationRepository;
-            _lookupDataRepository = lookupDataRepository;
-            _organisationStatusManager = organisationStatusManager;
-        }
+            CompareChildren = true,
+            MaxDifferences = byte.MaxValue
+        });
 
-        public async Task<AuditData> BuildListOfFieldsChanged(Organisation originalOrganisation, Organisation updatedOrganisation)
+        ComparisonResult comparisonResult = organisationComparison.Compare(originalOrganisation, updatedOrganisation);
+
+        var updatedAt = updatedOrganisation.UpdatedAt ?? DateTime.Now;
+        var updatedBy = string.IsNullOrWhiteSpace(updatedOrganisation.UpdatedBy) ? "System" : updatedOrganisation.UpdatedBy;
+
+        var auditData = new AuditData
         {
-            CompareLogic organisationComparison = new(new ComparisonConfig
+            OrganisationId = updatedOrganisation.Id,
+            UpdatedAt = updatedAt,
+            UpdatedBy = updatedBy
+        };
+
+        List<AuditLogEntry> auditLogEntries = [];
+        foreach (var difference in comparisonResult.Differences)
+        {
+            if (_settings.IgnoredFields.Contains(difference.PropertyName))
             {
-                CompareChildren = true,
-                MaxDifferences = byte.MaxValue
-            });
-
-            ComparisonResult comparisonResult = organisationComparison.Compare(originalOrganisation, updatedOrganisation);
-
-            var updatedAt = updatedOrganisation.UpdatedAt ?? DateTime.Now;
-            var updatedBy = string.IsNullOrWhiteSpace(updatedOrganisation.UpdatedBy) ? "System" : updatedOrganisation.UpdatedBy;
-
-            var auditData = new AuditData
-            {
-                OrganisationId = updatedOrganisation.Id,
-                UpdatedAt = updatedAt,
-                UpdatedBy = updatedBy
-            };
-
-            List<AuditLogEntry> auditLogEntries = [];
-            foreach (var difference in comparisonResult.Differences)
-            {
-                if (_settings.IgnoredFields.Contains(difference.PropertyName))
-                {
-                    continue;
-                }
-
-                string propertyName = difference.PropertyName;
-
-                AuditLogDisplayName displayNameForProperty = Enumerable.FirstOrDefault<AuditLogDisplayName>(_settings.DisplayNames, x => x.FieldName == propertyName);
-
-                if (displayNameForProperty != null)
-                {
-                    propertyName = displayNameForProperty.DisplayName;
-                }
-
-                if (!updatedOrganisation.UpdatedAt.HasValue)
-                {
-                    updatedOrganisation.UpdatedAt = DateTime.Now;
-                }
-
-                if (String.IsNullOrWhiteSpace(updatedOrganisation.UpdatedBy))
-                {
-                    updatedOrganisation.UpdatedBy = "System";
-                }
-
-                AuditLogEntry entry = new()
-                {
-                    FieldChanged = propertyName,
-                    PreviousValue = difference.Object1Value,
-                    NewValue = difference.Object2Value
-                };
-                auditLogEntries.Add(entry);
-
+                continue;
             }
-            auditData.FieldChanges = auditLogEntries;
 
-            return await Task.FromResult(auditData);
-        }
+            string propertyName = difference.PropertyName;
 
-        public AuditData CreateAuditLogEntry(Guid organisationId, string updatedBy, string fieldName, string oldValue,
-            string newValue)
-        {
-            return new AuditData
+            AuditLogDisplayName displayNameForProperty = Enumerable.FirstOrDefault<AuditLogDisplayName>(_settings.DisplayNames, x => x.FieldName == propertyName);
+
+            if (displayNameForProperty != null)
             {
-                OrganisationId = organisationId,
-                UpdatedAt = DateTime.Now,
-                UpdatedBy = updatedBy,
-                FieldChanges = [
-                    new AuditLogEntry
-                    {
-                        FieldChanged = fieldName,
-                        NewValue = newValue,
-                        PreviousValue = oldValue
-                    }
-                ]
-            };
-        }
+                propertyName = displayNameForProperty.DisplayName;
+            }
 
-        public AuditData CreateAuditData(Guid organisationId, string updatedBy)
-        {
-            return new AuditData
+            if (!updatedOrganisation.UpdatedAt.HasValue)
             {
-                FieldChanges = [],
-                OrganisationId = organisationId,
-                UpdatedAt = DateTime.Now,
-                UpdatedBy = updatedBy
-            };
-        }
+                updatedOrganisation.UpdatedAt = DateTime.Now;
+            }
 
-        public void AddAuditEntry(AuditData auditData, string fieldChanged, string previousValue, string newValue)
+            if (String.IsNullOrWhiteSpace(updatedOrganisation.UpdatedBy))
+            {
+                updatedOrganisation.UpdatedBy = "System";
+            }
+
+            AuditLogEntry entry = new()
+            {
+                FieldChanged = propertyName,
+                PreviousValue = difference.Object1Value,
+                NewValue = difference.Object2Value
+            };
+            auditLogEntries.Add(entry);
+
+        }
+        auditData.FieldChanges = auditLogEntries;
+
+        return await Task.FromResult(auditData);
+    }
+
+    public AuditData CreateAuditLogEntry(Guid organisationId, string updatedBy, string fieldName, string oldValue,
+        string newValue)
+    {
+        return new AuditData
+        {
+            OrganisationId = organisationId,
+            UpdatedAt = DateTime.Now,
+            UpdatedBy = updatedBy,
+            FieldChanges = [
+                new AuditLogEntry
+                {
+                    FieldChanged = fieldName,
+                    NewValue = newValue,
+                    PreviousValue = oldValue
+                }
+            ]
+        };
+    }
+
+    public AuditData CreateAuditData(Guid organisationId, string updatedBy)
+    {
+        return new AuditData
+        {
+            FieldChanges = [],
+            OrganisationId = organisationId,
+            UpdatedAt = DateTime.Now,
+            UpdatedBy = updatedBy
+        };
+    }
+
+    public void AddAuditEntry(AuditData auditData, string fieldChanged, string previousValue, string newValue)
+    {
+        var entry = new AuditLogEntry
+        {
+            FieldChanged = fieldChanged,
+            PreviousValue = previousValue,
+            NewValue = newValue
+        };
+
+        auditData.FieldChanges.Add(entry);
+    }
+
+    public AuditData AuditFinancialTrackRecord(Guid organisationId, string updatedBy,
+        bool newFinancialTrackRecord)
+    {
+        var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+
+        var previousFinancialTrackRecord = _organisationRepository.GetFinancialTrackRecord(organisationId).Result;
+
+        if (previousFinancialTrackRecord != newFinancialTrackRecord)
         {
             var entry = new AuditLogEntry
             {
-                FieldChanged = fieldChanged,
-                PreviousValue = previousValue,
-                NewValue = newValue
+                FieldChanged = AuditLogField.FinancialTrackRecord,
+                PreviousValue = previousFinancialTrackRecord.ToString(),
+                NewValue = newFinancialTrackRecord.ToString()
             };
-
             auditData.FieldChanges.Add(entry);
         }
 
-        public AuditData AuditFinancialTrackRecord(Guid organisationId, string updatedBy,
-            bool newFinancialTrackRecord)
+        return auditData;
+    }
+
+    public AuditData AuditParentCompanyGuarantee(Guid organisationId, string updatedBy, bool newParentCompanyGuarantee)
+    {
+        var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+        var previousParentCompanyGuarantee = _organisationRepository.GetParentCompanyGuarantee(organisationId).Result;
+        if (previousParentCompanyGuarantee != newParentCompanyGuarantee)
         {
-            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
-
-            var previousFinancialTrackRecord = _organisationRepository.GetFinancialTrackRecord(organisationId).Result;
-
-            if (previousFinancialTrackRecord != newFinancialTrackRecord)
+            var entry = new AuditLogEntry
             {
-                var entry = new AuditLogEntry
-                {
-                    FieldChanged = AuditLogField.FinancialTrackRecord,
-                    PreviousValue = previousFinancialTrackRecord.ToString(),
-                    NewValue = newFinancialTrackRecord.ToString()
-                };
-                auditData.FieldChanges.Add(entry);
-            }
+                FieldChanged = AuditLogField.ParentCompanyGuarantee,
+                PreviousValue = previousParentCompanyGuarantee.ToString(),
+                NewValue = newParentCompanyGuarantee.ToString()
+            };
+            auditData.FieldChanges.Add(entry);
+        }
+        return auditData;
+    }
 
-            return auditData;
+    public AuditData AuditLegalName(Guid organisationId, string updatedBy, string newLegalName)
+    {
+        var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+        var previousLegalName = _organisationRepository.GetLegalName(organisationId).Result;
+        if (newLegalName != previousLegalName)
+        {
+            var entry = new AuditLogEntry
+            {
+                FieldChanged = AuditLogField.LegalName,
+                PreviousValue = previousLegalName,
+                NewValue = newLegalName
+            };
+            auditData.FieldChanges.Add(entry);
+        }
+        return auditData;
+    }
+
+    public AuditData AuditTradingName(Guid organisationId, string updatedBy, string newTradingName)
+    {
+        var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+        var previousTradingName = _organisationRepository.GetTradingName(organisationId).Result;
+
+        if ((!(string.IsNullOrWhiteSpace(previousTradingName) && string.IsNullOrWhiteSpace(newTradingName))) && newTradingName != previousTradingName)
+        {
+            var entry = new AuditLogEntry
+            {
+                FieldChanged = AuditLogField.TradingName,
+                PreviousValue = previousTradingName,
+                NewValue = newTradingName
+            };
+            auditData.FieldChanges.Add(entry);
+        }
+        return auditData;
+    }
+
+    public AuditData AuditUkprn(Guid organisationId, string updatedBy, long newUkprn)
+    {
+        var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+        var previousUkprn = _organisationRepository.GetUkprn(organisationId).Result;
+
+        if (previousUkprn != newUkprn)
+        {
+            var entry = new AuditLogEntry
+            {
+                FieldChanged = AuditLogField.Ukprn,
+                PreviousValue = previousUkprn.ToString(),
+                NewValue = newUkprn.ToString()
+            };
+            auditData.FieldChanges.Add(entry);
+        }
+        return auditData;
+    }
+
+    public AuditData AuditCompanyNumber(Guid organisationId, string updatedBy, string companyNumber)
+    {
+        var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+        var previousCompanyNumber = _organisationRepository.GetCompanyNumber(organisationId).Result;
+
+        if (previousCompanyNumber != companyNumber)
+        {
+            var entry = new AuditLogEntry
+            {
+                FieldChanged = AuditLogField.CompanyNumber,
+                PreviousValue = previousCompanyNumber,
+                NewValue = companyNumber
+            };
+            auditData.FieldChanges.Add(entry);
+        }
+        return auditData;
+    }
+
+    public AuditData AuditOrganisationType(Guid organisationId, string updatedBy, int newOrganisationTypeId)
+    {
+        var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+        var previousOrganisationTypeId = _organisationRepository.GetOrganisationType(organisationId).Result;
+        var organisationTypes = _lookupDataRepository.GetOrganisationTypes().Result.ToList();
+        var newOrganisationType = organisationTypes.Find(x => x.Id == newOrganisationTypeId)?.Type ?? "Not set";
+        var previousOrganisationType = organisationTypes.Find(x => x.Id == previousOrganisationTypeId)?.Type ?? "Not set";
+
+        if (previousOrganisationTypeId != newOrganisationTypeId)
+        {
+            var entry = new AuditLogEntry
+            {
+                FieldChanged = AuditLogField.OrganisationType,
+                PreviousValue = previousOrganisationType,
+                NewValue = newOrganisationType
+            };
+            auditData.FieldChanges.Add(entry);
         }
 
-        public AuditData AuditParentCompanyGuarantee(Guid organisationId, string updatedBy, bool newParentCompanyGuarantee)
+        return auditData;
+    }
+
+    public AuditData AuditCharityNumber(Guid organisationId, string updatedBy, string charityNumber)
+    {
+        var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+        var previousCharityNumber = _organisationRepository.GetCharityNumber(organisationId).Result;
+
+        if (previousCharityNumber != charityNumber)
         {
-            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
-            var previousParentCompanyGuarantee = _organisationRepository.GetParentCompanyGuarantee(organisationId).Result;
-            if (previousParentCompanyGuarantee != newParentCompanyGuarantee)
+            var entry = new AuditLogEntry
             {
-                var entry = new AuditLogEntry
-                {
-                    FieldChanged = AuditLogField.ParentCompanyGuarantee,
-                    PreviousValue = previousParentCompanyGuarantee.ToString(),
-                    NewValue = newParentCompanyGuarantee.ToString()
-                };
-                auditData.FieldChanges.Add(entry);
-            }
-            return auditData;
+                FieldChanged = AuditLogField.CharityNumber,
+                PreviousValue = previousCharityNumber,
+                NewValue = charityNumber
+            };
+            auditData.FieldChanges.Add(entry);
+        }
+        return auditData;
+    }
+
+    public AuditData AuditApplicationDeterminedDate(Guid organisationId, string updatedBy, DateTime applicationDeterminedDate)
+    {
+        var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+        var previousApplicationDeterminedDate = _organisationRepository.GetApplicationDeterminedDate(organisationId).Result;
+
+        if (previousApplicationDeterminedDate != applicationDeterminedDate)
+        {
+            var entry = new AuditLogEntry
+            {
+                FieldChanged = AuditLogField.ApplicationDeterminedDate,
+                PreviousValue = previousApplicationDeterminedDate?.ToShortDateString(),
+                NewValue = applicationDeterminedDate.ToShortDateString()
+            };
+            auditData.FieldChanges.Add(entry);
+        }
+        return auditData;
+    }
+
+    public AuditData AuditOrganisation(UpdateOrganisationCommand command)
+    {
+        var auditChanges = new List<AuditData>();
+        var auditChangesMade = AuditLegalName(command.OrganisationId, command.Username, command.LegalName);
+
+        if (auditChangesMade.ChangesMade)
+        {
+            auditChanges.Add(auditChangesMade);
         }
 
-        public AuditData AuditLegalName(Guid organisationId, string updatedBy, string newLegalName)
+        auditChangesMade = AuditTradingName(command.OrganisationId, command.Username, command.TradingName);
+        if (auditChangesMade.ChangesMade)
+            auditChanges.Add(auditChangesMade);
+
+        auditChangesMade = AuditProviderType(command.OrganisationId, command.Username,
+            command.ProviderTypeId, command.OrganisationTypeId);
+        if (auditChangesMade.ChangesMade)
+            auditChanges.Add(auditChangesMade);
+
+        auditChangesMade = AuditCompanyNumber(command.OrganisationId, command.Username, command.CompanyNumber);
+        if (auditChangesMade.ChangesMade)
+            auditChanges.Add(auditChangesMade);
+
+        auditChangesMade = AuditCharityNumber(command.OrganisationId, command.Username, command.CharityNumber);
+        if (auditChangesMade.ChangesMade)
+            auditChanges.Add(auditChangesMade);
+
+        auditChangesMade = AuditApplicationDeterminedDate(command.OrganisationId, command.Username,
+            command.ApplicationDeterminedDate);
+        if (auditChangesMade.ChangesMade)
+            auditChanges.Add(auditChangesMade);
+
+        var auditDetailsReturned = new AuditData { FieldChanges = [] };
+        if (auditChanges.Count != 0)
         {
-            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
-            var previousLegalName = _organisationRepository.GetLegalName(organisationId).Result;
-            if (newLegalName != previousLegalName)
+            auditDetailsReturned.OrganisationId = command.OrganisationId;
+            auditDetailsReturned.UpdatedAt = DateTime.Now;
+            auditDetailsReturned.UpdatedBy = command.Username;
+
+            foreach (var auditChange in auditChanges)
             {
-                var entry = new AuditLogEntry
+                foreach (var fieldChange in auditChange.FieldChanges)
                 {
-                    FieldChanged = AuditLogField.LegalName,
-                    PreviousValue = previousLegalName,
-                    NewValue = newLegalName
-                };
-                auditData.FieldChanges.Add(entry);
-            }
-            return auditData;
-        }
-
-        public AuditData AuditTradingName(Guid organisationId, string updatedBy, string newTradingName)
-        {
-            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
-            var previousTradingName = _organisationRepository.GetTradingName(organisationId).Result;
-
-            if ((!(string.IsNullOrWhiteSpace(previousTradingName) && string.IsNullOrWhiteSpace(newTradingName))) && newTradingName != previousTradingName)
-            {
-                var entry = new AuditLogEntry
-                {
-                    FieldChanged = AuditLogField.TradingName,
-                    PreviousValue = previousTradingName,
-                    NewValue = newTradingName
-                };
-                auditData.FieldChanges.Add(entry);
-            }
-            return auditData;
-        }
-
-        public AuditData AuditUkprn(Guid organisationId, string updatedBy, long newUkprn)
-        {
-            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
-            var previousUkprn = _organisationRepository.GetUkprn(organisationId).Result;
-
-            if (previousUkprn != newUkprn)
-            {
-                var entry = new AuditLogEntry
-                {
-                    FieldChanged = AuditLogField.Ukprn,
-                    PreviousValue = previousUkprn.ToString(),
-                    NewValue = newUkprn.ToString()
-                };
-                auditData.FieldChanges.Add(entry);
-            }
-            return auditData;
-        }
-
-        public AuditData AuditCompanyNumber(Guid organisationId, string updatedBy, string companyNumber)
-        {
-            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
-            var previousCompanyNumber = _organisationRepository.GetCompanyNumber(organisationId).Result;
-
-            if (previousCompanyNumber != companyNumber)
-            {
-                var entry = new AuditLogEntry
-                {
-                    FieldChanged = AuditLogField.CompanyNumber,
-                    PreviousValue = previousCompanyNumber,
-                    NewValue = companyNumber
-                };
-                auditData.FieldChanges.Add(entry);
-            }
-            return auditData;
-        }
-
-        public AuditData AuditOrganisationType(Guid organisationId, string updatedBy, int newOrganisationTypeId)
-        {
-            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
-            var previousOrganisationTypeId = _organisationRepository.GetOrganisationType(organisationId).Result;
-            var organisationTypes = _lookupDataRepository.GetOrganisationTypes().Result.ToList();
-            var newOrganisationType = organisationTypes.Find(x => x.Id == newOrganisationTypeId)?.Type ?? "Not set";
-            var previousOrganisationType = organisationTypes.Find(x => x.Id == previousOrganisationTypeId)?.Type ?? "Not set";
-
-            if (previousOrganisationTypeId != newOrganisationTypeId)
-            {
-                var entry = new AuditLogEntry
-                {
-                    FieldChanged = AuditLogField.OrganisationType,
-                    PreviousValue = previousOrganisationType,
-                    NewValue = newOrganisationType
-                };
-                auditData.FieldChanges.Add(entry);
-            }
-
-            return auditData;
-        }
-
-        public AuditData AuditCharityNumber(Guid organisationId, string updatedBy, string charityNumber)
-        {
-            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
-            var previousCharityNumber = _organisationRepository.GetCharityNumber(organisationId).Result;
-
-            if (previousCharityNumber != charityNumber)
-            {
-                var entry = new AuditLogEntry
-                {
-                    FieldChanged = AuditLogField.CharityNumber,
-                    PreviousValue = previousCharityNumber,
-                    NewValue = charityNumber
-                };
-                auditData.FieldChanges.Add(entry);
-            }
-            return auditData;
-        }
-
-        public AuditData AuditApplicationDeterminedDate(Guid organisationId, string updatedBy, DateTime applicationDeterminedDate)
-        {
-            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
-            var previousApplicationDeterminedDate = _organisationRepository.GetApplicationDeterminedDate(organisationId).Result;
-
-            if (previousApplicationDeterminedDate != applicationDeterminedDate)
-            {
-                var entry = new AuditLogEntry
-                {
-                    FieldChanged = AuditLogField.ApplicationDeterminedDate,
-                    PreviousValue = previousApplicationDeterminedDate?.ToShortDateString(),
-                    NewValue = applicationDeterminedDate.ToShortDateString()
-                };
-                auditData.FieldChanges.Add(entry);
-            }
-            return auditData;
-        }
-
-        public AuditData AuditOrganisation(UpdateOrganisationCommand command)
-        {
-            var auditChanges = new List<AuditData>();
-            var auditChangesMade = AuditLegalName(command.OrganisationId, command.Username, command.LegalName);
-
-            if (auditChangesMade.ChangesMade)
-            {
-                auditChanges.Add(auditChangesMade);
-            }
-
-            auditChangesMade = AuditTradingName(command.OrganisationId, command.Username, command.TradingName);
-            if (auditChangesMade.ChangesMade)
-                auditChanges.Add(auditChangesMade);
-
-            auditChangesMade = AuditProviderType(command.OrganisationId, command.Username,
-                command.ProviderTypeId, command.OrganisationTypeId);
-            if (auditChangesMade.ChangesMade)
-                auditChanges.Add(auditChangesMade);
-
-            auditChangesMade = AuditCompanyNumber(command.OrganisationId, command.Username, command.CompanyNumber);
-            if (auditChangesMade.ChangesMade)
-                auditChanges.Add(auditChangesMade);
-
-            auditChangesMade = AuditCharityNumber(command.OrganisationId, command.Username, command.CharityNumber);
-            if (auditChangesMade.ChangesMade)
-                auditChanges.Add(auditChangesMade);
-
-            auditChangesMade = AuditApplicationDeterminedDate(command.OrganisationId, command.Username,
-                command.ApplicationDeterminedDate);
-            if (auditChangesMade.ChangesMade)
-                auditChanges.Add(auditChangesMade);
-
-            var auditDetailsReturned = new AuditData { FieldChanges = [] };
-            if (auditChanges.Count != 0)
-            {
-                auditDetailsReturned.OrganisationId = command.OrganisationId;
-                auditDetailsReturned.UpdatedAt = DateTime.Now;
-                auditDetailsReturned.UpdatedBy = command.Username;
-
-                foreach (var auditChange in auditChanges)
-                {
-                    foreach (var fieldChange in auditChange.FieldChanges)
-                    {
-                        auditDetailsReturned.FieldChanges.Add(fieldChange);
-                    }
+                    auditDetailsReturned.FieldChanges.Add(fieldChange);
                 }
-
-                return auditDetailsReturned;
             }
 
-            return null;
+            return auditDetailsReturned;
         }
 
-        public AuditData AuditOrganisationStatus(Guid organisationId, string updatedBy, int newOrganisationStatusId, int? newRemovedReasonId)
+        return null;
+    }
+
+    public AuditData AuditOrganisationStatus(Guid organisationId, string updatedBy, int newOrganisationStatusId, int? newRemovedReasonId)
+    {
+        var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+
+        var existingStatusId = _organisationRepository.GetOrganisationStatus(organisationId).Result;
+        var existingRemovedReason = _organisationRepository.GetRemovedReason(organisationId).Result;
+        var newRemovedReason = _lookupDataRepository.GetRemovedReasons().Result.FirstOrDefault(x => x.Id == newRemovedReasonId);
+        var organisationStatuses = _lookupDataRepository.GetOrganisationStatuses().Result.ToList();
+        var newStartDate = DateTime.Today;
+        var existingStartDate = _organisationRepository.GetStartDate(organisationId).Result;
+
+        if (existingStatusId != newOrganisationStatusId)
         {
-            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
-
-            var existingStatusId = _organisationRepository.GetOrganisationStatus(organisationId).Result;
-            var existingRemovedReason = _organisationRepository.GetRemovedReason(organisationId).Result;
-            var newRemovedReason = _lookupDataRepository.GetRemovedReasons().Result.FirstOrDefault(x => x.Id == newRemovedReasonId);
-            var organisationStatuses = _lookupDataRepository.GetOrganisationStatuses().Result.ToList();
-            var newStartDate = DateTime.Today;
-            var existingStartDate = _organisationRepository.GetStartDate(organisationId).Result;
-
-            if (existingStatusId != newOrganisationStatusId)
+            var entry = new AuditLogEntry
             {
+                FieldChanged = AuditLogField.OrganisationStatus,
+                PreviousValue = organisationStatuses.Find(x => x.Id == existingStatusId)?.Status,
+                NewValue = organisationStatuses.Find(x => x.Id == newOrganisationStatusId)?.Status
+            };
+            auditData.FieldChanges.Add(entry);
+        }
+
+        if (existingRemovedReason != newRemovedReason || newRemovedReasonId.HasValue && newRemovedReasonId.Value != existingRemovedReason.Id)
+        {
+            var entry = new AuditLogEntry
+            {
+                FieldChanged = AuditLogField.RemovedReason,
+                PreviousValue = existingRemovedReason?.Reason ?? "Not set",
+                NewValue = newRemovedReason?.Reason ?? "Not set"
+            };
+            auditData.FieldChanges.Add(entry);
+        }
+
+        if (auditData.FieldChanges.Count != 0 && UpdateStartDateRequired(existingStatusId, newOrganisationStatusId, newStartDate, existingStartDate))
+        {
+            var entry = new AuditLogEntry
+            {
+                FieldChanged = AuditLogField.StartDate,
+                PreviousValue = existingStartDate?.ToShortDateString() ?? "Not set",
+                NewValue = newStartDate.ToShortDateString()
+            };
+            auditData.FieldChanges.Add(entry);
+        }
+
+        return auditData;
+    }
+
+    public AuditData AuditProviderType(Guid organisationId, string updatedBy, int newProviderTypeId, int newOrganisationTypeId)
+    {
+        var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
+
+        var previousProviderTypeId = _organisationRepository.GetProviderType(organisationId).Result;
+        var previousOrganisationTypeId = _organisationRepository.GetOrganisationType(organisationId).Result;
+        var previousOrganisationStatusId = _organisationRepository.GetOrganisationStatus(organisationId).Result;
+        var providerTypes = _lookupDataRepository.GetProviderTypes().Result.ToList();
+        var organisationTypes = _lookupDataRepository.GetOrganisationTypes().Result.ToList();
+        var organisationStatuses = _lookupDataRepository.GetOrganisationStatuses().Result.ToList();
+        var previousProviderType = providerTypes.Find(x => x.Id == previousProviderTypeId)?.Type ?? "not defined";
+        var newProviderType = providerTypes.Find(x => x.Id == newProviderTypeId)?.Type ?? "not defined";
+        var previousOrganisationType = organisationTypes.Find(x => x.Id == previousOrganisationTypeId)?.Type ?? "not defined";
+        var newOrganisationType = organisationTypes.Find(x => x.Id == newOrganisationTypeId)?.Type ?? "not defined";
+        var previousOrganisationStatus =
+            organisationStatuses.Find(x => x.Id == previousOrganisationStatusId)?.Status ?? "not defined";
+        var activeOrganisationStatus = organisationStatuses.Find(x => x.Id == OrganisationStatus.Active)?.Status ?? "not defined";
+        var previousStartDate = _organisationRepository.GetStartDate(organisationId).Result;
+
+        if (previousOrganisationTypeId != newOrganisationTypeId)
+        {
+            var entry = new AuditLogEntry
+            {
+                FieldChanged = AuditLogField.OrganisationType,
+                PreviousValue = previousOrganisationType,
+                NewValue = newOrganisationType
+            };
+            auditData.FieldChanges.Add(entry);
+        }
+
+        if (previousProviderTypeId != newProviderTypeId)
+        {
+            var entry = new AuditLogEntry
+            {
+                FieldChanged = AuditLogField.ProviderType,
+                PreviousValue = previousProviderType,
+                NewValue = newProviderType
+            };
+            auditData.FieldChanges.Add(entry);
+        }
+
+        var changeStatusToActiveAndSetStartDate =
+            _organisationStatusManager.ShouldChangeStatustoActiveAndSetStartDateToToday(newProviderTypeId, previousProviderTypeId, previousOrganisationStatusId);
+
+        if (changeStatusToActiveAndSetStartDate)
+        {
+            if (previousOrganisationStatusId != OrganisationStatus.Active)
+            {
+
                 var entry = new AuditLogEntry
                 {
                     FieldChanged = AuditLogField.OrganisationStatus,
-                    PreviousValue = organisationStatuses.Find(x => x.Id == existingStatusId)?.Status,
-                    NewValue = organisationStatuses.Find(x => x.Id == newOrganisationStatusId)?.Status
+                    PreviousValue = previousOrganisationStatus,
+                    NewValue = activeOrganisationStatus
                 };
                 auditData.FieldChanges.Add(entry);
             }
 
-            if (existingRemovedReason != newRemovedReason || newRemovedReasonId.HasValue && newRemovedReasonId.Value != existingRemovedReason.Id)
-            {
-                var entry = new AuditLogEntry
-                {
-                    FieldChanged = AuditLogField.RemovedReason,
-                    PreviousValue = existingRemovedReason?.Reason ?? "Not set",
-                    NewValue = newRemovedReason?.Reason ?? "Not set"
-                };
-                auditData.FieldChanges.Add(entry);
-            }
-
-            if (auditData.FieldChanges.Count != 0 && UpdateStartDateRequired(existingStatusId, newOrganisationStatusId, newStartDate, existingStartDate))
+            if (previousStartDate == null || previousStartDate.Value.Date != DateTime.Today.Date)
             {
                 var entry = new AuditLogEntry
                 {
                     FieldChanged = AuditLogField.StartDate,
-                    PreviousValue = existingStartDate?.ToShortDateString() ?? "Not set",
-                    NewValue = newStartDate.ToShortDateString()
+                    PreviousValue = previousStartDate?.ToShortDateString() ?? "Not set",
+                    NewValue = DateTime.Today.ToShortDateString()
                 };
                 auditData.FieldChanges.Add(entry);
             }
-
-            return auditData;
         }
+        return auditData;
+    }
 
-        public AuditData AuditProviderType(Guid organisationId, string updatedBy, int newProviderTypeId, int newOrganisationTypeId)
+    private static bool UpdateStartDateRequired(int oldStatusId, int newStatusId, DateTime newStartDate, DateTime? existingStartDate)
+    {
+        if ((oldStatusId == OrganisationStatus.Removed || oldStatusId == OrganisationStatus.Onboarding) &&
+            (newStatusId == OrganisationStatus.Active || newStatusId == OrganisationStatus.ActiveNotTakingOnApprentices)
+            && (!existingStartDate.HasValue || existingStartDate.Value.Date != newStartDate.Date))
         {
-            var auditData = new AuditData { FieldChanges = [], OrganisationId = organisationId, UpdatedAt = DateTime.Now, UpdatedBy = updatedBy };
-
-            var previousProviderTypeId = _organisationRepository.GetProviderType(organisationId).Result;
-            var previousOrganisationTypeId = _organisationRepository.GetOrganisationType(organisationId).Result;
-            var previousOrganisationStatusId = _organisationRepository.GetOrganisationStatus(organisationId).Result;
-            var providerTypes = _lookupDataRepository.GetProviderTypes().Result.ToList();
-            var organisationTypes = _lookupDataRepository.GetOrganisationTypes().Result.ToList();
-            var organisationStatuses = _lookupDataRepository.GetOrganisationStatuses().Result.ToList();
-            var previousProviderType = providerTypes.Find(x => x.Id == previousProviderTypeId)?.Type ?? "not defined";
-            var newProviderType = providerTypes.Find(x => x.Id == newProviderTypeId)?.Type ?? "not defined";
-            var previousOrganisationType = organisationTypes.Find(x => x.Id == previousOrganisationTypeId)?.Type ?? "not defined";
-            var newOrganisationType = organisationTypes.Find(x => x.Id == newOrganisationTypeId)?.Type ?? "not defined";
-            var previousOrganisationStatus =
-                organisationStatuses.Find(x => x.Id == previousOrganisationStatusId)?.Status ?? "not defined";
-            var activeOrganisationStatus = organisationStatuses.Find(x => x.Id == OrganisationStatus.Active)?.Status ?? "not defined";
-            var previousStartDate = _organisationRepository.GetStartDate(organisationId).Result;
-
-            if (previousOrganisationTypeId != newOrganisationTypeId)
-            {
-                var entry = new AuditLogEntry
-                {
-                    FieldChanged = AuditLogField.OrganisationType,
-                    PreviousValue = previousOrganisationType,
-                    NewValue = newOrganisationType
-                };
-                auditData.FieldChanges.Add(entry);
-            }
-
-            if (previousProviderTypeId != newProviderTypeId)
-            {
-                var entry = new AuditLogEntry
-                {
-                    FieldChanged = AuditLogField.ProviderType,
-                    PreviousValue = previousProviderType,
-                    NewValue = newProviderType
-                };
-                auditData.FieldChanges.Add(entry);
-            }
-
-            var changeStatusToActiveAndSetStartDate =
-                _organisationStatusManager.ShouldChangeStatustoActiveAndSetStartDateToToday(newProviderTypeId, previousProviderTypeId, previousOrganisationStatusId);
-
-            if (changeStatusToActiveAndSetStartDate)
-            {
-                if (previousOrganisationStatusId != OrganisationStatus.Active)
-                {
-
-                    var entry = new AuditLogEntry
-                    {
-                        FieldChanged = AuditLogField.OrganisationStatus,
-                        PreviousValue = previousOrganisationStatus,
-                        NewValue = activeOrganisationStatus
-                    };
-                    auditData.FieldChanges.Add(entry);
-                }
-
-                if (previousStartDate == null || previousStartDate.Value.Date != DateTime.Today.Date)
-                {
-                    var entry = new AuditLogEntry
-                    {
-                        FieldChanged = AuditLogField.StartDate,
-                        PreviousValue = previousStartDate?.ToShortDateString() ?? "Not set",
-                        NewValue = DateTime.Today.ToShortDateString()
-                    };
-                    auditData.FieldChanges.Add(entry);
-                }
-            }
-            return auditData;
+            return true;
         }
 
-        private static bool UpdateStartDateRequired(int oldStatusId, int newStatusId, DateTime newStartDate, DateTime? existingStartDate)
-        {
-            if ((oldStatusId == OrganisationStatus.Removed || oldStatusId == OrganisationStatus.Onboarding) &&
-                (newStatusId == OrganisationStatus.Active || newStatusId == OrganisationStatus.ActiveNotTakingOnApprentices)
-                && (!existingStartDate.HasValue || existingStartDate.Value.Date != newStartDate.Date))
-            {
-                return true;
-            }
-
-            return false;
-        }
+        return false;
     }
 }

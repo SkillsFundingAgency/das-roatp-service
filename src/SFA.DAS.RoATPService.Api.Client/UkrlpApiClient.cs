@@ -1,98 +1,100 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.Extensions.Logging;
+using SFA.DAS.RoATPService.Api.Client.Interfaces;
+using SFA.DAS.RoATPService.Api.Client.Models.Ukrlp;
+using SFA.DAS.RoATPService.Application.Api.Configuration;
 
-namespace SFA.DAS.RoATPService.Api.Client
+namespace SFA.DAS.RoATPService.Api.Client;
+
+public class UkrlpApiClient : IUkrlpApiClient
 {
-    using System.Collections.Generic;
-    using System.Net.Http;
-    using System.Text;
-    using System.Threading.Tasks;
-    using global::AutoMapper;
-    using Interfaces;
-    using Microsoft.Extensions.Logging;
-    using Models.Ukrlp;
-    using SFA.DAS.RoATPService.Settings;
+    private readonly ILogger<UkrlpApiClient> _logger;
 
-    public class UkrlpApiClient : IUkrlpApiClient
+    private readonly UkrlpApiAuthentication _config;
+
+    private readonly HttpClient _httpClient;
+
+    private readonly IUkrlpSoapSerializer _serializer;
+
+    public UkrlpApiClient(ILogger<UkrlpApiClient> logger, UkrlpApiAuthentication config, HttpClient httpClient, IUkrlpSoapSerializer serializer)
     {
-        private readonly ILogger<UkrlpApiClient> _logger;
+        _logger = logger;
+        _config = config;
+        _httpClient = httpClient;
+        _serializer = serializer;
+    }
 
-        private readonly WebConfiguration _config;
+    public async Task<UkprnLookupResponse> GetListOfTrainingProviders(List<long> ukprns)
+    {
+        _logger.LogInformation("Calling UKRLP API to get details for multiple UKPRNs");
 
-        private readonly HttpClient _httpClient;
+        var request = _serializer.BuildGetAllUkrlpSoapRequest(ukprns, _config.StakeholderId,
+            _config.QueryId);
 
-        private readonly IUkrlpSoapSerializer _serializer;
+        return await GetUkprnLookupResponse(request);
+    }
 
-        public UkrlpApiClient(ILogger<UkrlpApiClient> logger, WebConfiguration config, HttpClient httpClient, IUkrlpSoapSerializer serializer)
+    public async Task<UkprnLookupResponse> GetTrainingProviderByUkprn(long ukprn)
+    {
+        // Due to a bug in .net core, we have to parse the SOAP XML from UKRLP by hand
+        // If this ever gets fixed then look to remove this code and replace with 'Add connected service'
+        // https://github.com/dotnet/wcf/issues/3228
+        // Sep 2025 Update: I tried generating the client from the WSDL but it didn't serialise one class with different namespace, so I was not able to use the generated client.
+        _logger.LogInformation("Calling UKRLP API to get details for UKPRN: {Ukprn}", ukprn);
+        var request = _serializer.BuildUkrlpSoapRequest(ukprn, _config.StakeholderId,
+            _config.QueryId);
+
+        return await GetUkprnLookupResponse(request);
+    }
+
+    private async Task<UkprnLookupResponse> GetUkprnLookupResponse(string request)
+    {
+        _logger.LogInformation("Calling UKRLP API with request: {Request}", request);
+        var requestMessage =
+            new HttpRequestMessage(HttpMethod.Post, _config.ApiBaseAddress)
+            {
+                Content = new StringContent(request, Encoding.UTF8, "text/xml")
+            };
+
+        var responseMessage = await _httpClient.SendAsync(requestMessage);
+
+        if (!responseMessage.IsSuccessStatusCode)
         {
-            _logger = logger;
-            _config = config;
-            _httpClient = httpClient;
-            _serializer = serializer;
+            var failureResponse = new UkprnLookupResponse
+            {
+                Success = false,
+                Results = new List<ProviderDetails>()
+            };
+            return await Task.FromResult(failureResponse);
         }
 
-        public async Task<UkprnLookupResponse> GetListOfTrainingProviders(List<long> ukprns)
-        {
-            var request = _serializer.BuildGetAllUkrlpSoapRequest(ukprns, _config.UkrlpApiAuthentication.StakeholderId,
-                _config.UkrlpApiAuthentication.QueryId);
+        var soapXml = await responseMessage.Content.ReadAsStringAsync();
+        var matchingProviderRecords = _serializer.DeserialiseMatchingProviderRecordsResponse(soapXml);
 
-            return await GetUkprnLookupResponse(request);
+        if (matchingProviderRecords != null)
+        {
+            var result = matchingProviderRecords.Select(Mapper.Map<ProviderDetails>).ToList();
+
+            var resultsFound = new UkprnLookupResponse
+            {
+                Success = true,
+                Results = result
+            };
+            return await Task.FromResult(resultsFound);
         }
-
-        public async Task<UkprnLookupResponse> GetTrainingProviderByUkprn(long ukprn)
+        else
         {
-            // Due to a bug in .net core, we have to parse the SOAP XML from UKRLP by hand
-            // If this ever gets fixed then look to remove this code and replace with 'Add connected service'
-            // https://github.com/dotnet/wcf/issues/3228
-
-            var request = _serializer.BuildUkrlpSoapRequest(ukprn, _config.UkrlpApiAuthentication.StakeholderId,
-                _config.UkrlpApiAuthentication.QueryId);
-
-            return await GetUkprnLookupResponse(request);
-        }
-
-        private async Task<UkprnLookupResponse> GetUkprnLookupResponse(string request)
-        {
-            var requestMessage =
-                new HttpRequestMessage(HttpMethod.Post, _config.UkrlpApiAuthentication.ApiBaseAddress)
-                {
-                    Content = new StringContent(request, Encoding.UTF8, "text/xml")
-                };
-
-            var responseMessage = await _httpClient.SendAsync(requestMessage);
-
-            if (!responseMessage.IsSuccessStatusCode)
+            var noResultsFound = new UkprnLookupResponse
             {
-                var failureResponse = new UkprnLookupResponse
-                {
-                    Success = false,
-                    Results = new List<ProviderDetails>()
-                };
-                return await Task.FromResult(failureResponse);
-            }
-
-            var soapXml = await responseMessage.Content.ReadAsStringAsync();
-            var matchingProviderRecords = _serializer.DeserialiseMatchingProviderRecordsResponse(soapXml);
-
-            if (matchingProviderRecords != null)
-            {
-                var result = matchingProviderRecords.Select(Mapper.Map<ProviderDetails>).ToList();
-
-                var resultsFound = new UkprnLookupResponse
-                {
-                    Success = true,
-                    Results = result
-                };
-                return await Task.FromResult(resultsFound);
-            }
-            else
-            {
-                var noResultsFound = new UkprnLookupResponse
-                {
-                    Success = true,
-                    Results = new List<ProviderDetails>()
-                };
-                return await Task.FromResult(noResultsFound);
-            }
+                Success = true,
+                Results = []
+            };
+            return await Task.FromResult(noResultsFound);
         }
     }
 }

@@ -89,7 +89,7 @@
             {
                 UkprnOnRegister = true,
                 OrganisationId = Guid.NewGuid(),
-                RemovedReasonId = RemovedReason.Merger,
+                RemovedReasonId = 7,
                 StatusDate = new DateTime(2018, 1, 1, 0, 0, 0, DateTimeKind.Unspecified),
                 StatusId = OrganisationStatus.Removed,
                 ProviderTypeId = ProviderType.MainProvider
@@ -105,7 +105,7 @@
             result.OrganisationId.Should().NotBeNull();
             result.ProviderTypeId.Should().Be(ProviderType.MainProvider);
             result.StatusId.Should().Be(OrganisationStatus.Removed);
-            result.RemovedReasonId.Should().Be(RemovedReason.Merger);
+            result.RemovedReasonId.Should().Be(7);
         }
 
         [Test]

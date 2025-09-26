@@ -6,8 +6,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\SFA.DAS.RoATPService.Domain\SFA.DAS.RoATPService.Domain.csproj" />
-      <ProjectReference Include="..\SFA.DAS.RoATPService.Settings\SFA.DAS.RoATPService.Settings.csproj" />
       <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.1" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
     </ItemGroup>
 
 </Project>
