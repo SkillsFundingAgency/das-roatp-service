@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -12,14 +13,17 @@ using SFA.DAS.RoATPService.Application.Api.Extensions;
 using SFA.DAS.RoATPService.Application.Api.Infrastructure;
 using SFA.DAS.RoATPService.Application.Api.Middleware;
 using SFA.DAS.RoATPService.Application.AppStart;
+using SFA.DAS.RoATPService.Data.Extensions;
 using SFA.DAS.Telemetry.Startup;
 
 var builder = WebApplication.CreateBuilder(args);
 
 IConfiguration _configuration = builder.Configuration.LoadConfiguration();
+builder.Services.AddSingleton(_configuration);
 
 builder.Services
     .AddAuthentication(_configuration)
+    .AddRoatpDataContext(_configuration[ConfigurationConstants.SqlConnectionString])
     .AddOptions()
     .AddLogging()
     .AddApplicationInsightsTelemetry()
@@ -30,22 +34,25 @@ builder.Services
     .AddSwaggerGen(options =>
     {
         options.SwaggerDoc(PolicyNames.Default, new OpenApiInfo { Title = "ROATP API" });
+        options.CustomSchemaIds(type => type.ToString());
     });
 
-builder.Services.AddMvc(options =>
-{
-    if (_configuration.IsLocalEnvironment())
+builder.Services
+    .AddMvc(options =>
     {
-        options.Filters.Add(new AllowAnonymousFilter());
-    }
-    else
-    {
-        var policy = new AuthorizationPolicyBuilder()
-            .RequireRole(Roles.RoATPServiceInternalAPI)
-            .Build();
-        options.Filters.Add(new AuthorizeFilter(policy));
-    }
-});
+        if (_configuration.IsLocalEnvironment())
+        {
+            options.Filters.Add(new AllowAnonymousFilter());
+        }
+        else
+        {
+            var policy = new AuthorizationPolicyBuilder()
+                .RequireRole(Roles.RoATPServiceInternalAPI)
+                .Build();
+            options.Filters.Add(new AuthorizeFilter(policy));
+        }
+    })
+    .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 var app = builder.Build();
 

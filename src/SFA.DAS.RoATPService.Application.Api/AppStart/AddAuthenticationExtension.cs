@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SFA.DAS.Api.Common.AppStart;
+using SFA.DAS.RoATPService.Application.Api.Configuration;
 using SFA.DAS.RoATPService.Application.Api.Infrastructure;
-using SFA.DAS.RoATPService.Settings;
 
 namespace SFA.DAS.RoATPService.Application.AppStart;
 

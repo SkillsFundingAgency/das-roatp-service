@@ -1,10 +1,12 @@
-﻿using AutoMapper;
+﻿using System.Diagnostics.CodeAnalysis;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SFA.DAS.RoATPService.Api.Client;
 using SFA.DAS.RoATPService.Api.Client.AutoMapper;
 using SFA.DAS.RoATPService.Api.Client.Interfaces;
+using SFA.DAS.RoATPService.Application.Api.Configuration;
 using SFA.DAS.RoATPService.Application.Api.Helpers;
 using SFA.DAS.RoATPService.Application.Handlers;
 using SFA.DAS.RoATPService.Application.Interfaces;
@@ -13,19 +15,19 @@ using SFA.DAS.RoATPService.Application.Services;
 using SFA.DAS.RoATPService.Application.Validators;
 using SFA.DAS.RoATPService.Data;
 using SFA.DAS.RoATPService.Data.Helpers;
+using SFA.DAS.RoATPService.Domain.Configuration;
 using SFA.DAS.RoATPService.Infrastructure.Database;
 using SFA.DAS.RoATPService.Infrastructure.Interfaces;
-using SFA.DAS.RoATPService.Settings;
 
 namespace SFA.DAS.RoATPService.Application.Api.AppStart;
 
+[ExcludeFromCodeCoverage]
 public static class AddServiceRegistrationsExtensions
 {
     public static IServiceCollection AddServiceRegistrations(this IServiceCollection services, IConfiguration configuration)
     {
         AddMappings();
         RegisterConfigurations(services, configuration);
-        AddHealthChecks(services, configuration);
         services.AddMediatR(c => c.RegisterServicesFromAssembly(typeof(GetProviderTypesHandler).Assembly));
 
         services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
@@ -77,25 +79,8 @@ public static class AddServiceRegistrationsExtensions
 
     private static void RegisterConfigurations(IServiceCollection services, IConfiguration configuration)
     {
-        var auditLogSettings = new RegisterAuditLogSettings();
-        configuration.Bind("RegisterAuditLogSettings", auditLogSettings);
-        services.AddSingleton(auditLogSettings);
+        services.AddSingleton(configuration.GetSection("RegisterAuditLogSettings").Get<RegisterAuditLogSettings>());
 
-        WebConfiguration webConfiguration = new()
-        {
-            ApiAuthentication = configuration.GetSection("ApiAuthentication").Get<ApiAuthentication>(),
-            SqlConnectionString = configuration["SqlConnectionString"],
-            SessionRedisConnectionString = configuration["SessionRedisConnectionString"],
-            UkrlpApiAuthentication = configuration.GetSection("UkrlpApiAuthentication").Get<UkrlpApiAuthentication>()
-        };
-
-        services.AddSingleton(webConfiguration);
-    }
-
-    private static void AddHealthChecks(IServiceCollection services, IConfiguration configuration)
-    {
-        services
-            .AddHealthChecks()
-            .AddSqlServer(configuration["SqlConnectionString"], name: "sql", tags: ["db", "sql"]);
+        services.AddSingleton(configuration.GetSection("UkrlpApiAuthentication").Get<UkrlpApiAuthentication>());
     }
 }

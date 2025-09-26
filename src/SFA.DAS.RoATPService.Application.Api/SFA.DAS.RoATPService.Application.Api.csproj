@@ -31,11 +31,6 @@
     <ProjectReference Include="..\SFA.DAS.RoATPService.Application\SFA.DAS.RoATPService.Application.csproj" />
     <ProjectReference Include="..\SFA.DAS.RoATPService.Data\SFA.DAS.RoATPService.Data.csproj" />
     <ProjectReference Include="..\SFA.DAS.RoATPService.Infrastructure\SFA.DAS.RoATPService.Infrastructure.csproj" />
-    <ProjectReference Include="..\SFA.DAS.RoATPService.Settings\SFA.DAS.RoATPService.Settings.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Configuration\" />
   </ItemGroup>
 
 </Project>
