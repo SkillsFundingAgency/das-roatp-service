@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SFA.DAS.RoATPService.Application.Types;
 using SFA.DAS.RoATPService.Domain.Entities;
 
 namespace SFA.DAS.RoATPService.Application.Queries.GetOrganisation;
@@ -15,7 +14,8 @@ public class GetOrganisationQueryResult
     public string CompanyNumber { get; set; }
     public string CharityNumber { get; set; }
     public ProviderType ProviderType { get; set; }
-    public IdDescriptionPair OrganisationType { get; set; }
+    public int OrganisationTypeId { get; set; }
+    public string OrganisationType { get; set; }
     public OrganisationStatus Status { get; set; }
     public DateTime? LastUpdatedDate { get; set; }
     public DateTime? ApplicationDeterminedDate { get; set; }
@@ -34,7 +34,8 @@ public class GetOrganisationQueryResult
             CompanyNumber = source.OrganisationData.CompanyNumber,
             CharityNumber = source.OrganisationData.CharityNumber,
             ProviderType = source.ProviderType,
-            OrganisationType = source.OrganisationType,
+            OrganisationTypeId = source.OrganisationType.Id,
+            OrganisationType = source.OrganisationType.Type,
             LastUpdatedDate = source.UpdatedAt,
             ApplicationDeterminedDate = source.OrganisationData.ApplicationDeterminedDate,
             Status = source.Status,

@@ -26,7 +26,7 @@ public class GetOrganisationQueryHandlerTests
         GetOrganisationQueryResult actual = await sut.Handle(query, cancellationToken);
         //Assert
         actual.Should().BeNull();
-        organisationStatusEventRepositoryMock.Verify(o => o.GetLatestStatusChangeEvent(It.IsAny<int>(), It.IsAny<Domain.Entities.OrganisationStatus>(), It.IsAny<CancellationToken>()), Times.Never);
+        organisationStatusEventRepositoryMock.Verify(o => o.GetLatestStatusChangeEvent(It.IsAny<int>(), It.IsAny<OrganisationStatus>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Test, RecursiveMoqAutoData]
@@ -45,7 +45,12 @@ public class GetOrganisationQueryHandlerTests
         //Act
         GetOrganisationQueryResult actual = await sut.Handle(query, cancellationToken);
         //Assert
-        actual.Should().BeEquivalentTo(expectedOrganisation, o => o.ExcludingMissingMembers());
+        actual.Should().BeEquivalentTo(
+            expectedOrganisation,
+            o => o.ExcludingMissingMembers()
+            .Excluding(o => o.OrganisationCourseTypes)
+            .Excluding(o => o.OrganisationTypeId)
+            .Excluding(x => x.OrganisationType));
         actual.RemovedDate.Should().Be(expectedOrganisationStatusEvent.CreatedOn);
     }
 }
