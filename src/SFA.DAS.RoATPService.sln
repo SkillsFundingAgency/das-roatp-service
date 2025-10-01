@@ -17,8 +17,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.RoATPService.Applic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.RoATPService.Application.Api", "SFA.DAS.RoATPService.Application.Api\SFA.DAS.RoATPService.Application.Api.csproj", "{9C639D8E-0200-4CDA-BF22-8DB61559EDF0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.RoATPService.Settings", "SFA.DAS.RoATPService.Settings\SFA.DAS.RoATPService.Settings.csproj", "{03CCD1A0-5701-4C68-8B62-44EE0AD4AE1C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.RoATPService.Application.UnitTests", "SFA.DAS.RoATPService.Application.UnitTests\SFA.DAS.RoATPService.Application.UnitTests.csproj", "{5740747C-1320-4F60-AE06-5C1C251931BD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.RoATPService.Api.UnitTests", "SFA.DAS.RoATPService.Api.UnitTests\SFA.DAS.RoATPService.Api.UnitTests.csproj", "{08EE85C1-621E-4FE0-AB48-7091C440AAED}"
@@ -63,10 +61,6 @@ Global
 		{9C639D8E-0200-4CDA-BF22-8DB61559EDF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C639D8E-0200-4CDA-BF22-8DB61559EDF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C639D8E-0200-4CDA-BF22-8DB61559EDF0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{03CCD1A0-5701-4C68-8B62-44EE0AD4AE1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{03CCD1A0-5701-4C68-8B62-44EE0AD4AE1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{03CCD1A0-5701-4C68-8B62-44EE0AD4AE1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{03CCD1A0-5701-4C68-8B62-44EE0AD4AE1C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5740747C-1320-4F60-AE06-5C1C251931BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5740747C-1320-4F60-AE06-5C1C251931BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5740747C-1320-4F60-AE06-5C1C251931BD}.Release|Any CPU.ActiveCfg = Release|Any CPU

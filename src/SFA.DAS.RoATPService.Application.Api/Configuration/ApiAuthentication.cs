@@ -1,6 +1,6 @@
-﻿namespace SFA.DAS.RoATPService.Settings;
+﻿namespace SFA.DAS.RoATPService.Application.Api.Configuration;
 
-public class ApiAuthentication : IApiAuthentication
+public class ApiAuthentication
 {
     public string ClientId { get; set; }
 
