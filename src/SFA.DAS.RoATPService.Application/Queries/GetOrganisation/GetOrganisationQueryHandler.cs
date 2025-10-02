@@ -6,7 +6,7 @@ using SFA.DAS.RoATPService.Domain.Repositories;
 
 namespace SFA.DAS.RoATPService.Application.Queries.GetOrganisation;
 
-public class GetOrganisationQueryHandler(IOrganisationRepository _organisationRepository, IOrganisationStatusEventRepository _organisationStatusEventRepository) : IRequestHandler<GetOrganisationQuery, GetOrganisationQueryResult>
+public class GetOrganisationQueryHandler(IOrganisationsRepository _organisationRepository, IOrganisationStatusEventsRepository _organisationStatusEventRepository) : IRequestHandler<GetOrganisationQuery, GetOrganisationQueryResult>
 {
     public async Task<GetOrganisationQueryResult> Handle(GetOrganisationQuery request, CancellationToken cancellationToken)
     {

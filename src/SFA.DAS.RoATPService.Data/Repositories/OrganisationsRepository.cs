@@ -8,7 +8,7 @@ using SFA.DAS.RoATPService.Domain.Repositories;
 namespace SFA.DAS.RoATPService.Data.Repositories;
 
 [ExcludeFromCodeCoverage]
-internal class OrganisationRepository(RoatpDataContext _dataContext) : IOrganisationRepository
+internal class OrganisationsRepository(RoatpDataContext _dataContext) : IOrganisationsRepository
 {
     public Task<Organisation> GetOrganisationByUkprn(int ukprn, CancellationToken cancellationToken)
         => _dataContext

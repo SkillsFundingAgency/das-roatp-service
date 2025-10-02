@@ -14,8 +14,8 @@ public class GetOrganisationQueryHandlerTests
 {
     [Test, MoqAutoData]
     public async Task Handle_OrganisationNotFound_ReturnsNull(
-        [Frozen] Mock<IOrganisationRepository> organisationRepositoryMock,
-        [Frozen] Mock<IOrganisationStatusEventRepository> organisationStatusEventRepositoryMock,
+        [Frozen] Mock<IOrganisationsRepository> organisationRepositoryMock,
+        [Frozen] Mock<IOrganisationStatusEventsRepository> organisationStatusEventRepositoryMock,
         GetOrganisationQueryHandler sut,
         GetOrganisationQuery query,
         CancellationToken cancellationToken)
@@ -31,8 +31,8 @@ public class GetOrganisationQueryHandlerTests
 
     [Test, RecursiveMoqAutoData]
     public async Task Handle_OrganisationFound_ReturnsOrganisationDetails(
-        [Frozen] Mock<IOrganisationRepository> organisationRepositoryMock,
-        [Frozen] Mock<IOrganisationStatusEventRepository> organisationStatusEventRepositoryMock,
+        [Frozen] Mock<IOrganisationsRepository> organisationRepositoryMock,
+        [Frozen] Mock<IOrganisationStatusEventsRepository> organisationStatusEventRepositoryMock,
         GetOrganisationQueryHandler sut,
         GetOrganisationQuery query,
         Organisation expectedOrganisation,
