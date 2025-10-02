@@ -6,7 +6,11 @@ using SFA.DAS.RoATPService.Domain.Repositories;
 
 namespace SFA.DAS.RoATPService.Application.Queries.GetOrganisation;
 
-public class GetOrganisationQueryHandler(IOrganisationsRepository _organisationRepository, IOrganisationStatusEventsRepository _organisationStatusEventRepository) : IRequestHandler<GetOrganisationQuery, GetOrganisationQueryResult>
+public class GetOrganisationQueryHandler(
+    IOrganisationsRepository _organisationRepository,
+    IOrganisationStatusEventsRepository _organisationStatusEventRepository,
+    IAuditsRepository _auditsRepository)
+    : IRequestHandler<GetOrganisationQuery, GetOrganisationQueryResult>
 {
     public async Task<GetOrganisationQueryResult> Handle(GetOrganisationQuery request, CancellationToken cancellationToken)
     {
@@ -16,10 +20,16 @@ public class GetOrganisationQueryHandler(IOrganisationsRepository _organisationR
             return null;
         }
 
-        OrganisationStatusEvent latestOrganisationStatusEvent = await _organisationStatusEventRepository.GetLatestStatusChangeEvent(request.Ukprn, organisation.Status, cancellationToken);
-
         GetOrganisationQueryResult result = organisation;
-        result.RemovedDate = latestOrganisationStatusEvent.CreatedOn;
+
+        if (organisation.Status == OrganisationStatus.Removed)
+        {
+            OrganisationStatusEvent latestOrganisationStatusEvent = await _organisationStatusEventRepository.GetLatestStatusChangeEvent(request.Ukprn, organisation.Status, cancellationToken);
+            result.RemovedDate = latestOrganisationStatusEvent.CreatedOn;
+        }
+
+        var lastUpdatedTime = await _auditsRepository.GetLastUpdatedDateForOrganisation(organisation.Id, cancellationToken);
+        result.LastUpdatedDate = lastUpdatedTime ?? organisation.UpdatedAt;
 
         return result;
     }

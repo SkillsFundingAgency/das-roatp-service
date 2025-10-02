@@ -31,5 +31,6 @@ public static class AddRoatpDataContextExtension
         services.AddTransient<IOrganisationStatusEventsRepository, OrganisationStatusEventsRepository>();
         services.AddTransient<ICourseTypesRepository, CourseTypesRepository>();
         services.AddTransient<IOrganisationCourseTypesRepository, OrganisationCourseTypesRepository>();
+        services.AddTransient<IAuditsRepository, AuditsRepository>();
     }
 }

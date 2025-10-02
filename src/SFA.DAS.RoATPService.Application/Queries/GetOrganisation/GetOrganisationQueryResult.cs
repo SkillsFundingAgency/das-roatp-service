@@ -32,7 +32,6 @@ public class GetOrganisationQueryResult
             LegalName = source.LegalName,
             TradingName = source.TradingName,
             ProviderType = source.ProviderType,
-            LastUpdatedDate = source.UpdatedAt,
             Status = source.Status,
             OrganisationTypeId = source.OrganisationType.Id,
             OrganisationType = source.OrganisationType.Type,
