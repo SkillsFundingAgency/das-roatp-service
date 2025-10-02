@@ -49,7 +49,7 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
 
         _logger.LogTrace("Validation passed");
 
-        var response = await next();
+        var response = await next(cancellationToken);
 
         return response;
     }

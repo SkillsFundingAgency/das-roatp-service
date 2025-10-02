@@ -14,7 +14,7 @@ internal class OrganisationCourseTypesRepository(RoatpDataContext context) : IOr
 {
     public async Task UpdateOrganisationShortCourseTypes(Guid organisationId, IEnumerable<int> courseTypeIds, string userId, CancellationToken cancellationToken)
     {
-        List<int> existingCourseTypes = await context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId && o.CourseType.LearningType == LearningType.ShortCourse).Select(o => o.CourseTypeId).ToListAsync();
+        List<int> existingCourseTypes = await context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId && o.CourseType.LearningType == LearningType.ShortCourse).Select(o => o.CourseTypeId).ToListAsync(cancellationToken);
 
         context.OrganisationCourseTypes.RemoveRange(context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId && o.CourseType.LearningType == LearningType.ShortCourse));
 
