@@ -36,7 +36,7 @@ public class UpdateOrganisationShortCourseTypesTests
 
         // Act
         var newShortCourseIds = new[] { shortCourseBootcampType.Id }; // Only keep short course bootcamp type 
-        await sut.UpdateOrganisationShortCourseTypes(organisationId, newShortCourseIds, CancellationToken.None);
+        await sut.UpdateOrganisationShortCourseTypes(organisationId, newShortCourseIds, "userid", CancellationToken.None);
 
         // Assert
         var orgCourseTypes = context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId).ToList();

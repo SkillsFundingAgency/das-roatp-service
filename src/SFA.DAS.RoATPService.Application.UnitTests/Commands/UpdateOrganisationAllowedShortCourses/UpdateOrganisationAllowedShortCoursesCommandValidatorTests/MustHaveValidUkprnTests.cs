@@ -18,9 +18,10 @@ public class MustHaveValidUkprnTests
     [MoqInlineAutoData(-1)]
     public async Task Ukprn_IsEmpty_FailsValidation(
         int ukprn,
+        string userId,
         UpdateOrganisationAllowedShortCoursesCommandValidator sut)
     {
-        UpdateOrganisationAllowedShortCoursesCommand command = new(ukprn, []);
+        UpdateOrganisationAllowedShortCoursesCommand command = new(ukprn, [], userId);
 
         var result = await sut.TestValidateAsync(command);
 

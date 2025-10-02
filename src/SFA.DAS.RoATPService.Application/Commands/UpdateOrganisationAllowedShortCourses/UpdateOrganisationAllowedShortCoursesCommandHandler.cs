@@ -16,7 +16,7 @@ public class UpdateOrganisationAllowedShortCoursesCommandHandler(
     {
         Organisation org = await _organisationsRepository.GetOrganisationByUkprn(request.Ukprn, cancellationToken);
 
-        await _organisationCourseTypesRepository.UpdateOrganisationShortCourseTypes(org.Id, request.CourseTypeIds, cancellationToken);
+        await _organisationCourseTypesRepository.UpdateOrganisationShortCourseTypes(org.Id, request.CourseTypeIds, request.RequestingUserId, cancellationToken);
         return new ValidatedResponse();
     }
 }

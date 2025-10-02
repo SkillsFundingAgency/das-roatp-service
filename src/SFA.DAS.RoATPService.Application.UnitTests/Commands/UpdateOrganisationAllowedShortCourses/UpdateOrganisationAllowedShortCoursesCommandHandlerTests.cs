@@ -21,6 +21,6 @@ public class UpdateOrganisationAllowedShortCoursesCommandHandlerTests
 
         await sut.Handle(command, default);
 
-        orgCrsTypeRepoMock.Verify(x => x.UpdateOrganisationShortCourseTypes(organisation.Id, command.CourseTypeIds, default), Times.Once);
+        orgCrsTypeRepoMock.Verify(x => x.UpdateOrganisationShortCourseTypes(organisation.Id, command.CourseTypeIds, command.RequestingUserId, default), Times.Once);
     }
 }

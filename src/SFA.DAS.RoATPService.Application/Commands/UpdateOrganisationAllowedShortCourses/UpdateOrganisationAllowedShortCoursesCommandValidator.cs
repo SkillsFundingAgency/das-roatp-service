@@ -11,6 +11,7 @@ public class UpdateOrganisationAllowedShortCoursesCommandValidator : AbstractVal
     public const string UkprnIsRequiredMessage = "Ukprn must not be empty";
     public const string CourseTypeIdsIsRequiredMessage = "At least one CourseTypeId is required";
     public const string InvalidCourseTypeIdMessage = "Course type id is not a valid short course";
+    public const string RequestingUserIdIsRequiredMessage = "RequestingUserId must not be empty";
 
     public UpdateOrganisationAllowedShortCoursesCommandValidator(IOrganisationsRepository organisationRepository, ICourseTypesRepository courseTypesRepository)
     {
@@ -33,5 +34,8 @@ public class UpdateOrganisationAllowedShortCoursesCommandValidator : AbstractVal
                 return courseIds.All(c => validCourseIds.Contains(c));
             })
             .WithMessage(InvalidCourseTypeIdMessage);
+        RuleFor(c => c.RequestingUserId)
+            .NotEmpty()
+            .WithMessage(RequestingUserIdIsRequiredMessage);
     }
 }

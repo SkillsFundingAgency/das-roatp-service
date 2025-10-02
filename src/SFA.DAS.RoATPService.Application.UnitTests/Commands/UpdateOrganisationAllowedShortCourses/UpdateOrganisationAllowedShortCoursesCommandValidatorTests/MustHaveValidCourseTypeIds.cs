@@ -14,9 +14,10 @@ public class MustHaveValidCourseTypeIds
     [Test, RecursiveMoqAutoData]
     public async Task CourseTypeIds_IsEmpty_FailsValidation(
         UpdateOrganisationAllowedShortCoursesCommandValidator sut,
-        int ukprn)
+        int ukprn,
+        string userId)
     {
-        UpdateOrganisationAllowedShortCoursesCommand command = new(ukprn, []);
+        UpdateOrganisationAllowedShortCoursesCommand command = new(ukprn, [], userId);
 
         var result = await sut.TestValidateAsync(command);
 
@@ -27,9 +28,10 @@ public class MustHaveValidCourseTypeIds
     public async Task CourseTypeIds_ContainsInvalidId_FailsValidation(
         [Frozen] Mock<ICourseTypesRepository> courseTypesRepositoryMock,
         UpdateOrganisationAllowedShortCoursesCommandValidator sut,
-        int ukprn)
+        int ukprn,
+        string userId)
     {
-        UpdateOrganisationAllowedShortCoursesCommand command = new(ukprn, [999]);
+        UpdateOrganisationAllowedShortCoursesCommand command = new(ukprn, [999], userId);
         courseTypesRepositoryMock.Setup(r => r.GetAllCourseTypes(default)).ReturnsAsync([]);
 
         var result = await sut.TestValidateAsync(command);

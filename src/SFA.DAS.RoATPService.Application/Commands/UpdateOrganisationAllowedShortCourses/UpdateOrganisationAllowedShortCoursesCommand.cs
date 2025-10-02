@@ -4,4 +4,4 @@ using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
 
 namespace SFA.DAS.RoATPService.Application.Commands.UpdateOrganisationCourseTypes;
 
-public record UpdateOrganisationAllowedShortCoursesCommand(int Ukprn, IEnumerable<int> CourseTypeIds) : IRequest<ValidatedResponse>;
+public record UpdateOrganisationAllowedShortCoursesCommand(int Ukprn, IEnumerable<int> CourseTypeIds, string RequestingUserId) : IRequest<ValidatedResponse>;
