@@ -10,6 +10,7 @@ public class RoatpDataContext : DbContext
     public DbSet<OrganisationStatusEvent> OrganisationStatusEvents => Set<OrganisationStatusEvent>();
     public DbSet<OrganisationCourseType> OrganisationCourseTypes => Set<OrganisationCourseType>();
     public DbSet<CourseType> CourseTypes => Set<CourseType>();
+    public DbSet<Audit> Audits => Set<Audit>();
 
 
     public RoatpDataContext(DbContextOptions<RoatpDataContext> options) : base(options)

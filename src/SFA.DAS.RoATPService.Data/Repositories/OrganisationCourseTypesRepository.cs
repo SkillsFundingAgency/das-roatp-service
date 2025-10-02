@@ -1,23 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using SFA.DAS.RoATPService.Domain;
+using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
 
 namespace SFA.DAS.RoATPService.Data.Repositories;
 
-[ExcludeFromCodeCoverage]
 internal class OrganisationCourseTypesRepository(RoatpDataContext context) : IOrganisationCourseTypesRepository
 {
     public async Task UpdateOrganisationShortCourseTypes(Guid organisationId, IEnumerable<int> courseTypeIds, string userId, CancellationToken cancellationToken)
     {
-        context.OrganisationCourseTypes.RemoveRange(context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId && o.CourseType.LearningType == Domain.Entities.LearningType.ShortCourse));
+        List<int> existingCourseTypes = await context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId && o.CourseType.LearningType == LearningType.ShortCourse).Select(o => o.CourseTypeId).ToListAsync();
 
-        context.OrganisationCourseTypes.AddRange(courseTypeIds.Select(c => new Domain.Entities.OrganisationCourseType { Id = Guid.NewGuid(), OrganisationId = organisationId, CourseTypeId = c }));
+        context.OrganisationCourseTypes.RemoveRange(context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId && o.CourseType.LearningType == LearningType.ShortCourse));
 
+        context.OrganisationCourseTypes.AddRange(courseTypeIds.Select(c => new OrganisationCourseType { Id = Guid.NewGuid(), OrganisationId = organisationId, CourseTypeId = c }));
 
+        AuditLogEntry entry = new()
+        {
+            FieldChanged = "ShortCourseTypes",
+            NewValue = string.Join(",", courseTypeIds),
+            PreviousValue = string.Join(",", existingCourseTypes)
+        };
+
+        AuditData auditData = new()
+        {
+            OrganisationId = organisationId,
+            UpdatedBy = userId,
+            UpdatedAt = DateTime.UtcNow,
+            FieldChanges = [entry]
+        };
+
+        Audit audit = new()
+        {
+            OrganisationId = organisationId,
+            UpdatedBy = userId,
+            UpdatedAt = DateTime.UtcNow,
+            AuditData = auditData
+        };
+
+        context.Audits.Add(audit);
 
         await context.SaveChangesAsync(cancellationToken);
     }

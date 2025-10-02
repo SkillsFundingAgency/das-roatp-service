@@ -42,9 +42,11 @@ public class UpdateOrganisationShortCourseTypesTests
         var orgCourseTypes = context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId).ToList();
         Assert.Multiple(() =>
         {
-            Assert.That(orgCourseTypes.Count, Is.EqualTo(2));
+            Assert.That(orgCourseTypes, Has.Count.EqualTo(2));
             Assert.That(orgCourseTypes.Exists(o => o.CourseTypeId == standardCourseType.Id), Is.True);
             Assert.That(orgCourseTypes.Exists(o => o.CourseTypeId == shortCourseBootcampType.Id), Is.True);
         });
+
+        Assert.That(context.Audits.CountAsync().Result, Is.EqualTo(1));
     }
 }
