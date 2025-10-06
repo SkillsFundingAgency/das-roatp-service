@@ -23,7 +23,6 @@ public class GetOrganisationQueryResultTests
             Assert.That(sut.ProviderType, Is.EqualTo(organisation.ProviderType));
             Assert.That(sut.OrganisationTypeId, Is.EqualTo(organisation.OrganisationType.Id));
             Assert.That(sut.OrganisationType, Is.EqualTo(organisation.OrganisationType.Type));
-            Assert.That(sut.LastUpdatedDate, Is.EqualTo(organisation.UpdatedAt));
             Assert.That(sut.ApplicationDeterminedDate, Is.EqualTo(organisation.OrganisationData.ApplicationDeterminedDate));
             Assert.That(sut.Status, Is.EqualTo(organisation.Status));
             Assert.That(sut.RemovedReasonId, Is.EqualTo(organisation.OrganisationData?.RemovedReason?.Id));

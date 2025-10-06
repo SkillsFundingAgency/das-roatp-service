@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using AutoMapper;
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +13,7 @@ using SFA.DAS.RoATPService.Application.Api.Helpers;
 using SFA.DAS.RoATPService.Application.Handlers;
 using SFA.DAS.RoATPService.Application.Interfaces;
 using SFA.DAS.RoATPService.Application.Mappers;
+using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
 using SFA.DAS.RoATPService.Application.Services;
 using SFA.DAS.RoATPService.Application.Validators;
 using SFA.DAS.RoATPService.Data;
@@ -56,6 +59,10 @@ public static class AddServiceRegistrationsExtensions
 
         services.AddTransient<IDbConnectionHelper, DbConnectionHelper>();
         services.AddTransient<IFatDataExportService, FatDataExportService>();
+
+        services.AddValidatorsFromAssembly(typeof(ValidationBehavior<,>).Assembly);
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehaviour<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
         return services;
     }

@@ -9,7 +9,7 @@ using SFA.DAS.RoATPService.Domain.Repositories;
 namespace SFA.DAS.RoATPService.Data.Repositories;
 
 [ExcludeFromCodeCoverage]
-internal class OrganisationStatusEventRepository(RoatpDataContext _dataContext) : IOrganisationStatusEventRepository
+internal class OrganisationStatusEventsRepository(RoatpDataContext _dataContext) : IOrganisationStatusEventsRepository
 {
     public Task<OrganisationStatusEvent> GetLatestStatusChangeEvent(int ukprn, OrganisationStatus status, CancellationToken cancellationToken)
         => _dataContext

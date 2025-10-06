@@ -1,9 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <ProjectGuid>{08EE85C1-621E-4FE0-AB48-7091C440AAED}</ProjectGuid>
     <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
     <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,18 +18,19 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="FluentAssertions" Version="7.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.3.0" />
-    <PackageReference Include="Moq" Version="4.20.72" />
-    <PackageReference Include="nunit" Version="3.14.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="5.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.20" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageReference Include="SFA.DAS.Testing.AutoFixture" Version="17.1.146" />
+    <PackageReference Include="NUnit" Version="3.14.0" />
+    <PackageReference Include="NUnit.Analyzers" Version="3.9.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="5.1.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SFA.DAS.RoATPService.Application.Api\SFA.DAS.RoATPService.Application.Api.csproj" />
+    <ProjectReference Include="..\SFA.DAS.RoATPService.Data\SFA.DAS.RoATPService.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="NUnit.Framework" />
   </ItemGroup>
 
 </Project>

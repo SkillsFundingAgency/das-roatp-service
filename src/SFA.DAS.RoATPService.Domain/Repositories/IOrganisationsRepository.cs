@@ -2,7 +2,8 @@
 using System.Threading.Tasks;
 
 namespace SFA.DAS.RoATPService.Domain.Repositories;
-public interface IOrganisationRepository
+
+public interface IOrganisationsRepository
 {
     Task<Entities.Organisation> GetOrganisationByUkprn(int ukprn, CancellationToken cancellationToken);
 }
