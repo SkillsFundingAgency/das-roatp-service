@@ -1,10 +1,10 @@
-﻿using System.Linq;
-using FluentValidation;
+﻿using FluentValidation;
 using SFA.DAS.RoATPService.Domain.Repositories;
+using System.Linq;
 
 namespace SFA.DAS.RoATPService.Application.Commands.UpdateOrganisationCourseTypes;
 
-public class UpdateOrganisationAllowedShortCoursesCommandValidator : AbstractValidator<UpdateOrganisationAllowedShortCoursesCommand>
+public class UpdateOrganisationCourseTypesValidator : AbstractValidator<UpdateOrganisationCourseTypesCommand>
 {
     public const string InvalidUkprnMessage = "Ukprn does not exist";
     public const string UkprnIsRequiredMessage = "Ukprn must not be empty";
@@ -12,7 +12,7 @@ public class UpdateOrganisationAllowedShortCoursesCommandValidator : AbstractVal
     public const string InvalidCourseTypeIdMessage = "Course type id is not a valid short course";
     public const string RequestingUserIdIsRequiredMessage = "RequestingUserId must not be empty";
 
-    public UpdateOrganisationAllowedShortCoursesCommandValidator(IOrganisationsRepository organisationRepository, ICourseTypesRepository courseTypesRepository)
+    public UpdateOrganisationCourseTypesValidator(IOrganisationsRepository organisationRepository, ICourseTypesRepository courseTypesRepository)
     {
         RuleFor(c => c.Ukprn)
             .GreaterThan(0)
@@ -29,7 +29,7 @@ public class UpdateOrganisationAllowedShortCoursesCommandValidator : AbstractVal
             .MustAsync(async (courseIds, token) =>
             {
                 var courseTypes = await courseTypesRepository.GetAllCourseTypes(token);
-                var validCourseIds = courseTypes.Where(c => c.LearningType == Domain.Entities.LearningType.ShortCourse).Select(c => c.Id);
+                var validCourseIds = courseTypes.Select(c => c.Id);
                 return courseIds.All(c => validCourseIds.Contains(c));
             })
             .WithMessage(InvalidCourseTypeIdMessage);

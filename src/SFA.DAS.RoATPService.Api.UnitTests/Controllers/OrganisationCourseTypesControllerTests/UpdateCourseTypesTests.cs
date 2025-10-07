@@ -27,7 +27,7 @@ public class UpdateCourseTypesTests
         ValidatedResponse validatedResponse = new();
 
         mediatorMock
-            .Setup(m => m.Send(It.IsAny<UpdateOrganisationAllowedShortCoursesCommand>(), It.IsAny<CancellationToken>()))
+            .Setup(m => m.Send(It.IsAny<UpdateOrganisationCourseTypesCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(validatedResponse);
 
         // Act
@@ -48,7 +48,7 @@ public class UpdateCourseTypesTests
         // Arrange
         var validatedResponse = new ValidatedResponse(errors);
         mediatorMock
-            .Setup(m => m.Send(It.IsAny<UpdateOrganisationAllowedShortCoursesCommand>(), It.IsAny<CancellationToken>()))
+            .Setup(m => m.Send(It.IsAny<UpdateOrganisationCourseTypesCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(validatedResponse);
 
         // Act

@@ -1,22 +1,22 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using SFA.DAS.RoATPService.Domain;
+using SFA.DAS.RoATPService.Domain.Entities;
+using SFA.DAS.RoATPService.Domain.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using SFA.DAS.RoATPService.Domain;
-using SFA.DAS.RoATPService.Domain.Entities;
-using SFA.DAS.RoATPService.Domain.Repositories;
 
 namespace SFA.DAS.RoATPService.Data.Repositories;
 
 internal class OrganisationCourseTypesRepository(RoatpDataContext context) : IOrganisationCourseTypesRepository
 {
-    public async Task UpdateOrganisationShortCourseTypes(Guid organisationId, IEnumerable<int> courseTypeIds, string userId, CancellationToken cancellationToken)
+    public async Task UpdateOrganisationCourseTypes(Guid organisationId, IEnumerable<int> courseTypeIds, string userId, CancellationToken cancellationToken)
     {
-        List<int> existingCourseTypes = await context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId && o.CourseType.LearningType == LearningType.ShortCourse).Select(o => o.CourseTypeId).ToListAsync(cancellationToken);
+        List<int> existingCourseTypes = await context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId).Select(o => o.CourseTypeId).ToListAsync(cancellationToken);
 
-        context.OrganisationCourseTypes.RemoveRange(context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId && o.CourseType.LearningType == LearningType.ShortCourse));
+        context.OrganisationCourseTypes.RemoveRange(context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId));
 
         context.OrganisationCourseTypes.AddRange(courseTypeIds.Select(c => new OrganisationCourseType { Id = Guid.NewGuid(), OrganisationId = organisationId, CourseTypeId = c }));
 

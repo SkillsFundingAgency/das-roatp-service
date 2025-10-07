@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using AutoFixture.NUnit3;
+﻿using AutoFixture.NUnit3;
 using FluentValidation.TestHelper;
 using Moq;
 using NUnit.Framework;
@@ -7,47 +6,48 @@ using SFA.DAS.RoATPService.Application.Commands.UpdateOrganisationCourseTypes;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
 using SFA.DAS.Testing.AutoFixture;
+using System.Threading.Tasks;
 
-namespace SFA.DAS.RoATPService.Application.UnitTests.Commands.UpdateOrganisationAllowedShortCourses.UpdateOrganisationAllowedShortCoursesCommandValidatorTests;
+namespace SFA.DAS.RoATPService.Application.UnitTests.Commands.UpdateOrganisationCourseTypes.UpdateOrganisationCourseTypesCommandValidatorTests;
 
 public class MustHaveValidCourseTypeIds
 {
     [Test, RecursiveMoqAutoData]
     public async Task CourseTypeIds_IsEmpty_FailsValidation(
-        UpdateOrganisationAllowedShortCoursesCommandValidator sut,
+        UpdateOrganisationCourseTypesValidator sut,
         int ukprn,
         string userId)
     {
-        UpdateOrganisationAllowedShortCoursesCommand command = new(ukprn, [], userId);
+        UpdateOrganisationCourseTypesCommand command = new(ukprn, [], userId);
 
         var result = await sut.TestValidateAsync(command);
 
-        result.ShouldHaveValidationErrorFor(c => c.CourseTypeIds).WithErrorMessage(UpdateOrganisationAllowedShortCoursesCommandValidator.CourseTypeIdsIsRequiredMessage);
+        result.ShouldHaveValidationErrorFor(c => c.CourseTypeIds).WithErrorMessage(UpdateOrganisationCourseTypesValidator.CourseTypeIdsIsRequiredMessage);
     }
 
     [Test, RecursiveMoqAutoData]
     public async Task CourseTypeIds_ContainsInvalidId_FailsValidation(
         [Frozen] Mock<ICourseTypesRepository> courseTypesRepositoryMock,
-        UpdateOrganisationAllowedShortCoursesCommandValidator sut,
+        UpdateOrganisationCourseTypesValidator sut,
         int ukprn,
         string userId)
     {
-        UpdateOrganisationAllowedShortCoursesCommand command = new(ukprn, [999], userId);
+        UpdateOrganisationCourseTypesCommand command = new(ukprn, [999], userId);
         courseTypesRepositoryMock.Setup(r => r.GetAllCourseTypes(default)).ReturnsAsync([]);
 
         var result = await sut.TestValidateAsync(command);
 
-        result.ShouldHaveValidationErrorFor(c => c.CourseTypeIds).WithErrorMessage(UpdateOrganisationAllowedShortCoursesCommandValidator.InvalidCourseTypeIdMessage);
+        result.ShouldHaveValidationErrorFor(c => c.CourseTypeIds).WithErrorMessage(UpdateOrganisationCourseTypesValidator.InvalidCourseTypeIdMessage);
     }
 
     [Test, RecursiveMoqAutoData]
     public async Task CourseTypeIds_ContainsValidId_PassesValidation(
         [Frozen] Mock<ICourseTypesRepository> courseTypesRepositoryMock,
-        UpdateOrganisationAllowedShortCoursesCommandValidator sut,
+        UpdateOrganisationCourseTypesValidator sut,
         int ukprn,
         string userId)
     {
-        UpdateOrganisationAllowedShortCoursesCommand command = new(ukprn, [1], userId);
+        UpdateOrganisationCourseTypesCommand command = new(ukprn, [1], userId);
         courseTypesRepositoryMock.Setup(r => r.GetAllCourseTypes(default)).ReturnsAsync([new CourseType { Id = 1, LearningType = LearningType.ShortCourse }]);
 
         var result = await sut.TestValidateAsync(command);
