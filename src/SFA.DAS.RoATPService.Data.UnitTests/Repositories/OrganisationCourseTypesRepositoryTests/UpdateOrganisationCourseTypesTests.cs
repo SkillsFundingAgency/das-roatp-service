@@ -4,10 +4,10 @@ using SFA.DAS.RoATPService.Domain.Entities;
 
 namespace SFA.DAS.RoATPService.Data.UnitTests.Repositories.OrganisationCourseTypesRepositoryTests;
 
-public class UpdateOrganisationShortCourseTypesTests
+public class UpdateOrganisationCourseTypesTests
 {
     [Test]
-    public async Task UpdateOrganisationShortCourseTypes_RemovesAndAddsShortCourses()
+    public async Task UpdateOrganisationCourseTypes_RemovesAndAddsCourses()
     {
         // Arrange
         var options = new DbContextOptionsBuilder<RoatpDataContext>()
@@ -36,14 +36,13 @@ public class UpdateOrganisationShortCourseTypesTests
 
         // Act
         var newShortCourseIds = new[] { shortCourseBootcampType.Id }; // Only keep short course bootcamp type 
-        await sut.UpdateOrganisationShortCourseTypes(organisationId, newShortCourseIds, "userid", CancellationToken.None);
+        await sut.UpdateOrganisationCourseTypes(organisationId, newShortCourseIds, "userid", CancellationToken.None);
 
         // Assert
         var orgCourseTypes = context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId).ToList();
         Assert.Multiple(() =>
         {
-            Assert.That(orgCourseTypes, Has.Count.EqualTo(2));
-            Assert.That(orgCourseTypes.Exists(o => o.CourseTypeId == standardCourseType.Id), Is.True);
+            Assert.That(orgCourseTypes, Has.Count.EqualTo(1));
             Assert.That(orgCourseTypes.Exists(o => o.CourseTypeId == shortCourseBootcampType.Id), Is.True);
         });
 
