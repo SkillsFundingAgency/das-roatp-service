@@ -12,6 +12,7 @@ using SFA.DAS.RoATPService.Application.Api.AppStart;
 using SFA.DAS.RoATPService.Application.Api.Extensions;
 using SFA.DAS.RoATPService.Application.Api.Infrastructure;
 using SFA.DAS.RoATPService.Application.Api.Middleware;
+using SFA.DAS.RoATPService.Application.Api.Serialization;
 using SFA.DAS.RoATPService.Application.AppStart;
 using SFA.DAS.RoATPService.Data.Extensions;
 using SFA.DAS.Telemetry.Startup;
@@ -34,7 +35,10 @@ builder.Services
     .AddSwaggerGen(options =>
     {
         options.SwaggerDoc(PolicyNames.Default, new OpenApiInfo { Title = "ROATP API" });
+        // below is needed to ensure that the schema ids use the full name including namespace to avoid conflicts
         options.CustomSchemaIds(type => type.ToString());
+        // below is needed to ensure Optional<T> types get documented correctly
+        options.SchemaFilter<OptionalSchemaFilter>();
     });
 
 builder.Services
@@ -52,7 +56,11 @@ builder.Services
             options.Filters.Add(new AuthorizeFilter(policy));
         }
     })
-    .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.Converters.Add(new OptionalConverterFactory());
+    });
 
 var app = builder.Build();
 
