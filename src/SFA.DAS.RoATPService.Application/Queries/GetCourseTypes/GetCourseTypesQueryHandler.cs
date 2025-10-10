@@ -20,11 +20,6 @@ public class GetCourseTypesQueryHandler(ICourseTypesRepository _courseTypesRepos
             return null;
         }
 
-        GetCourseTypesResult result = new()
-        {
-            CourseTypes = courseType.Select(c => (CourseTypes)c)
-        };
-
-        return result;
+        return new() { CourseTypes = courseType.Select(c => (CourseTypes)c) };
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.RoATPService.Application.Queries.GetCourseTypes;
@@ -11,6 +12,8 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers;
 public class CourseTypesController(IMediator _mediator, ILogger<CourseTypesController> _logger) : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetCourseTypesResult))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
 
     public async Task<IActionResult> GetCourseTypes(CancellationToken cancellationToken)
     {
