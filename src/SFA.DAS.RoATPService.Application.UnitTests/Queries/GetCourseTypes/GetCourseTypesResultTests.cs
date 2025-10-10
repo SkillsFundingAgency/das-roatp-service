@@ -21,6 +21,7 @@ public class GetCourseTypesResultTests
         // Act & Assert
         Assert.Multiple(() =>
         {
+            Assert.That(sut.CourseTypes.Count(), Is.EqualTo(1));
             Assert.That(sut.CourseTypes.FirstOrDefault().Id, Is.EqualTo(courseType.Id));
             Assert.That(sut.CourseTypes.FirstOrDefault().Name, Is.EqualTo(courseType.Name));
             Assert.That(sut.CourseTypes.FirstOrDefault().LearningType, Is.EqualTo(courseType.LearningType));
