@@ -2,7 +2,7 @@
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.RoATPService.Application.Queries.GetCourseTypes;
+using SFA.DAS.RoATPService.Application.Queries.GetAllCourseTypes;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
 using SFA.DAS.Testing.AutoFixture;
@@ -10,15 +10,15 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SFA.DAS.RoATPService.Application.UnitTests.Queries.GetCourseTypes;
-public class GetCourseTypesQueryHandlerTests
+namespace SFA.DAS.RoATPService.Application.UnitTests.Queries.GetAllCourseTypes;
+public class GetAllCourseTypesQueryHandlerTests
 {
     [Test, RecursiveMoqAutoData]
 
     public async Task Handle_GetAllCourseTypes_ReturnsCourseTypes(
         [Frozen] Mock<ICourseTypesRepository> mockCourseTypesRepository,
-        GetCourseTypesQueryHandler sut,
-        GetCourseTypesQuery query,
+        GetAllCourseTypesQueryHandler sut,
+        GetAllCourseTypesQuery query,
         List<CourseType> expectedCourseTypes
         )
     {
@@ -39,13 +39,13 @@ public class GetCourseTypesQueryHandlerTests
 
     public async Task Handle_GetAllCourseTypes_ReturnsEmpty(
         [Frozen] Mock<ICourseTypesRepository> mockCourseTypesRepository,
-        GetCourseTypesQueryHandler sut,
-        GetCourseTypesQuery query
+        GetAllCourseTypesQueryHandler sut,
+        GetAllCourseTypesQuery query
         )
     {
         //Arrange
         var expectedCourseTypes = new List<CourseType>();
-        var expectedResponse = new GetCourseTypesResult();
+        var expectedResponse = new GetAllCourseTypesResult();
         mockCourseTypesRepository.Setup(x => x.GetAllCourseTypes(CancellationToken.None)).ReturnsAsync(expectedCourseTypes);
 
         //Act
