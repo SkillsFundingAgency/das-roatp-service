@@ -15,10 +15,6 @@ public class GetCourseTypesQueryHandler(ICourseTypesRepository _courseTypesRepos
         _logger.LogInformation("Handling Get All Course Types");
 
         List<CourseType> courseType = await _courseTypesRepository.GetAllCourseTypes(cancellationToken);
-        if (courseType == null)
-        {
-            return null;
-        }
 
         return new() { CourseTypes = courseType.Select(c => (CourseTypes)c) };
     }

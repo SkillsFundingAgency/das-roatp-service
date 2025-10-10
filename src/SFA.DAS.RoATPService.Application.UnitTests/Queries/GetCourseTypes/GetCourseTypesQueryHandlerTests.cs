@@ -37,19 +37,21 @@ public class GetCourseTypesQueryHandlerTests
 
     [Test, MoqAutoData]
 
-    public async Task Handle_GetAllCourseTypes_ReturnsNull(
+    public async Task Handle_GetAllCourseTypes_ReturnsEmpty(
         [Frozen] Mock<ICourseTypesRepository> mockCourseTypesRepository,
         GetCourseTypesQueryHandler sut,
         GetCourseTypesQuery query
         )
     {
         //Arrange
-        mockCourseTypesRepository.Setup(x => x.GetAllCourseTypes(CancellationToken.None)).ReturnsAsync(() => null);
+        var expectedCourseTypes = new List<CourseType>();
+        var expectedResponse = new GetCourseTypesResult();
+        mockCourseTypesRepository.Setup(x => x.GetAllCourseTypes(CancellationToken.None)).ReturnsAsync(expectedCourseTypes);
 
         //Act
         var response = await sut.Handle(query, CancellationToken.None);
 
         //Assert
-        response.Should().BeNull();
+        response.Should().BeEquivalentTo(expectedResponse);
     }
 }

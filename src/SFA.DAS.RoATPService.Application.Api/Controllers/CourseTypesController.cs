@@ -13,12 +13,11 @@ public class CourseTypesController(IMediator _mediator, ILogger<CourseTypesContr
 {
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetCourseTypesResult))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
 
     public async Task<IActionResult> GetCourseTypes(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Processing CourseTypes-GetCourseTypes");
         GetCourseTypesResult result = await _mediator.Send(new GetCourseTypesQuery(), cancellationToken);
-        return result == null ? NotFound() : Ok(result);
+        return Ok(result);
     }
 }
