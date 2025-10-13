@@ -3,8 +3,9 @@ using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Queries.GetAllCourseTypes;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.Testing.AutoFixture;
+using System.Linq;
 
-namespace SFA.DAS.RoATPService.Application.UnitTests.Queries.GetCourseTypes;
+namespace SFA.DAS.RoATPService.Application.UnitTests.Queries.GetAllCourseTypes;
 public class GetAllCourseTypesResultTests
 {
     [Test, RecursiveMoqAutoData]
@@ -12,11 +13,28 @@ public class GetAllCourseTypesResultTests
     public void GetAllCourseTypesResult_MapsCourseTypeDataCorrectly(CourseType courseType)
     {
         // Arrange
-        CourseTypeSummary sut = courseType;
+        CourseTypeSummary courseTypeSummary = courseType;
+        GetAllCourseTypesResult sut = new() { CourseTypes = [courseTypeSummary] };
 
-        // Act & Assert
-        sut.Id.Should().Be(courseType.Id);
-        sut.Name.Should().Be(courseType.Name);
-        sut.LearningType.Should().Be(courseType.LearningType);
+        // Act
+        var result = sut.CourseTypes.First();
+
+        // Assert
+        result.Id.Should().Be(courseType.Id);
+        result.Name.Should().Be(courseType.Name);
+        result.LearningType.Should().Be(courseType.LearningType);
+    }
+
+    [Test, RecursiveMoqAutoData]
+
+    public void CourseTypeSummary_ImplicitOperator_MapsCourseTypeCorrectly(CourseType courseType)
+    {
+        // Act
+        CourseTypeSummary result = courseType;
+
+        // Assert
+        result.Id.Should().Be(courseType.Id);
+        result.Name.Should().Be(courseType.Name);
+        result.LearningType.Should().Be(courseType.LearningType);
     }
 }
