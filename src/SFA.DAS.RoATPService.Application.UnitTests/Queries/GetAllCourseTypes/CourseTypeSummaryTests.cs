@@ -3,21 +3,16 @@ using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Queries.GetAllCourseTypes;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.Testing.AutoFixture;
-using System.Linq;
 
 namespace SFA.DAS.RoATPService.Application.UnitTests.Queries.GetAllCourseTypes;
-public class GetAllCourseTypesResultTests
+public class CourseTypeSummaryTests
 {
     [Test, RecursiveMoqAutoData]
 
-    public void GetAllCourseTypesResult_MapsCourseTypeDataCorrectly(CourseType courseType)
+    public void CourseTypeSummary_ImplicitOperator_MapsCourseTypeCorrectly(CourseType courseType)
     {
-        // Arrange
-        CourseTypeSummary courseTypeSummary = courseType;
-        GetAllCourseTypesResult sut = new() { CourseTypes = [courseTypeSummary] };
-
         // Act
-        var result = sut.CourseTypes.First();
+        CourseTypeSummary result = courseType;
 
         // Assert
         result.Id.Should().Be(courseType.Id);
