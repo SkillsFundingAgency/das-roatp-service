@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace SFA.DAS.RoATPService.Application.Api.Controllers;
 
 [ApiController]
-[Route("organisations/{ukprn}/allowed-course-types")]
+[Route("organisations/{ukprn}/course-types")]
 public class OrganisationCourseTypesController(IMediator _mediator) : ControllerBase
 {
     [HttpPut]

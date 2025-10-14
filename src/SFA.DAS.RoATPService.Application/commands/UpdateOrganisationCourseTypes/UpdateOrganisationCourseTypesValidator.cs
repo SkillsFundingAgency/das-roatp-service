@@ -9,7 +9,7 @@ public class UpdateOrganisationCourseTypesValidator : AbstractValidator<UpdateOr
     public const string InvalidUkprnMessage = "Ukprn does not exist";
     public const string UkprnIsRequiredMessage = "Ukprn must not be empty";
     public const string CourseTypeIdsIsRequiredMessage = "At least one CourseTypeId is required";
-    public const string InvalidCourseTypeIdMessage = "Course type id is not a valid course";
+    public const string InvalidCourseTypeIdMessage = "Request contains invalid course types";
     public const string RequestingUserIdIsRequiredMessage = "RequestingUserId must not be empty";
 
     public UpdateOrganisationCourseTypesValidator(IOrganisationsRepository organisationRepository, ICourseTypesRepository courseTypesRepository)
