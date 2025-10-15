@@ -102,4 +102,7 @@
   <ItemGroup>
     <PreDeploy Include="Script.PreDeployment1.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="PostDeployment\AddOrganisationDataFields.sql" />
+  </ItemGroup>
 </Project>

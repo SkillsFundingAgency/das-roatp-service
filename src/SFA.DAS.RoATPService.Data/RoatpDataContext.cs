@@ -1,8 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 using SFA.DAS.RoATPService.Data.EntityConfigurations;
 using SFA.DAS.RoATPService.Domain.Entities;
 
 namespace SFA.DAS.RoATPService.Data;
+
+[ExcludeFromCodeCoverage]
 public class RoatpDataContext : DbContext
 {
     public DbSet<Organisation> Organisations => Set<Organisation>();
@@ -12,7 +15,6 @@ public class RoatpDataContext : DbContext
     public DbSet<CourseType> CourseTypes => Set<CourseType>();
     public DbSet<Audit> Audits => Set<Audit>();
     public DbSet<RemovedReason> RemovedReasons => Set<RemovedReason>();
-
 
     public RoatpDataContext(DbContextOptions<RoatpDataContext> options) : base(options)
     { }

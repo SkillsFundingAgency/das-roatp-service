@@ -25,7 +25,7 @@ public class GetOrganisationQueryHandler(
         if (organisation.Status == OrganisationStatus.Removed)
         {
             OrganisationStatusEvent latestOrganisationStatusEvent = await _organisationStatusEventRepository.GetLatestStatusChangeEvent(request.Ukprn, organisation.Status, cancellationToken);
-            result.RemovedDate = latestOrganisationStatusEvent.CreatedOn;
+            result.RemovedDate = latestOrganisationStatusEvent?.CreatedOn;
         }
 
         var lastUpdatedTime = await _auditsRepository.GetLastUpdatedDateForOrganisation(organisation.Id, cancellationToken);

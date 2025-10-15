@@ -1,6 +1,7 @@
 ﻿namespace SFA.DAS.RoATPService.Data
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using Dapper;
     using SFA.DAS.RoatpService.Data.DapperTypeHandlers;
@@ -9,7 +10,8 @@
     using SFA.DAS.RoATPService.Domain;
     using SFA.DAS.RoATPService.Infrastructure.Interfaces;
 
-    public class CreateOrganisationRepository: ICreateOrganisationRepository
+    [ExcludeFromCodeCoverage]
+    public class CreateOrganisationRepository : ICreateOrganisationRepository
     {
         private readonly IDbConnectionHelper _dbConnectionHelper;
 
@@ -42,6 +44,13 @@
                     ApplicationDeterminedDate = command.ApplicationDeterminedDate
                 };
 
+                var companyNumber = command.CompanyNumber?.ToUpper();
+                var charityNumber = command.CharityNumber;
+                var parentCompanyGuarantee = command.ParentCompanyGuarantee;
+                var financialTrackRecord = command.FinancialTrackRecord;
+                var nonLevyContract = command.NonLevyContract;
+                var applicationDeterminedDate = command.ApplicationDeterminedDate;
+
                 string sql = $"INSERT INTO [dbo].[Organisations] " +
                              " ([Id] " +
                              ",[CreatedAt] " +
@@ -53,10 +62,20 @@
                              ",[LegalName] " +
                              ",[TradingName] " +
                              ",[StatusDate] " +
-                             ",[OrganisationData]) " +
+                             ",[CompanyNumber]" +
+                             ",[CharityNumber]" +
+                             ",[StartDate]" +
+                             ",[ParentCompanyGuarantee]" +
+                             ",[FinancialTrackRecord]" +
+                             ",[NonLevyContract]" +
+                             ",[applicationDeterminedDate]" +
+                             ",[OrganisationData]" +
+                             ") " +
                              "VALUES " +
                              "(@organisationId, @createdAt, @createdBy, @statusId, @providerTypeId, @organisationTypeId," +
-                             " @ukprn, @legalName, @tradingName, @statusDate, @organisationData)";
+                             " @ukprn, @legalName, @tradingName, @statusDate, " +
+                             "@companyNumber,@charityNumber,@startDate, @parentCompanyGuarantee,@financialTrackRecord,@nonLevyContract,@applicationDeterminedDate,  " +
+                             "@organisationData)";
 
                 var organisationsCreated = await connection.ExecuteAsync(sql,
                     new
@@ -71,6 +90,13 @@
                         command.LegalName,
                         command.TradingName,
                         command.StatusDate,
+                        companyNumber,
+                        charityNumber,
+                        startDate,
+                        parentCompanyGuarantee,
+                        financialTrackRecord,
+                        nonLevyContract,
+                        applicationDeterminedDate,
                         organisationData
                     });
 
