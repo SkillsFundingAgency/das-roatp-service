@@ -98,6 +98,31 @@ public class GetOrganisationQueryHandlerTests
     }
 
     [Test, RecursiveMoqAutoData]
+    public async Task Handle_OrganisationStatusIsRemoved_ReturnsNoRemovedDateIfNoStatusEvent(
+        [Frozen] Mock<IOrganisationsRepository> organisationRepositoryMock,
+        [Frozen] Mock<IOrganisationStatusEventsRepository> organisationStatusEventRepositoryMock,
+        GetOrganisationQueryHandler sut,
+        GetOrganisationQuery query,
+        Organisation expectedOrganisation,
+        CancellationToken cancellationToken)
+    {
+        //Arrange
+        expectedOrganisation.Status = OrganisationStatus.Removed;
+        organisationRepositoryMock.Setup(x => x.GetOrganisationByUkprn(query.Ukprn, cancellationToken)).ReturnsAsync(expectedOrganisation);
+        organisationStatusEventRepositoryMock.Setup(x => x.GetLatestStatusChangeEvent(query.Ukprn, expectedOrganisation.Status, cancellationToken)).ReturnsAsync(() => (OrganisationStatusEvent)null);
+        //Act
+        GetOrganisationQueryResult actual = await sut.Handle(query, cancellationToken);
+        //Assert
+        actual.Should().BeEquivalentTo(
+            expectedOrganisation,
+            o => o.ExcludingMissingMembers()
+                .Excluding(o => o.OrganisationCourseTypes)
+                .Excluding(o => o.OrganisationTypeId)
+                .Excluding(x => x.OrganisationType));
+        actual.RemovedDate.Should().BeNull();
+    }
+
+    [Test, RecursiveMoqAutoData]
     public async Task Handle_OrganisationFound_NoAuditRecords_ReturnsLastUpdateDateFromOrganisation(
         [Frozen] Mock<IOrganisationsRepository> organisationRepositoryMock,
         [Frozen] Mock<IAuditsRepository> auditRepositoryMock,
