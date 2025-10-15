@@ -1,9 +1,9 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SFA.DAS.RoATPService.Data.Repositories;
 using SFA.DAS.RoATPService.Domain.Repositories;
+using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.RoATPService.Data.Extensions;
 
@@ -32,5 +32,6 @@ public static class AddRoatpDataContextExtension
         services.AddTransient<ICourseTypesRepository, CourseTypesRepository>();
         services.AddTransient<IOrganisationCourseTypesRepository, OrganisationCourseTypesRepository>();
         services.AddTransient<IAuditsRepository, AuditsRepository>();
+        services.AddTransient<IRemovedReasonsRepository, RemovedReasonsRepository>();
     }
 }

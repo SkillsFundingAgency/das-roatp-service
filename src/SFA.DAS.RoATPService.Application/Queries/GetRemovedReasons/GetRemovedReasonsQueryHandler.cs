@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
 using System.Collections.Generic;
@@ -7,19 +8,14 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.RoATPService.Application.Queries.GetRemovedReasons;
-public class GetRemovedReasonsQueryHandler(IRemovedReasonsRepository _removedReasonsRepository) : IRequestHandler<GetRemovedReasonsQuery, GetRemovedReasonsQueryResult>
+public class GetRemovedReasonsQueryHandler(IRemovedReasonsRepository _removedReasonsRepository, ILogger<GetRemovedReasonsQueryHandler> _logger) : IRequestHandler<GetRemovedReasonsQuery, GetRemovedReasonsQueryResult>
 {
     public async Task<GetRemovedReasonsQueryResult> Handle(GetRemovedReasonsQuery request, CancellationToken cancellationToken)
     {
-        List<RemovedReason> Removedreasons = await _removedReasonsRepository.GetAllRemovedReasons(cancellationToken);
+        _logger.LogInformation("Handle request for get all removed reasons");
+
+        List<RemovedReason> removedReasons = await _removedReasonsRepository.GetAllRemovedReasons(cancellationToken);
+
+        return new() { ReasonsForRemoval = removedReasons.Select(r => (RemovedReasonSummary)r) };
     }
-}
-
-public class GetRemovedReasonsQuery : IRequest<GetRemovedReasonsQueryResult>
-{
-}
-
-public class GetRemovedReasonsQueryResult
-{
-    IEnumerable<RemovedReasonSummary> RemovedReasons { get; set; } = Enumerable.Empty<RemovedReasonSummary>();
 }
