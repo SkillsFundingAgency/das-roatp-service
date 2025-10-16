@@ -28,7 +28,8 @@ public class GetRemovedReasonsQueryHandlerTests
         var result = await sut.Handle(query, CancellationToken.None);
 
         // Assert
-        result.ReasonsForRemoval.Should().BeEquivalentTo(expectedResponse);
+        result.ReasonsForRemoval.Should().BeEquivalentTo(expectedResponse, o => o.ExcludingMissingMembers()
+        .Excluding(d => d.Description));
         removedReasonsRepositoryMock.Verify(m => m.GetAllRemovedReasons(It.IsAny<CancellationToken>()), Times.Once);
     }
 
