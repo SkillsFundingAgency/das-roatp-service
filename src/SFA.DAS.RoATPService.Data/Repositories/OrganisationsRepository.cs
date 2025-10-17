@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -17,4 +18,12 @@ internal class OrganisationsRepository(RoatpDataContext _dataContext) : IOrganis
             .Include(o => o.OrganisationCourseTypes)
             .ThenInclude(oc => oc.CourseType)
             .FirstOrDefaultAsync(o => o.Ukprn == ukprn, cancellationToken);
+
+    public Task<List<Organisation>> GetOrganisations(CancellationToken cancellationToken)
+        => _dataContext
+            .Organisations
+            .Include(o => o.OrganisationType)
+            .Include(o => o.OrganisationCourseTypes)
+            .ThenInclude(oc => oc.CourseType)
+            .ToListAsync(cancellationToken);
 }

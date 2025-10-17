@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.RoATPService.Domain.Repositories;
@@ -6,4 +7,5 @@ namespace SFA.DAS.RoATPService.Domain.Repositories;
 public interface IOrganisationsRepository
 {
     Task<Entities.Organisation> GetOrganisationByUkprn(int ukprn, CancellationToken cancellationToken);
+    Task<List<Entities.Organisation>> GetOrganisations(CancellationToken cancellationToken);
 }
