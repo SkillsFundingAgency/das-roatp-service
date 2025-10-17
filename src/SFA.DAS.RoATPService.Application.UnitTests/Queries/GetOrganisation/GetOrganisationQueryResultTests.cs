@@ -18,15 +18,15 @@ public class GetOrganisationQueryResultTests
             Assert.That(sut.Ukprn, Is.EqualTo(organisation.Ukprn));
             Assert.That(sut.LegalName, Is.EqualTo(organisation.LegalName));
             Assert.That(sut.TradingName, Is.EqualTo(organisation.TradingName));
-            Assert.That(sut.CompanyNumber, Is.EqualTo(organisation.OrganisationData.CompanyNumber));
-            Assert.That(sut.CharityNumber, Is.EqualTo(organisation.OrganisationData.CharityNumber));
+            Assert.That(sut.CompanyNumber, Is.EqualTo(organisation.CompanyNumber));
+            Assert.That(sut.CharityNumber, Is.EqualTo(organisation.CharityNumber));
             Assert.That(sut.ProviderType, Is.EqualTo(organisation.ProviderType));
             Assert.That(sut.OrganisationTypeId, Is.EqualTo(organisation.OrganisationType.Id));
             Assert.That(sut.OrganisationType, Is.EqualTo(organisation.OrganisationType.Type));
-            Assert.That(sut.ApplicationDeterminedDate, Is.EqualTo(organisation.OrganisationData.ApplicationDeterminedDate));
+            Assert.That(sut.ApplicationDeterminedDate, Is.EqualTo(organisation.ApplicationDeterminedDate));
             Assert.That(sut.Status, Is.EqualTo(organisation.Status));
-            Assert.That(sut.RemovedReasonId, Is.EqualTo(organisation.OrganisationData?.RemovedReason?.Id));
-            Assert.That(sut.RemovedReason, Is.EqualTo(organisation.OrganisationData?.RemovedReason?.Reason));
+            Assert.That(sut.RemovedReasonId, Is.EqualTo(organisation.RemovedReasonId));
+            Assert.That(sut.RemovedReason, Is.EqualTo(organisation.RemovedReason.Reason));
             Assert.That(sut.AllowedCourseTypes.Count(), Is.EqualTo(organisation.OrganisationCourseTypes.Count));
         });
     }

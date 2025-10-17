@@ -1,24 +1,32 @@
 ﻿CREATE TABLE [dbo].[Organisations](
 	[Id] [uniqueidentifier] NOT NULL,
 	[CreatedAt] DATETIME2 NOT NULL, 
-    [CreatedBy] NVARCHAR(256) NOT NULL, 
-    [UpdatedAt] DATETIME2 NULL, 
-    [UpdatedBy] NVARCHAR(256) NULL, 
-    [StatusId] INT NOT NULL, 
+	[CreatedBy] NVARCHAR(256) NOT NULL, 
+	[UpdatedAt] DATETIME2 NULL, 
+	[UpdatedBy] NVARCHAR(256) NULL, 
+	[StatusId] INT NOT NULL, 
 	[ProviderTypeId] INT NOT NULL,
 	[OrganisationTypeId] int NOT NULL,  
 	[UKPRN] bigint NOT NULL,
 	[LegalName] [nvarchar] (200) NOT NULL,
 	[TradingName] [nvarchar] (200) NULL,
 	[StatusDate] [datetime] NOT NULL,
-	OrganisationData [nvarchar](max) NULL
-	
+	OrganisationData [nvarchar](max) NULL,
+	[CompanyNumber] NVARCHAR(20) NULL, 
+	[CharityNumber] NVARCHAR(20) NULL, 
+	[StartDate] DATETIME2 NULL,
+ 	[ApplicationDeterminedDate] DATETIME2 NULL,
+	[RemovedReasonId] INT NULL,
+	[ParentCompanyGuarantee] BIT NULL,
+	[FinancialTrackRecord] BIT NULL,
+	[NonLevyContract] BIT NULL
  CONSTRAINT [PK_Organisations] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY], 
     CONSTRAINT [FK_Organisations_ProviderType] FOREIGN KEY ([ProviderTypeId]) REFERENCES [ProviderTypes]([Id]), 
     CONSTRAINT [FK_Organisations_Status] FOREIGN KEY ([StatusId]) REFERENCES [OrganisationStatus]([Id]),
+    CONSTRAINT [FK_Organisations_RemovedReason] FOREIGN KEY ([RemovedReasonId]) REFERENCES [RemovedReasons]([Id]),
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 

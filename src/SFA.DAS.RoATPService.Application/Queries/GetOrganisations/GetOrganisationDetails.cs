@@ -36,11 +36,11 @@ public class GetOrganisationDetails
             Status = source.Status,
             OrganisationTypeId = source.OrganisationType.Id,
             OrganisationType = source.OrganisationType.Type,
-            CompanyNumber = source.OrganisationData?.CompanyNumber,
-            CharityNumber = source.OrganisationData?.CharityNumber,
-            ApplicationDeterminedDate = source.OrganisationData?.ApplicationDeterminedDate,
-            RemovedReasonId = source.OrganisationData?.RemovedReason?.Id,
-            RemovedReason = source.OrganisationData?.RemovedReason?.Reason,
+            CompanyNumber = source.CompanyNumber,
+            CharityNumber = source.CharityNumber,
+            ApplicationDeterminedDate = source.ApplicationDeterminedDate,
+            RemovedReasonId = source.RemovedReasonId,
+            RemovedReason = source.RemovedReason?.Reason,
             AllowedCourseTypes = source.OrganisationCourseTypes.Select(c => new AllowedCourseType(c.CourseType.Id, c.CourseType.Name, c.CourseType.LearningType))
         };
 }
