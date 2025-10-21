@@ -7,20 +7,22 @@ SELECT
 	o.LegalName AS [Legal name],
 	o.TradingName AS [Trading name],
 	ot.Type AS [Organisation type],
-	o.CompanyNumber AS [Company number],
-	o.CharityNumber AS [Charity number],
-	CASE o.ParentCompanyGuarantee
-	WHEN 1 THEN 'Yes'
+	JSON_VALUE(o.OrganisationData, '$.CompanyNumber') AS [Company number],
+	JSON_VALUE(o.OrganisationData, '$.CharityNumber') AS [Charity number],
+	CASE JSON_VALUE(o.OrganisationData, '$.ParentCompanyGuarantee')
+	WHEN 'True' THEN 'Yes'
 	ELSE 'No'
 	END AS [Parent company guarantee],
-	CASE o.FinancialTrackRecord
-	WHEN 1 THEN 'Yes'
+	CASE JSON_VALUE(o.OrganisationData, '$.FinancialTrackRecord')
+	WHEN 'True' THEN 'Yes'
 	ELSE 'No'
 	END AS [Financial track record],
 	os.[Status],
 	SUBSTRING(CONVERT(VARCHAR, o.StatusDate, 103), 0, 11) AS [Status date],
-	rr.RemovedReason AS [Reason],
-	SUBSTRING(CONVERT(VARCHAR, o.StartDate, 103), 0, 11) 
+	JSON_VALUE(o.OrganisationData, '$.RemovedReason.Reason') AS [Reason],
+	SUBSTRING(JSON_VALUE(OrganisationData, '$.StartDate'), 9, 2) + '/' 
+	+ SUBSTRING(JSON_VALUE(OrganisationData, '$.StartDate'), 6, 2) + '/'
+	+ SUBSTRING(JSON_VALUE(OrganisationData, '$.StartDate'), 0, 5)
 	AS [Date joined]
 	FROM Organisations o
 	INNER JOIN ProviderTypes pt
@@ -29,8 +31,6 @@ SELECT
 	ON ot.Id = o.OrganisationTypeId
 	INNER JOIN OrganisationStatus os
 	ON os.Id = o.StatusId
-	LEFT OUTER JOIN RemovedReasons rr
-	ON o.RemovedReasonId = rr.Id
 	ORDER BY o.LegalName ASC
 END
 GO

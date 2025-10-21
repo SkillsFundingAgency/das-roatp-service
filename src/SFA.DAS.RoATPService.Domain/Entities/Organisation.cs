@@ -29,7 +29,4 @@ public class Organisation
     public int? RemovedReasonId { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? ApplicationDeterminedDate { get; set; }
-    public bool? ParentCompanyGuarantee { get; set; }
-    public bool? FinancialTrackRecord { get; set; }
-    public bool? NonLevyContract { get; set; }
 }

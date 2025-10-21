@@ -46,9 +46,6 @@
 
                 var companyNumber = command.CompanyNumber?.ToUpper();
                 var charityNumber = command.CharityNumber;
-                var parentCompanyGuarantee = command.ParentCompanyGuarantee;
-                var financialTrackRecord = command.FinancialTrackRecord;
-                var nonLevyContract = command.NonLevyContract;
                 var applicationDeterminedDate = command.ApplicationDeterminedDate;
 
                 string sql = $"INSERT INTO [dbo].[Organisations] " +
@@ -65,16 +62,13 @@
                              ",[CompanyNumber]" +
                              ",[CharityNumber]" +
                              ",[StartDate]" +
-                             ",[ParentCompanyGuarantee]" +
-                             ",[FinancialTrackRecord]" +
-                             ",[NonLevyContract]" +
                              ",[applicationDeterminedDate]" +
                              ",[OrganisationData]" +
                              ") " +
                              "VALUES " +
                              "(@organisationId, @createdAt, @createdBy, @statusId, @providerTypeId, @organisationTypeId," +
                              " @ukprn, @legalName, @tradingName, @statusDate, " +
-                             "@companyNumber,@charityNumber,@startDate, @parentCompanyGuarantee,@financialTrackRecord,@nonLevyContract,@applicationDeterminedDate,  " +
+                             "@companyNumber,@charityNumber,@startDate, @applicationDeterminedDate,  " +
                              "@organisationData)";
 
                 var organisationsCreated = await connection.ExecuteAsync(sql,
@@ -93,9 +87,6 @@
                         companyNumber,
                         charityNumber,
                         startDate,
-                        parentCompanyGuarantee,
-                        financialTrackRecord,
-                        nonLevyContract,
                         applicationDeterminedDate,
                         organisationData
                     });

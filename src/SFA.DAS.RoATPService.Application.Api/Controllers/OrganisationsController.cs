@@ -26,7 +26,7 @@ public class OrganisationsController(IMediator _mediator, ILogger<OrganisationsC
     }
 
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetOrganisationQueryResult))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetOrganisationsQueryResult))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetOrganisations(CancellationToken cancellationToken)
     {

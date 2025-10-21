@@ -22,6 +22,7 @@ public class GetOrganisationQueryResult
     public int? RemovedReasonId { get; set; }
     public string RemovedReason { get; set; }
     public DateTime? RemovedDate { get; set; }
+    public DateTime? StartDate { get; set; }
     public IEnumerable<AllowedCourseType> AllowedCourseTypes { get; set; } = [];
 
     public static implicit operator GetOrganisationQueryResult(Organisation source) =>
@@ -40,7 +41,8 @@ public class GetOrganisationQueryResult
             ApplicationDeterminedDate = source.ApplicationDeterminedDate,
             RemovedReasonId = source.RemovedReasonId,
             RemovedReason = source.RemovedReason?.Reason,
-            AllowedCourseTypes = source.OrganisationCourseTypes.Select(c => new AllowedCourseType(c.CourseType.Id, c.CourseType.Name, c.CourseType.LearningType))
+            AllowedCourseTypes = source.OrganisationCourseTypes.Select(c => new AllowedCourseType(c.CourseType.Id, c.CourseType.Name, c.CourseType.LearningType)),
+            StartDate = source.StartDate
         };
 }
 

@@ -16,10 +16,7 @@
 	[CharityNumber] NVARCHAR(20) NULL, 
 	[StartDate] DATETIME2 NULL,
  	[ApplicationDeterminedDate] DATETIME2 NULL,
-	[RemovedReasonId] INT NULL,
-	[ParentCompanyGuarantee] BIT NULL,
-	[FinancialTrackRecord] BIT NULL,
-	[NonLevyContract] BIT NULL
+	[RemovedReasonId] INT NULL
  CONSTRAINT [PK_Organisations] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
