@@ -15,7 +15,7 @@ public class GetOrganisationsQueryHandler(
         var organisations = await _organisationRepository.GetOrganisations(cancellationToken);
 
         var organisationsReturned = new GetOrganisationsQueryResult
-        { Organisations = organisations.Select(o => (GetOrganisationDetails)o).ToList() };
+        { Organisations = organisations.Select(o => (OrganisationModel)o).ToList() };
 
         return organisationsReturned;
     }

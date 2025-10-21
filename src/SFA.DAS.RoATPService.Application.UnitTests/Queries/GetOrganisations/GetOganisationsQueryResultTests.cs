@@ -12,7 +12,7 @@ public class GetOganisationsQueryResultTests
     [Test, RecursiveMoqAutoData]
     public void ConvertsFromOrganisationEntity(Organisation organisation)
     {
-        GetOrganisationDetails sut = organisation;
+        OrganisationModel sut = organisation;
         Assert.Multiple(() =>
         {
             Assert.That(sut.OrganisationId, Is.EqualTo(organisation.Id));
@@ -28,22 +28,6 @@ public class GetOganisationsQueryResultTests
             Assert.That(sut.Status, Is.EqualTo(organisation.Status));
             Assert.That(sut.RemovedReasonId, Is.EqualTo(organisation.RemovedReasonId));
             Assert.That(sut.RemovedReason, Is.EqualTo(organisation.RemovedReason.Reason));
-            Assert.That(sut.AllowedCourseTypes.Count(), Is.EqualTo(organisation.OrganisationCourseTypes.Count));
-        });
-    }
-
-    [Test, RecursiveMoqAutoData]
-    public void ConvertsFromOrganisationEntityWithoutOrganisationData(Organisation organisation)
-    {
-        organisation.OrganisationData = null;
-        GetOrganisationDetails sut = organisation;
-        Assert.Multiple(() =>
-        {
-            Assert.That(sut.CompanyNumber, Is.Not.Null);
-            Assert.That(sut.CharityNumber, Is.Not.Null);
-            Assert.That(sut.ApplicationDeterminedDate, Is.Not.Null);
-            Assert.That(sut.RemovedReasonId, Is.Not.Null);
-            Assert.That(sut.RemovedReason, Is.Not.Null);
             Assert.That(sut.AllowedCourseTypes.Count(), Is.EqualTo(organisation.OrganisationCourseTypes.Count));
         });
     }

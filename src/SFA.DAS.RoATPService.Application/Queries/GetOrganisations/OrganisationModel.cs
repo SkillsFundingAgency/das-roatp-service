@@ -7,8 +7,7 @@ using SFA.DAS.RoATPService.Domain.Entities;
 
 namespace SFA.DAS.RoATPService.Application.Queries.GetOrganisations;
 
-
-public class GetOrganisationDetails
+public class OrganisationModel
 {
     public Guid OrganisationId { get; set; }
     public int Ukprn { get; set; }
@@ -26,7 +25,7 @@ public class GetOrganisationDetails
     public DateTime? StartDate { get; set; }
     public IEnumerable<AllowedCourseType> AllowedCourseTypes { get; set; } = [];
 
-    public static implicit operator GetOrganisationDetails(Organisation source) =>
+    public static implicit operator OrganisationModel(Organisation source) =>
         new()
         {
             OrganisationId = source.Id,
