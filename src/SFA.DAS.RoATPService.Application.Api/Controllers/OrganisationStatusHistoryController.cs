@@ -18,6 +18,6 @@ public class OrganisationStatusHistoryController(IMediator _mediator) : Controll
     {
         GetOrganisationStatusHistoryQuery query = new(ukprn);
         GetOrganisationStatusHistoryQueryResult result = await _mediator.Send(query, cancellationToken);
-        return Ok(result.StatusHistory);
+        return Ok(result);
     }
 }

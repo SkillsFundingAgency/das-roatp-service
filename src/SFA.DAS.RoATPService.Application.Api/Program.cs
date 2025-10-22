@@ -34,7 +34,6 @@ builder.Services
     .AddSwaggerGen(options =>
     {
         options.SwaggerDoc(PolicyNames.Default, new OpenApiInfo { Title = "ROATP API" });
-        options.DescribeAllParametersInCamelCase();
         options.CustomSchemaIds(type => type.ToString());
     });
 
@@ -65,7 +64,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
-app.UseSwagger();
+app.UseSwagger(c => c.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi2_0);
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint($"/swagger/{PolicyNames.Default}/swagger.json", PolicyNames.Default);

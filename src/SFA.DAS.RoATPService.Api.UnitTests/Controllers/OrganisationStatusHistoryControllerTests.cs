@@ -29,6 +29,6 @@ public class OrganisationStatusHistoryControllerTests
         var result = await sut.GetAll(ukprn, cancellationToken);
 
         Assert.That(result, Is.TypeOf<OkObjectResult>());
-        result.As<OkObjectResult>().Value.Should().BeEquivalentTo(queryResult.StatusHistory);
+        result.As<OkObjectResult>().Value.Should().Be(queryResult);
     }
 }
