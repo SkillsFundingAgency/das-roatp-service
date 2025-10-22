@@ -1,18 +1,16 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using SFA.DAS.RoATPService.Application.Common;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
 
 namespace SFA.DAS.RoATPService.Application.Queries.GetOrganisation;
 
-public class GetOrganisationQueryHandler(
-    IOrganisationsRepository _organisationRepository,
-    IOrganisationStatusEventsRepository _organisationStatusEventRepository,
-    IAuditsRepository _auditsRepository)
-    : IRequestHandler<GetOrganisationQuery, GetOrganisationQueryResult>
+public class GetOrganisationQueryHandler(IOrganisationsRepository _organisationRepository)
+    : IRequestHandler<GetOrganisationQuery, OrganisationModel>
 {
-    public async Task<GetOrganisationQueryResult> Handle(GetOrganisationQuery request, CancellationToken cancellationToken)
+    public async Task<OrganisationModel> Handle(GetOrganisationQuery request, CancellationToken cancellationToken)
     {
         Organisation organisation = await _organisationRepository.GetOrganisationByUkprn(request.Ukprn, cancellationToken);
         if (organisation == null)
@@ -20,16 +18,7 @@ public class GetOrganisationQueryHandler(
             return null;
         }
 
-        GetOrganisationQueryResult result = organisation;
-
-        if (organisation.Status == OrganisationStatus.Removed)
-        {
-            OrganisationStatusEvent latestOrganisationStatusEvent = await _organisationStatusEventRepository.GetLatestStatusChangeEvent(request.Ukprn, organisation.Status, cancellationToken);
-            result.RemovedDate = latestOrganisationStatusEvent?.CreatedOn;
-        }
-
-        var lastUpdatedTime = await _auditsRepository.GetLastUpdatedDateForOrganisation(organisation.Id, cancellationToken);
-        result.LastUpdatedDate = lastUpdatedTime ?? organisation.UpdatedAt;
+        OrganisationModel result = organisation;
 
         return result;
     }

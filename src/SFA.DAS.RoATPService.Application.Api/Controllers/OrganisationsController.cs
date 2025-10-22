@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using SFA.DAS.RoATPService.Application.Common;
 using SFA.DAS.RoATPService.Application.Queries.GetOrganisation;
 using SFA.DAS.RoATPService.Application.Queries.GetOrganisations;
 
@@ -15,13 +16,13 @@ public class OrganisationsController(IMediator _mediator, ILogger<OrganisationsC
 {
     [HttpGet]
     [Route("{ukprn:int}")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetOrganisationQueryResult))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OrganisationModel))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetOrganisationByUkprn([FromRoute] int ukprn, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Processing Organisations-GetOrganisationByUkprn for UKPRN {Ukprn}", ukprn);
         GetOrganisationQuery query = new(ukprn);
-        GetOrganisationQueryResult result = await _mediator.Send(query, cancellationToken);
+        OrganisationModel result = await _mediator.Send(query, cancellationToken);
         return result == null ? NotFound() : Ok(result);
     }
 

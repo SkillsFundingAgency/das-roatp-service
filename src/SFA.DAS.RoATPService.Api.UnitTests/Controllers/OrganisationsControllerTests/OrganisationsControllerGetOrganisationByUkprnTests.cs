@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Api.Controllers;
+using SFA.DAS.RoATPService.Application.Common;
 using SFA.DAS.RoATPService.Application.Queries.GetOrganisation;
 using SFA.DAS.Testing.AutoFixture;
 
@@ -40,11 +41,11 @@ public class OrganisationsControllerGetOrganisationByUkprnTests
     }
 
     [Test, MoqAutoData]
-    public async Task GetOrganisationByUkprn_NullResult_ReturnsNotFound(
+    public async Task GetOrganisationByUkprn_ReturnsOkResponse(
     [Frozen] Mock<IMediator> meditorMock,
     [Greedy] OrganisationsController sut,
     int ukprn,
-    GetOrganisationQueryResult expected,
+    OrganisationModel expected,
     CancellationToken cancellationToken)
     {
         meditorMock.Setup(m => m.Send(It.Is<GetOrganisationQuery>(q => q.Ukprn == ukprn), cancellationToken)).ReturnsAsync(expected);

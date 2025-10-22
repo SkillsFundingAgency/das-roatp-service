@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SFA.DAS.RoATPService.Application.Queries.GetOrganisation;
 using SFA.DAS.RoATPService.Domain.Entities;
 
 
