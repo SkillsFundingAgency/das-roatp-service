@@ -47,4 +47,38 @@ internal class OrganisationCourseTypesRepository(RoatpDataContext context) : IOr
 
         await context.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task DeleteOrganisationShortCourseTypes(Guid organisationId, string userId, CancellationToken cancellationToken)
+    {
+        List<int> existingCourseTypes = await context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId && o.CourseType.LearningType == LearningType.ShortCourse).Select(o => o.CourseTypeId).ToListAsync(cancellationToken);
+
+        context.OrganisationCourseTypes.RemoveRange(context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId && o.CourseType.LearningType == LearningType.ShortCourse));
+
+        AuditLogEntry entry = new()
+        {
+            FieldChanged = "Course Types",
+            NewValue = null,
+            PreviousValue = string.Join(",", existingCourseTypes)
+        };
+
+        AuditData auditData = new()
+        {
+            OrganisationId = organisationId,
+            UpdatedBy = userId,
+            UpdatedAt = DateTime.UtcNow,
+            FieldChanges = [entry]
+        };
+
+        Audit audit = new()
+        {
+            OrganisationId = organisationId,
+            UpdatedBy = userId,
+            UpdatedAt = DateTime.UtcNow,
+            AuditData = auditData
+        };
+
+        context.Audits.Add(audit);
+
+        await context.SaveChangesAsync(cancellationToken);
+    }
 }

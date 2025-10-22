@@ -7,4 +7,5 @@ namespace SFA.DAS.RoATPService.Domain.Repositories;
 public interface IOrganisationCourseTypesRepository
 {
     Task UpdateOrganisationCourseTypes(Guid organisationId, IEnumerable<int> courseTypeIds, string userId, CancellationToken cancellationToken);
+    Task DeleteOrganisationShortCourseTypes(Guid organisationId, string userId, CancellationToken cancellationToken);
 }
