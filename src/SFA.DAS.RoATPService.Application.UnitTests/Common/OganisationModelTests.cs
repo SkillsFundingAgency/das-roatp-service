@@ -1,13 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NUnit.Framework;
-using SFA.DAS.RoATPService.Application.Queries.GetOrganisation;
-using SFA.DAS.RoATPService.Application.Queries.GetOrganisations;
+using SFA.DAS.RoATPService.Application.Common;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.Testing.AutoFixture;
 
-namespace SFA.DAS.RoATPService.Application.UnitTests.Queries.GetOrganisations;
+namespace SFA.DAS.RoATPService.Application.UnitTests.Common;
 
-public class GetOganisationsQueryResultTests
+public class OganisationModelTests
 {
     [Test, RecursiveMoqAutoData]
     public void ConvertsFromOrganisationEntity(Organisation organisation)
@@ -45,10 +45,10 @@ public class GetOganisationsQueryResultTests
         organisation.OrganisationCourseTypes = [orgCourseType1, orgCourseType2];
 
         // Act
-        GetOrganisationQueryResult result = organisation;
+        OrganisationModel sut = organisation;
 
         // Assert
-        var allowedCourseTypes = result.AllowedCourseTypes.ToList();
+        var allowedCourseTypes = sut.AllowedCourseTypes.ToList();
         Assert.That(allowedCourseTypes.Count, Is.EqualTo(2));
 
         Assert.That(allowedCourseTypes[0].CourseTypeId, Is.EqualTo(courseType1.Id));
@@ -58,5 +58,31 @@ public class GetOganisationsQueryResultTests
         Assert.That(allowedCourseTypes[1].CourseTypeId, Is.EqualTo(courseType2.Id));
         Assert.That(allowedCourseTypes[1].CourseTypeName, Is.EqualTo(courseType2.Name));
         Assert.That(allowedCourseTypes[1].LearningType, Is.EqualTo(courseType2.LearningType));
+    }
+
+    [Test, RecursiveMoqAutoData]
+    public void ImplicitOperator_UpdatedAtIsNull_MapsUpdatedDateFromCreatedAt(Organisation organisation)
+    {
+        // Arrange
+        organisation.UpdatedAt = null;
+
+        // Act
+        OrganisationModel sut = organisation;
+
+        // Assert
+        Assert.That(sut.LastUpdatedDate, Is.EqualTo(organisation.CreatedAt));
+    }
+
+    [Test, RecursiveMoqAutoData]
+    public void ImplicitOperator_UpdatedAtIsNotNull_MapsUpdatedDateFromUpdatedAt(Organisation organisation)
+    {
+        // Arrange
+        organisation.UpdatedAt = DateTime.UtcNow;
+
+        // Act
+        OrganisationModel sut = organisation;
+
+        // Assert
+        Assert.That(sut.LastUpdatedDate, Is.EqualTo(organisation.UpdatedAt));
     }
 }

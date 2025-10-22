@@ -5,7 +5,7 @@ using SFA.DAS.RoATPService.Application.Queries.GetOrganisation;
 using SFA.DAS.RoATPService.Domain.Entities;
 
 
-namespace SFA.DAS.RoATPService.Application.Queries.GetOrganisations;
+namespace SFA.DAS.RoATPService.Application.Common;
 
 public class OrganisationModel
 {
@@ -23,6 +23,7 @@ public class OrganisationModel
     public int? RemovedReasonId { get; set; }
     public string RemovedReason { get; set; }
     public DateTime? StartDate { get; set; }
+    public DateTime LastUpdatedDate { get; set; }
     public IEnumerable<AllowedCourseType> AllowedCourseTypes { get; set; } = [];
 
     public static implicit operator OrganisationModel(Organisation source) =>
@@ -42,6 +43,7 @@ public class OrganisationModel
             RemovedReasonId = source.RemovedReasonId,
             RemovedReason = source.RemovedReason?.Reason,
             AllowedCourseTypes = source.OrganisationCourseTypes.Select(c => new AllowedCourseType(c.CourseType.Id, c.CourseType.Name, c.CourseType.LearningType)),
-            StartDate = source.StartDate
+            StartDate = source.StartDate,
+            LastUpdatedDate = source.UpdatedAt ?? source.CreatedAt
         };
 }

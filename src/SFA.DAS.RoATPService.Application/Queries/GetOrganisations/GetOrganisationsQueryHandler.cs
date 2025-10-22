@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using SFA.DAS.RoATPService.Application.Common;
 using SFA.DAS.RoATPService.Domain.Repositories;
 
 namespace SFA.DAS.RoATPService.Application.Queries.GetOrganisations;
