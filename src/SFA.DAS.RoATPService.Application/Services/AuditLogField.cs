@@ -15,6 +15,7 @@
         public static string CompanyNumber => "Company Number";
         public static string CharityNumber => "Charity Number";
         public static string ApplicationDeterminedDate => "Application Determined Date";
+        public static string CourseTypes => "Course Types";
     };
 }
 
