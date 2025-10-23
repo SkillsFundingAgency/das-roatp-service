@@ -50,15 +50,17 @@ internal class OrganisationCourseTypesRepository(RoatpDataContext context) : IOr
 
     public async Task DeleteOrganisationShortCourseTypes(Guid organisationId, string userId, CancellationToken cancellationToken)
     {
-        List<int> existingCourseTypes = await context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId && o.CourseType.LearningType == LearningType.ShortCourse).Select(o => o.CourseTypeId).ToListAsync(cancellationToken);
+        var courseTypesToRemove = await context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId && o.CourseType.LearningType == LearningType.ShortCourse).ToListAsync(cancellationToken);
 
-        context.OrganisationCourseTypes.RemoveRange(context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId && o.CourseType.LearningType == LearningType.ShortCourse));
+        context.OrganisationCourseTypes.RemoveRange(courseTypesToRemove);
+
+        var removedCourseTypeIds = courseTypesToRemove.Select(c => c.CourseTypeId).ToList();
 
         AuditLogEntry entry = new()
         {
             FieldChanged = "Course Types",
             NewValue = null,
-            PreviousValue = string.Join(",", existingCourseTypes)
+            PreviousValue = string.Join(",", removedCourseTypeIds)
         };
 
         AuditData auditData = new()
