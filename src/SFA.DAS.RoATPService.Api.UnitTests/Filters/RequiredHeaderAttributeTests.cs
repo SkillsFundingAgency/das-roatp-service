@@ -33,6 +33,7 @@ public class RequiredHeaderAttributeTests
         result.Should().BeEquivalentTo(expectedResponse);
     }
 
+    [Test]
     public void OnActionExecuting_HeaderPresent_ShouldNotSetResult()
     {
         //Arrange
