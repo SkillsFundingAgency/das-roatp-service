@@ -21,5 +21,12 @@ public class Organisation
     public DateTime? UpdatedAt { get; set; }
 
     public virtual OrganisationType OrganisationType { get; set; }
+    public virtual RemovedReason RemovedReason { get; set; }
     public virtual ICollection<OrganisationCourseType> OrganisationCourseTypes { get; set; } = [];
+
+    public string CompanyNumber { get; set; }
+    public string CharityNumber { get; set; }
+    public int? RemovedReasonId { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? ApplicationDeterminedDate { get; set; }
 }

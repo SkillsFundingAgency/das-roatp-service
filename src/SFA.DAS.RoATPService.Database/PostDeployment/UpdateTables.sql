@@ -7,3 +7,4 @@
 :r .\AddOrganisationCategory.sql
 :r .\AddOrganisationCategoryOrgTypeProviderType.sql
 :r .\AddCourseTypes.sql
+:r .\AddOrganisationDataFields.sql

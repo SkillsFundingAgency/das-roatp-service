@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using SFA.DAS.RoATPService.Domain.Entities;
 
-namespace SFA.DAS.RoATPService.Application.Queries.GetOrganisation;
 
-public class GetOrganisationQueryResult
+namespace SFA.DAS.RoATPService.Application.Common;
+
+public class OrganisationModel
 {
     public Guid OrganisationId { get; set; }
     public int Ukprn { get; set; }
@@ -17,14 +18,14 @@ public class GetOrganisationQueryResult
     public int OrganisationTypeId { get; set; }
     public string OrganisationType { get; set; }
     public OrganisationStatus Status { get; set; }
-    public DateTime? LastUpdatedDate { get; set; }
     public DateTime? ApplicationDeterminedDate { get; set; }
     public int? RemovedReasonId { get; set; }
     public string RemovedReason { get; set; }
-    public DateTime? RemovedDate { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime LastUpdatedDate { get; set; }
     public IEnumerable<AllowedCourseType> AllowedCourseTypes { get; set; } = [];
 
-    public static implicit operator GetOrganisationQueryResult(Organisation source) =>
+    public static implicit operator OrganisationModel(Organisation source) =>
         new()
         {
             OrganisationId = source.Id,
@@ -35,13 +36,13 @@ public class GetOrganisationQueryResult
             Status = source.Status,
             OrganisationTypeId = source.OrganisationType.Id,
             OrganisationType = source.OrganisationType.Type,
-            CompanyNumber = source.OrganisationData?.CompanyNumber,
-            CharityNumber = source.OrganisationData?.CharityNumber,
-            ApplicationDeterminedDate = source.OrganisationData?.ApplicationDeterminedDate,
-            RemovedReasonId = source.OrganisationData?.RemovedReason?.Id,
-            RemovedReason = source.OrganisationData?.RemovedReason?.Reason,
-            AllowedCourseTypes = source.OrganisationCourseTypes.Select(c => new AllowedCourseType(c.CourseType.Id, c.CourseType.Name, c.CourseType.LearningType))
+            CompanyNumber = source.CompanyNumber,
+            CharityNumber = source.CharityNumber,
+            ApplicationDeterminedDate = source.ApplicationDeterminedDate,
+            RemovedReasonId = source.RemovedReasonId,
+            RemovedReason = source.RemovedReason?.Reason,
+            AllowedCourseTypes = source.OrganisationCourseTypes.Select(c => new AllowedCourseType(c.CourseType.Id, c.CourseType.Name, c.CourseType.LearningType)),
+            StartDate = source.StartDate,
+            LastUpdatedDate = source.UpdatedAt ?? source.CreatedAt
         };
 }
-
-public record AllowedCourseType(int CourseTypeId, string CourseTypeName, LearningType LearningType);

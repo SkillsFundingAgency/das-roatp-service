@@ -1,15 +1,17 @@
-﻿using MediatR;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.RoATPService.Application.Api.Models;
 using SFA.DAS.RoATPService.Application.Commands.UpdateOrganisationCourseTypes;
 using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.RoATPService.Application.Api.Controllers;
 
 [ApiController]
 [Route("organisations/{ukprn}/course-types")]
+[Tags("Organisations")]
 public class OrganisationCourseTypesController(IMediator _mediator) : ControllerBase
 {
     [HttpPut]

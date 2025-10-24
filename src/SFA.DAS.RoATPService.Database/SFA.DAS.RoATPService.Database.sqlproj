@@ -94,6 +94,7 @@
     <None Include="PostDeployment\MapProviderTypesToOrganisationTypes.sql" />
     <None Include="PostDeployment\UpdateTables.sql" />
     <None Include="PostDeployment\AddCourseTypes.sql" />
+    <None Include="PostDeployment\AddOrganisationDataFields.sql" />
     <None Include="Scripts\AddApprenticeshipCourseTypeToMainAndEmployerProviders.sql" />
   </ItemGroup>
   <ItemGroup>

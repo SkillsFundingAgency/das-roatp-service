@@ -1,49 +1,33 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NUnit.Framework;
-using SFA.DAS.RoATPService.Application.Queries.GetOrganisation;
-using SFA.DAS.RoATPService.Application.Queries.GetOrganisations;
+using SFA.DAS.RoATPService.Application.Common;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.Testing.AutoFixture;
 
-namespace SFA.DAS.RoATPService.Application.UnitTests.Queries.GetOrganisations;
+namespace SFA.DAS.RoATPService.Application.UnitTests.Common;
 
-public class GetOganisationsQueryResultTests
+public class OganisationModelTests
 {
     [Test, RecursiveMoqAutoData]
     public void ConvertsFromOrganisationEntity(Organisation organisation)
     {
-        GetOrganisationDetails sut = organisation;
+        OrganisationModel sut = organisation;
         Assert.Multiple(() =>
         {
             Assert.That(sut.OrganisationId, Is.EqualTo(organisation.Id));
             Assert.That(sut.Ukprn, Is.EqualTo(organisation.Ukprn));
             Assert.That(sut.LegalName, Is.EqualTo(organisation.LegalName));
             Assert.That(sut.TradingName, Is.EqualTo(organisation.TradingName));
-            Assert.That(sut.CompanyNumber, Is.EqualTo(organisation.OrganisationData.CompanyNumber));
-            Assert.That(sut.CharityNumber, Is.EqualTo(organisation.OrganisationData.CharityNumber));
+            Assert.That(sut.CompanyNumber, Is.EqualTo(organisation.CompanyNumber));
+            Assert.That(sut.CharityNumber, Is.EqualTo(organisation.CharityNumber));
             Assert.That(sut.ProviderType, Is.EqualTo(organisation.ProviderType));
             Assert.That(sut.OrganisationTypeId, Is.EqualTo(organisation.OrganisationType.Id));
             Assert.That(sut.OrganisationType, Is.EqualTo(organisation.OrganisationType.Type));
-            Assert.That(sut.ApplicationDeterminedDate, Is.EqualTo(organisation.OrganisationData.ApplicationDeterminedDate));
+            Assert.That(sut.ApplicationDeterminedDate, Is.EqualTo(organisation.ApplicationDeterminedDate));
             Assert.That(sut.Status, Is.EqualTo(organisation.Status));
-            Assert.That(sut.RemovedReasonId, Is.EqualTo(organisation.OrganisationData?.RemovedReason?.Id));
-            Assert.That(sut.RemovedReason, Is.EqualTo(organisation.OrganisationData?.RemovedReason?.Reason));
-            Assert.That(sut.AllowedCourseTypes.Count(), Is.EqualTo(organisation.OrganisationCourseTypes.Count));
-        });
-    }
-
-    [Test, RecursiveMoqAutoData]
-    public void ConvertsFromOrganisationEntityWithoutOrganisationData(Organisation organisation)
-    {
-        organisation.OrganisationData = null;
-        GetOrganisationDetails sut = organisation;
-        Assert.Multiple(() =>
-        {
-            Assert.That(sut.CompanyNumber, Is.Null);
-            Assert.That(sut.CharityNumber, Is.Null);
-            Assert.That(sut.ApplicationDeterminedDate, Is.Null);
-            Assert.That(sut.RemovedReasonId, Is.Null);
-            Assert.That(sut.RemovedReason, Is.Null);
+            Assert.That(sut.RemovedReasonId, Is.EqualTo(organisation.RemovedReasonId));
+            Assert.That(sut.RemovedReason, Is.EqualTo(organisation.RemovedReason.Reason));
             Assert.That(sut.AllowedCourseTypes.Count(), Is.EqualTo(organisation.OrganisationCourseTypes.Count));
         });
     }
@@ -61,10 +45,10 @@ public class GetOganisationsQueryResultTests
         organisation.OrganisationCourseTypes = [orgCourseType1, orgCourseType2];
 
         // Act
-        GetOrganisationQueryResult result = organisation;
+        OrganisationModel sut = organisation;
 
         // Assert
-        var allowedCourseTypes = result.AllowedCourseTypes.ToList();
+        var allowedCourseTypes = sut.AllowedCourseTypes.ToList();
         Assert.That(allowedCourseTypes.Count, Is.EqualTo(2));
 
         Assert.That(allowedCourseTypes[0].CourseTypeId, Is.EqualTo(courseType1.Id));
@@ -74,5 +58,31 @@ public class GetOganisationsQueryResultTests
         Assert.That(allowedCourseTypes[1].CourseTypeId, Is.EqualTo(courseType2.Id));
         Assert.That(allowedCourseTypes[1].CourseTypeName, Is.EqualTo(courseType2.Name));
         Assert.That(allowedCourseTypes[1].LearningType, Is.EqualTo(courseType2.LearningType));
+    }
+
+    [Test, RecursiveMoqAutoData]
+    public void ImplicitOperator_UpdatedAtIsNull_MapsUpdatedDateFromCreatedAt(Organisation organisation)
+    {
+        // Arrange
+        organisation.UpdatedAt = null;
+
+        // Act
+        OrganisationModel sut = organisation;
+
+        // Assert
+        Assert.That(sut.LastUpdatedDate, Is.EqualTo(organisation.CreatedAt));
+    }
+
+    [Test, RecursiveMoqAutoData]
+    public void ImplicitOperator_UpdatedAtIsNotNull_MapsUpdatedDateFromUpdatedAt(Organisation organisation)
+    {
+        // Arrange
+        organisation.UpdatedAt = DateTime.UtcNow;
+
+        // Act
+        OrganisationModel sut = organisation;
+
+        // Assert
+        Assert.That(sut.LastUpdatedDate, Is.EqualTo(organisation.UpdatedAt));
     }
 }
