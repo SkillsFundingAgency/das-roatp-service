@@ -51,11 +51,11 @@ internal class OrganisationCourseTypesRepository(RoatpDataContext context) : IOr
 
     public async Task DeleteOrganisationShortCourseTypes(Guid organisationId, string userId, CancellationToken cancellationToken)
     {
-        var courseTypesToRemove = await context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId && o.CourseType.LearningType == LearningType.ShortCourse).ToListAsync(cancellationToken);
+        List<OrganisationCourseType> courseTypesToRemove = await context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId && o.CourseType.LearningType == LearningType.ShortCourse).ToListAsync(cancellationToken);
 
         context.OrganisationCourseTypes.RemoveRange(courseTypesToRemove);
 
-        var removedCourseTypeIds = courseTypesToRemove.Select(c => c.CourseTypeId).ToList();
+        List<int> removedCourseTypeIds = courseTypesToRemove.Select(c => c.CourseTypeId).ToList();
 
         AuditLogEntry entry = new()
         {
