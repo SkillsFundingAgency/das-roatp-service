@@ -18,7 +18,7 @@ public class RequiredHeaderAttributeTests
         var headerName = "X-Test-Header";
         RequiredHeaderAttribute sut = new(headerName);
         var actionCotext = new ActionContext(new DefaultHttpContext(), new RouteData(), new ActionDescriptor());
-        var context = new ActionExecutingContext(new ActionContext(), new List<IFilterMetadata>(), new Dictionary<string, object>(), controller: null);
+        var context = new ActionExecutingContext(actionCotext, new List<IFilterMetadata>(), new Dictionary<string, object>(), controller: null);
         var expectedResponse = new BadRequestObjectResult(new
         {
             Error = $"Missing required header: '{headerName}'."

@@ -1,4 +1,5 @@
 ﻿using AutoFixture.NUnit3;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.commands.DeleteOrganisationShortCourseTypes;
@@ -16,6 +17,7 @@ public class DeleteOrganisationShortCourseTypesCommandHandlerTests
     public async Task Handle_ShortCourseTypeFound_InvokesDeleteOrganisationShortCourseTypes(
         [Frozen] Mock<IOrganisationCourseTypesRepository> organisationCourseTypesRepositoryMock,
         [Frozen] Mock<IOrganisationsRepository> organisationsRepositoryMock,
+        [Frozen] Mock<ILogger<DeleteOrganisationShortCourseTypesCommandHandler>> loggerMock,
         DeleteOrganisationShortCourseTypesCommand command)
     {
         // Arrange
@@ -25,7 +27,7 @@ public class DeleteOrganisationShortCourseTypesCommandHandlerTests
                 {  new OrganisationCourseType { CourseType = new CourseType { LearningType = LearningType.ShortCourse }}}
         };
         organisationsRepositoryMock.Setup(o => o.GetOrganisationByUkprn(command.Ukprn, It.IsAny<CancellationToken>())).ReturnsAsync(organisation);
-        DeleteOrganisationShortCourseTypesCommandHandler sut = new(organisationsRepositoryMock.Object, organisationCourseTypesRepositoryMock.Object);
+        DeleteOrganisationShortCourseTypesCommandHandler sut = new(organisationsRepositoryMock.Object, organisationCourseTypesRepositoryMock.Object, loggerMock.Object);
 
         // Act
         await sut.Handle(command, CancellationToken.None);
@@ -38,6 +40,7 @@ public class DeleteOrganisationShortCourseTypesCommandHandlerTests
     public async Task Handle_ShortCourseTypeNotFound_DoesNotInvokesDeleteOrganisationShortCourseTypes(
         [Frozen] Mock<IOrganisationCourseTypesRepository> organisationCourseTypesRepositoryMock,
         [Frozen] Mock<IOrganisationsRepository> organisationsRepositoryMock,
+        [Frozen] Mock<ILogger<DeleteOrganisationShortCourseTypesCommandHandler>> loggerMock,
         DeleteOrganisationShortCourseTypesCommand command)
     {
         // Arrange
@@ -47,7 +50,7 @@ public class DeleteOrganisationShortCourseTypesCommandHandlerTests
                 {  new OrganisationCourseType { CourseType = new CourseType { LearningType = LearningType.Standard }}}
         };
         organisationsRepositoryMock.Setup(o => o.GetOrganisationByUkprn(command.Ukprn, It.IsAny<CancellationToken>())).ReturnsAsync(organisation);
-        DeleteOrganisationShortCourseTypesCommandHandler sut = new(organisationsRepositoryMock.Object, organisationCourseTypesRepositoryMock.Object);
+        DeleteOrganisationShortCourseTypesCommandHandler sut = new(organisationsRepositoryMock.Object, organisationCourseTypesRepositoryMock.Object, loggerMock.Object);
 
         // Act
         await sut.Handle(command, CancellationToken.None);
