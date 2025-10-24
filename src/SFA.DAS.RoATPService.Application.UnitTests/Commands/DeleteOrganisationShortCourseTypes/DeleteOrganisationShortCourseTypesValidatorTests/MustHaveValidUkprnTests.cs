@@ -15,7 +15,7 @@ public class MustHaveValidUkprnTests
     [Test]
     [MoqInlineAutoData(0)]
     [MoqInlineAutoData(-1)]
-    public async Task Ukprn_IsEmnpty_FailsValidation(
+    public async Task Ukprn_IsEmpty_FailsValidation(
         int ukprn,
         string requestingUserId,
         DeleteOrganisationShortCourseTypesValidator sut)
