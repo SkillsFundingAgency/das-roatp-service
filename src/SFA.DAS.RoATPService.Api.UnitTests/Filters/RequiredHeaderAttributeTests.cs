@@ -34,6 +34,30 @@ public class RequiredHeaderAttributeTests
     }
 
     [Test]
+    public void OnActionExecuting_HeaderIsEmpty_ShouldReturnBadRequest()
+    {
+        //Arrange
+        var headerName = "X-Test-Header";
+        RequiredHeaderAttribute sut = new(headerName);
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Headers[headerName] = "";
+        var actionCotext = new ActionContext(httpContext, new RouteData(), new ActionDescriptor());
+        var context = new ActionExecutingContext(actionCotext, new List<IFilterMetadata>(), new Dictionary<string, object>(), controller: null);
+        var expectedResponse = new BadRequestObjectResult(new
+        {
+            Error = $"Required header is empty: '{headerName}'."
+        });
+
+        // Act
+        sut.OnActionExecuting(context);
+        var result = context.Result.As<BadRequestObjectResult>();
+
+        // Assert
+        context.Result.Should().BeOfType<BadRequestObjectResult>();
+        result.Should().BeEquivalentTo(expectedResponse);
+    }
+
+    [Test]
     public void OnActionExecuting_HeaderPresent_ShouldNotSetResult()
     {
         //Arrange

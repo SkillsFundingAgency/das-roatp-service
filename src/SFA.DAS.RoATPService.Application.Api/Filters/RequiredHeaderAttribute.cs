@@ -25,6 +25,17 @@ public class RequiredHeaderAttribute : ActionFilterAttribute
             return;
         }
 
+        // Check if the request header is null or empty
+        if (string.IsNullOrEmpty(context.HttpContext.Request.Headers[_headerName]))
+        {
+            // If the header is null or empty, set the result to a 400 Bad Request
+            context.Result = new BadRequestObjectResult(new
+            {
+                Error = $"Required header is empty: '{_headerName}'."
+            });
+            return;
+        }
+
         base.OnActionExecuting(context);
     }
 }
