@@ -49,4 +49,20 @@ public class DeleteShortCourseTypesTests
         result.Should().BeOfType<BadRequestObjectResult>();
         response.Value.Should().BeEquivalentTo(validationErrors);
     }
+
+    [Test, MoqAutoData]
+    public async Task DeleteShortCourseTypes_UkprnNotFound_ReturnsNotFound(
+        [Frozen] Mock<IMediator> mediatorMock,
+        [Greedy] OrganisationCourseTypesController sut,
+        DeleteOrganisationShortCourseTypesCommand command)
+    {
+        // Arrange
+        mediatorMock.Setup(m => m.Send(command, It.IsAny<CancellationToken>())).ReturnsAsync(() => null);
+
+        // Act
+        var result = await sut.DeleteShortCourseTypes(command.Ukprn, command.RequestingUserId, CancellationToken.None);
+
+        // Assert
+        result.Should().BeOfType<NotFoundResult>();
+    }
 }

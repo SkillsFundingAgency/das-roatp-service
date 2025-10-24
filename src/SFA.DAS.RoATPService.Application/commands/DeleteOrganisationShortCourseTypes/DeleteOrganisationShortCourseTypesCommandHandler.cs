@@ -12,9 +12,11 @@ public class DeleteOrganisationShortCourseTypesCommandHandler(IOrganisationsRepo
 {
     public async Task<ValidatedResponse> Handle(DeleteOrganisationShortCourseTypesCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation($"Handle DeleteShortCourseTypes request for ukprn {request.Ukprn}.");
+        _logger.LogInformation("Handle DeleteShortCourseTypes request for ukprn {ukprn}.", request.Ukprn);
 
         Organisation organisation = await _organisationsRepository.GetOrganisationByUkprn(request.Ukprn, cancellationToken);
+
+        if (organisation is null) return null;
 
         if (organisation.OrganisationCourseTypes.Select(o => o.CourseType.LearningType).Contains(LearningType.ShortCourse))
         {

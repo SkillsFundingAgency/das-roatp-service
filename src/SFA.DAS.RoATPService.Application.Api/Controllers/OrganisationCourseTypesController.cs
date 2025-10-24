@@ -32,9 +32,9 @@ public class OrganisationCourseTypesController(IMediator _mediator, ILogger<Orga
     [Route("{ukprn}/short-courses")]
     public async Task<IActionResult> DeleteShortCourseTypes([FromRoute] int ukprn, [FromHeader(Name = Constants.RequestingUserIdHeader)] string requestingUserId, CancellationToken cancellationToken)
     {
-        _logger.LogInformation($"Request received to DeleteShortCourseTypes for ukprn {ukprn}.");
+        _logger.LogInformation("Request received to DeleteShortCourseTypes for ukprn {ukprn}.", ukprn);
         DeleteOrganisationShortCourseTypesCommand command = new(ukprn, requestingUserId);
         ValidatedResponse validatedResponse = await _mediator.Send(command, cancellationToken);
-        return validatedResponse.IsValidResponse ? NoContent() : new BadRequestObjectResult(validatedResponse.Errors);
+        return validatedResponse is null ? NotFound() : validatedResponse.IsValidResponse ? NoContent() : new BadRequestObjectResult(validatedResponse.Errors);
     }
 }

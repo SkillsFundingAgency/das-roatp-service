@@ -1,4 +1,5 @@
 ﻿using AutoFixture.NUnit3;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -56,6 +57,26 @@ public class DeleteOrganisationShortCourseTypesCommandHandlerTests
         await sut.Handle(command, CancellationToken.None);
 
         // Assert
+        organisationCourseTypesRepositoryMock.Verify(o => o.DeleteOrganisationShortCourseTypes(organisation.Id, command.RequestingUserId, It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Test, RecursiveMoqAutoData]
+    public async Task Handle_OrganisationNotFound_ReturnsNull(
+    [Frozen] Mock<IOrganisationCourseTypesRepository> organisationCourseTypesRepositoryMock,
+    [Frozen] Mock<IOrganisationsRepository> organisationsRepositoryMock,
+    [Frozen] Mock<ILogger<DeleteOrganisationShortCourseTypesCommandHandler>> loggerMock,
+    DeleteOrganisationShortCourseTypesCommand command)
+    {
+        // Arrange
+        Organisation organisation = new();
+        organisationsRepositoryMock.Setup(o => o.GetOrganisationByUkprn(command.Ukprn, It.IsAny<CancellationToken>())).ReturnsAsync(() => null);
+        DeleteOrganisationShortCourseTypesCommandHandler sut = new(organisationsRepositoryMock.Object, organisationCourseTypesRepositoryMock.Object, loggerMock.Object);
+
+        // Act
+        var result = await sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.Should().BeNull();
         organisationCourseTypesRepositoryMock.Verify(o => o.DeleteOrganisationShortCourseTypes(organisation.Id, command.RequestingUserId, It.IsAny<CancellationToken>()), Times.Never);
     }
 }
