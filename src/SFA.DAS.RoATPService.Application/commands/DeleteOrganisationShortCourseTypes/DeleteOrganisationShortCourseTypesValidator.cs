@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using SFA.DAS.RoATPService.Application.Common.Validators;
 using SFA.DAS.RoATPService.Domain.Repositories;
 
 namespace SFA.DAS.RoATPService.Application.commands.DeleteOrganisationShortCourseTypes;
@@ -11,5 +12,8 @@ public class DeleteOrganisationShortCourseTypesValidator : AbstractValidator<Del
         RuleFor(c => c.Ukprn)
             .GreaterThan(0)
             .WithMessage(UkprnIsRequiredMessage);
+        RuleFor(c => c.Ukprn)
+            .IsValidUkprnFormat()
+            .When(c => c.Ukprn > 0);
     }
 }
