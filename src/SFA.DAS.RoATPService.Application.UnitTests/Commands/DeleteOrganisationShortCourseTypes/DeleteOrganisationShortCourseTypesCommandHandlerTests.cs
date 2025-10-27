@@ -30,10 +30,11 @@ public class DeleteOrganisationShortCourseTypesCommandHandlerTests
         DeleteOrganisationShortCourseTypesCommandHandler sut = new(organisationsRepositoryMock.Object, organisationCourseTypesRepositoryMock.Object, loggerMock.Object);
 
         // Act
-        await sut.Handle(command, CancellationToken.None);
+        var result = await sut.Handle(command, CancellationToken.None);
 
         // Assert
         organisationCourseTypesRepositoryMock.Verify(o => o.DeleteOrganisationShortCourseTypes(organisation.Id, command.RequestingUserId, It.IsAny<CancellationToken>()), Times.Once);
+        Assert.That(result.Result.IsSuccess.Equals(true));
     }
 
     [Test, RecursiveMoqAutoData]
@@ -60,7 +61,7 @@ public class DeleteOrganisationShortCourseTypesCommandHandlerTests
     }
 
     [Test, RecursiveMoqAutoData]
-    public async Task Handle_OrganisationNotFound_ReturnsNull(
+    public async Task Handle_OrganisationNotFound_ReturnAFailureResponse(
     [Frozen] Mock<IOrganisationCourseTypesRepository> organisationCourseTypesRepositoryMock,
     [Frozen] Mock<IOrganisationsRepository> organisationsRepositoryMock,
     [Frozen] Mock<ILogger<DeleteOrganisationShortCourseTypesCommandHandler>> loggerMock,
@@ -76,5 +77,6 @@ public class DeleteOrganisationShortCourseTypesCommandHandlerTests
 
         // Assert
         organisationCourseTypesRepositoryMock.Verify(o => o.DeleteOrganisationShortCourseTypes(organisation.Id, command.RequestingUserId, It.IsAny<CancellationToken>()), Times.Never);
+        Assert.That(result.Result.IsSuccess.Equals(false));
     }
 }

@@ -43,4 +43,20 @@ public class MustHaveValidUkprnTests
         // Assert
         result.ShouldHaveValidationErrorFor(c => c.Ukprn).WithErrorMessage(UkprnValidator.UkprnFormatValidationMessage);
     }
+
+    [Test, MoqAutoData]
+    public async Task Ukprn_IsValid_PassesValidation(
+        string requestingUserId,
+        DeleteOrganisationShortCourseTypesValidator sut)
+    {
+        int ukprn = 11223344;
+        // Arrange
+        DeleteOrganisationShortCourseTypesCommand command = new(ukprn, requestingUserId);
+
+        // Act
+        var result = await sut.TestValidateAsync(command);
+
+        // Assert
+        result.ShouldNotHaveValidationErrorFor(c => c.Ukprn);
+    }
 }
