@@ -15,7 +15,7 @@ public class RequiredHeaderAttribute : ActionFilterAttribute
     public override void OnActionExecuting(ActionExecutingContext context)
     {
         // Check if the request headers contain the required header name
-        if (!context.HttpContext.Request.Headers.ContainsKey(_headerName))
+        if (!context.HttpContext.Request.Headers.TryGetValue(_headerName, out var headerValue))
         {
             // If the header is missing, set the result to a 400 Bad Request
             context.Result = new BadRequestObjectResult(new
@@ -26,7 +26,7 @@ public class RequiredHeaderAttribute : ActionFilterAttribute
         }
 
         // Check if the request header is null or empty
-        if (string.IsNullOrEmpty(context.HttpContext.Request.Headers[_headerName]))
+        if (string.IsNullOrEmpty(headerValue))
         {
             // If the header is null or empty, set the result to a 400 Bad Request
             context.Result = new BadRequestObjectResult(new

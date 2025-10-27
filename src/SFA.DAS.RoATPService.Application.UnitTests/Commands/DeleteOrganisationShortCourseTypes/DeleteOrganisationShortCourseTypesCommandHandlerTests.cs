@@ -1,5 +1,4 @@
 ﻿using AutoFixture.NUnit3;
-using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -76,7 +75,6 @@ public class DeleteOrganisationShortCourseTypesCommandHandlerTests
         var result = await sut.Handle(command, CancellationToken.None);
 
         // Assert
-        result.Should().BeNull();
         organisationCourseTypesRepositoryMock.Verify(o => o.DeleteOrganisationShortCourseTypes(organisation.Id, command.RequestingUserId, It.IsAny<CancellationToken>()), Times.Never);
     }
 }

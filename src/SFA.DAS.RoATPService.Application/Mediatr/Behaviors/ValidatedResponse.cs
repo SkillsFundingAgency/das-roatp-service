@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using FluentValidation.Results;
+using System.Collections.Generic;
 using System.Linq;
-using FluentValidation.Results;
 
 namespace SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
 
@@ -29,6 +29,8 @@ public class ValidatedResponse<T> : ValidatedResponse
     public T Result { get; }
 
     public ValidatedResponse(T model) => Result = model;
+
+    public ValidatedResponse(IEnumerable<ValidationError> validationErrors) : base(validationErrors) { Result = default; }
 }
 
 public record ValidationError(string PropertyName, string ErrorMessage)

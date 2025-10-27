@@ -6,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Api.Controllers;
 using SFA.DAS.RoATPService.Application.commands.DeleteOrganisationShortCourseTypes;
+using SFA.DAS.RoATPService.Application.Common.Models;
 using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
 using SFA.DAS.Testing.AutoFixture;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ public class DeleteShortCourseTypesTests
         DeleteOrganisationShortCourseTypesCommand command)
     {
         // Arrange
-        mediatorMock.Setup(m => m.Send(command, It.IsAny<CancellationToken>())).ReturnsAsync(new ValidatedResponse());
+        mediatorMock.Setup(m => m.Send(command, It.IsAny<CancellationToken>())).ReturnsAsync(new ValidatedResponse<SuccessModel>(new SuccessModel(true)));
 
         // Act
         var result = await sut.DeleteShortCourseTypes(command.Ukprn, command.RequestingUserId, CancellationToken.None);
@@ -39,7 +40,7 @@ public class DeleteShortCourseTypesTests
         List<ValidationError> validationErrors)
     {
         // Arrange
-        mediatorMock.Setup(m => m.Send(command, It.IsAny<CancellationToken>())).ReturnsAsync(new ValidatedResponse(validationErrors));
+        mediatorMock.Setup(m => m.Send(command, It.IsAny<CancellationToken>())).ReturnsAsync(new ValidatedResponse<SuccessModel>(validationErrors));
 
         // Act
         var result = await sut.DeleteShortCourseTypes(command.Ukprn, command.RequestingUserId, CancellationToken.None);
@@ -57,7 +58,7 @@ public class DeleteShortCourseTypesTests
         DeleteOrganisationShortCourseTypesCommand command)
     {
         // Arrange
-        mediatorMock.Setup(m => m.Send(command, It.IsAny<CancellationToken>())).ReturnsAsync(() => null);
+        mediatorMock.Setup(m => m.Send(command, It.IsAny<CancellationToken>())).ReturnsAsync(new ValidatedResponse<SuccessModel>(new SuccessModel(false)));
 
         // Act
         var result = await sut.DeleteShortCourseTypes(command.Ukprn, command.RequestingUserId, CancellationToken.None);
