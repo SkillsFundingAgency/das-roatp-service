@@ -1,25 +1,28 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SFA.DAS.RoATPService.Application.Services;
-using SFA.DAS.RoATPService.Domain;
-using SFA.DAS.RoATPService.Domain.Entities;
-using SFA.DAS.RoATPService.Domain.Repositories;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using SFA.DAS.RoATPService.Application.Services;
+using SFA.DAS.RoATPService.Domain;
+using SFA.DAS.RoATPService.Domain.Entities;
+using SFA.DAS.RoATPService.Domain.Repositories;
 
 namespace SFA.DAS.RoATPService.Data.Repositories;
 
 internal class OrganisationCourseTypesRepository(RoatpDataContext context) : IOrganisationCourseTypesRepository
 {
-    public async Task UpdateOrganisationCourseTypes(Guid organisationId, IEnumerable<int> courseTypeIds, string userId, CancellationToken cancellationToken)
+    public async Task UpdateOrganisationCourseTypes(Domain.Entities.Organisation organisation, IEnumerable<int> courseTypeIds, string userId, CancellationToken cancellationToken)
     {
-        List<int> existingCourseTypes = await context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId).Select(o => o.CourseTypeId).ToListAsync(cancellationToken);
+        organisation.UpdatedAt = DateTime.UtcNow;
+        organisation.UpdatedBy = userId;
 
-        context.OrganisationCourseTypes.RemoveRange(context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId));
+        List<int> existingCourseTypes = await context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisation.Id).Select(o => o.CourseTypeId).ToListAsync(cancellationToken);
 
-        context.OrganisationCourseTypes.AddRange(courseTypeIds.Select(c => new OrganisationCourseType { Id = Guid.NewGuid(), OrganisationId = organisationId, CourseTypeId = c }));
+        context.OrganisationCourseTypes.RemoveRange(context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisation.Id));
+
+        context.OrganisationCourseTypes.AddRange(courseTypeIds.Select(c => new OrganisationCourseType { Id = Guid.NewGuid(), OrganisationId = organisation.Id, CourseTypeId = c }));
 
         AuditLogEntry entry = new()
         {
@@ -30,7 +33,7 @@ internal class OrganisationCourseTypesRepository(RoatpDataContext context) : IOr
 
         AuditData auditData = new()
         {
-            OrganisationId = organisationId,
+            OrganisationId = organisation.Id,
             UpdatedBy = userId,
             UpdatedAt = DateTime.UtcNow,
             FieldChanges = [entry]
@@ -38,7 +41,7 @@ internal class OrganisationCourseTypesRepository(RoatpDataContext context) : IOr
 
         Audit audit = new()
         {
-            OrganisationId = organisationId,
+            OrganisationId = organisation.Id,
             UpdatedBy = userId,
             UpdatedAt = DateTime.UtcNow,
             AuditData = auditData
@@ -49,9 +52,12 @@ internal class OrganisationCourseTypesRepository(RoatpDataContext context) : IOr
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteOrganisationShortCourseTypes(Guid organisationId, string userId, CancellationToken cancellationToken)
+    public async Task DeleteOrganisationShortCourseTypes(Domain.Entities.Organisation organisation, string userId, CancellationToken cancellationToken)
     {
-        List<OrganisationCourseType> courseTypesToRemove = await context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId && o.CourseType.LearningType == LearningType.ShortCourse).ToListAsync(cancellationToken);
+        organisation.UpdatedAt = DateTime.UtcNow;
+        organisation.UpdatedBy = userId;
+
+        List<OrganisationCourseType> courseTypesToRemove = await context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisation.Id && o.CourseType.LearningType == LearningType.ShortCourse).ToListAsync(cancellationToken);
 
         context.OrganisationCourseTypes.RemoveRange(courseTypesToRemove);
 
@@ -66,7 +72,7 @@ internal class OrganisationCourseTypesRepository(RoatpDataContext context) : IOr
 
         AuditData auditData = new()
         {
-            OrganisationId = organisationId,
+            OrganisationId = organisation.Id,
             UpdatedBy = userId,
             UpdatedAt = DateTime.UtcNow,
             FieldChanges = [entry]
@@ -74,7 +80,7 @@ internal class OrganisationCourseTypesRepository(RoatpDataContext context) : IOr
 
         Audit audit = new()
         {
-            OrganisationId = organisationId,
+            OrganisationId = organisation.Id,
             UpdatedBy = userId,
             UpdatedAt = DateTime.UtcNow,
             AuditData = auditData

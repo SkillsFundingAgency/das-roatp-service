@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -9,8 +11,6 @@ using SFA.DAS.RoATPService.Application.commands.DeleteOrganisationShortCourseTyp
 using SFA.DAS.RoATPService.Application.Commands.UpdateOrganisationCourseTypes;
 using SFA.DAS.RoATPService.Application.Common.Models;
 using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.RoATPService.Application.Api.Controllers;
 
@@ -33,7 +33,7 @@ public class OrganisationCourseTypesController(IMediator _mediator, ILogger<Orga
     [Route("{ukprn}/short-courses")]
     public async Task<IActionResult> DeleteShortCourseTypes([FromRoute] int ukprn, [FromHeader(Name = Constants.RequestingUserIdHeader)] string requestingUserId, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Request received to DeleteShortCourseTypes for ukprn {ukprn}.", ukprn);
+        _logger.LogInformation("Request received to DeleteShortCourseTypes for ukprn {Ukprn}.", ukprn);
         DeleteOrganisationShortCourseTypesCommand command = new(ukprn, requestingUserId);
         ValidatedResponse<SuccessModel> validatedResponse = await _mediator.Send(command, cancellationToken);
         if (!validatedResponse.IsValidResponse) return new BadRequestObjectResult(validatedResponse.Errors);

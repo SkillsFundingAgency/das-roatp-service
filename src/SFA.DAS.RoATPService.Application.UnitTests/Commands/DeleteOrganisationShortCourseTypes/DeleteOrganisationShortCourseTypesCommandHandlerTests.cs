@@ -1,4 +1,7 @@
-﻿using AutoFixture.NUnit3;
+﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoFixture.NUnit3;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -6,9 +9,6 @@ using SFA.DAS.RoATPService.Application.commands.DeleteOrganisationShortCourseTyp
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
 using SFA.DAS.Testing.AutoFixture;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.RoATPService.Application.UnitTests.Commands.DeleteOrganisationShortCourseTypes;
 public class DeleteOrganisationShortCourseTypesCommandHandlerTests
@@ -33,7 +33,7 @@ public class DeleteOrganisationShortCourseTypesCommandHandlerTests
         var result = await sut.Handle(command, CancellationToken.None);
 
         // Assert
-        organisationCourseTypesRepositoryMock.Verify(o => o.DeleteOrganisationShortCourseTypes(organisation.Id, command.RequestingUserId, It.IsAny<CancellationToken>()), Times.Once);
+        organisationCourseTypesRepositoryMock.Verify(o => o.DeleteOrganisationShortCourseTypes(organisation, command.RequestingUserId, It.IsAny<CancellationToken>()), Times.Once);
         Assert.That(result.Result.IsSuccess.Equals(true));
     }
 
@@ -57,7 +57,7 @@ public class DeleteOrganisationShortCourseTypesCommandHandlerTests
         await sut.Handle(command, CancellationToken.None);
 
         // Assert
-        organisationCourseTypesRepositoryMock.Verify(o => o.DeleteOrganisationShortCourseTypes(organisation.Id, command.RequestingUserId, It.IsAny<CancellationToken>()), Times.Never);
+        organisationCourseTypesRepositoryMock.Verify(o => o.DeleteOrganisationShortCourseTypes(organisation, command.RequestingUserId, It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Test, RecursiveMoqAutoData]
@@ -76,7 +76,7 @@ public class DeleteOrganisationShortCourseTypesCommandHandlerTests
         var result = await sut.Handle(command, CancellationToken.None);
 
         // Assert
-        organisationCourseTypesRepositoryMock.Verify(o => o.DeleteOrganisationShortCourseTypes(organisation.Id, command.RequestingUserId, It.IsAny<CancellationToken>()), Times.Never);
+        organisationCourseTypesRepositoryMock.Verify(o => o.DeleteOrganisationShortCourseTypes(organisation, command.RequestingUserId, It.IsAny<CancellationToken>()), Times.Never);
         Assert.That(result.Result.IsSuccess.Equals(false));
     }
 }

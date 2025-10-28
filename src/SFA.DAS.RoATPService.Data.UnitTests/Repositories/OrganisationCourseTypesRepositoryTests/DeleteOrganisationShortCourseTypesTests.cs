@@ -16,6 +16,14 @@ public class DeleteOrganisationShortCourseTypesTests
         using var context = new RoatpDataContext(options);
 
         var organisationId = Guid.NewGuid();
+        Organisation organisation = new()
+        {
+            Id = organisationId,
+            LegalName = "Test Organisation",
+            UpdatedAt = DateTime.UtcNow.AddDays(-1),
+            UpdatedBy = "InitialUser"
+        };
+        context.Organisations.Add(organisation);
 
         // Seed a short course type and a non-short course type
         var standardCourseType = new CourseType { Id = 1, Name = "StandardCourse", LearningType = LearningType.Standard };
@@ -35,8 +43,10 @@ public class DeleteOrganisationShortCourseTypesTests
 
         var sut = new OrganisationCourseTypesRepository(context);
 
+        var newUserId = "TestUserId";
+
         // Act
-        await sut.DeleteOrganisationShortCourseTypes(organisationId, "TestUserId", CancellationToken.None);
+        await sut.DeleteOrganisationShortCourseTypes(organisation, newUserId, CancellationToken.None);
 
         // Assert
         var organisationCourseTypes = context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId).ToList();
@@ -46,8 +56,10 @@ public class DeleteOrganisationShortCourseTypesTests
             Assert.That(organisationCourseTypes.Exists(o => o.CourseTypeId == standardCourseType.Id), Is.True);
             Assert.That(organisationCourseTypes.Exists(o => o.CourseTypeId == shortCourseType1.Id), Is.False);
             Assert.That(organisationCourseTypes.Exists(o => o.CourseTypeId == shortCourseType2.Id), Is.False);
+            Assert.That(context.Audits.CountAsync().Result, Is.EqualTo(1));
+            Assert.That(context.Organisations.First().UpdatedAt.GetValueOrDefault().Date, Is.EqualTo(DateTime.UtcNow.Date));
+            Assert.That(context.Organisations.First().UpdatedBy, Is.EqualTo(newUserId));
         });
 
-        Assert.That(context.Audits.CountAsync().Result, Is.EqualTo(1));
     }
 }

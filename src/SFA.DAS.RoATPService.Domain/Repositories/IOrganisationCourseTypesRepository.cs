@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SFA.DAS.RoATPService.Domain.Repositories;
 public interface IOrganisationCourseTypesRepository
 {
-    Task UpdateOrganisationCourseTypes(Guid organisationId, IEnumerable<int> courseTypeIds, string userId, CancellationToken cancellationToken);
-    Task DeleteOrganisationShortCourseTypes(Guid organisationId, string userId, CancellationToken cancellationToken);
+    Task UpdateOrganisationCourseTypes(Domain.Entities.Organisation organisation, IEnumerable<int> courseTypeIds, string userId, CancellationToken cancellationToken);
+    Task DeleteOrganisationShortCourseTypes(Domain.Entities.Organisation organisation, string userId, CancellationToken cancellationToken);
 }
