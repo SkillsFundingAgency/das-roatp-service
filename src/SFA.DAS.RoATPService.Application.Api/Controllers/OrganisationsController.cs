@@ -1,10 +1,14 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using SFA.DAS.RoATPService.Application.Commands.PatchOrganisation;
 using SFA.DAS.RoATPService.Application.Common;
+using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
 using SFA.DAS.RoATPService.Application.Queries.GetOrganisation;
 using SFA.DAS.RoATPService.Application.Queries.GetOrganisations;
 
@@ -35,4 +39,27 @@ public class OrganisationsController(IMediator _mediator, ILogger<OrganisationsC
         GetOrganisationsQueryResult result = await _mediator.Send(new GetOrganisationsQuery(), cancellationToken);
         return Ok(result);
     }
+
+    [HttpPatch]
+    [Route("{ukprn:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(IEnumerable<ValidationError>))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> PatchOrganisations([FromRoute] int ukprn, [FromBody] JsonPatchDocument<PatchOrganisationModel> patchDoc, [FromHeader(Name = "X-RequestingUserId")] string userId, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Processing Organisations-PatchOrganisations");
+
+        var result = await _mediator.Send(new PatchOrganisationCommand(ukprn, userId, patchDoc), cancellationToken);
+
+        if (result == null) return NotFound();
+
+        if (!result.IsValidResponse)
+        {
+            return BadRequest(result.Errors);
+        }
+
+        return NoContent();
+    }
 }
+
+

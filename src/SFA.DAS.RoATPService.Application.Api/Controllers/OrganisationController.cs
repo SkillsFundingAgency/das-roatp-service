@@ -1,12 +1,12 @@
-﻿using MediatR;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.RoATPService.Api.Types.Models;
 using SFA.DAS.RoATPService.Domain;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.RoATPService.Application.Api.Controllers;
 
