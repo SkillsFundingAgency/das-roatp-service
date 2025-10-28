@@ -1,28 +1,23 @@
-﻿using FluentValidation;
+﻿using System.Linq;
+using FluentValidation;
+using SFA.DAS.RoATPService.Application.Common.Validators;
 using SFA.DAS.RoATPService.Domain.Repositories;
-using System.Linq;
 
 namespace SFA.DAS.RoATPService.Application.Commands.UpdateOrganisationCourseTypes;
 
 public class UpdateOrganisationCourseTypesValidator : AbstractValidator<UpdateOrganisationCourseTypesCommand>
 {
-    public const string InvalidUkprnMessage = "Ukprn does not exist";
-    public const string UkprnIsRequiredMessage = "Ukprn must not be empty";
     public const string CourseTypeIdsIsRequiredMessage = "At least one CourseTypeId is required";
     public const string InvalidCourseTypeIdMessage = "Request contains invalid course types";
     public const string RequestingUserIdIsRequiredMessage = "RequestingUserId must not be empty";
 
-    public UpdateOrganisationCourseTypesValidator(IOrganisationsRepository organisationRepository, ICourseTypesRepository courseTypesRepository)
+    public UpdateOrganisationCourseTypesValidator(ICourseTypesRepository courseTypesRepository)
     {
         RuleFor(c => c.Ukprn)
-            .GreaterThan(0)
-            .WithMessage(UkprnIsRequiredMessage)
-            .MustAsync(async (id, token) =>
-            {
-                var org = await organisationRepository.GetOrganisationByUkprn(id, token);
-                return org != null;
-            })
-            .WithMessage(InvalidUkprnMessage);
+            .Cascade(CascadeMode.Stop)
+            .UkprnNotEmpty()
+            .MustBeValidUkprnFormat();
+
         RuleFor(c => c.CourseTypeIds)
             .NotEmpty()
             .WithMessage(CourseTypeIdsIsRequiredMessage)
@@ -33,6 +28,7 @@ public class UpdateOrganisationCourseTypesValidator : AbstractValidator<UpdateOr
                 return courseIds.All(c => validCourseIds.Contains(c));
             })
             .WithMessage(InvalidCourseTypeIdMessage);
+
         RuleFor(c => c.RequestingUserId)
             .NotEmpty()
             .WithMessage(RequestingUserIdIsRequiredMessage);
