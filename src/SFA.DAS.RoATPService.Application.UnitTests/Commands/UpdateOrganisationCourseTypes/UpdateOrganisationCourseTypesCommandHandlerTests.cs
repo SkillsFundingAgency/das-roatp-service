@@ -1,10 +1,10 @@
-﻿using Moq;
+﻿using System.Threading.Tasks;
+using Moq;
 using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Commands.UpdateOrganisationCourseTypes;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
 using SFA.DAS.Testing.AutoFixture;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.RoATPService.Application.UnitTests.Commands.UpdateOrganisationCourseTypes;
 public class UpdateOrganisationCourseTypesCommandHandlerTests
@@ -21,6 +21,6 @@ public class UpdateOrganisationCourseTypesCommandHandlerTests
 
         await sut.Handle(command, default);
 
-        orgCrsTypeRepoMock.Verify(x => x.UpdateOrganisationCourseTypes(organisation.Id, command.CourseTypeIds, command.RequestingUserId, default), Times.Once);
+        orgCrsTypeRepoMock.Verify(x => x.UpdateOrganisationCourseTypes(organisation, command.CourseTypeIds, command.RequestingUserId, default), Times.Once);
     }
 }

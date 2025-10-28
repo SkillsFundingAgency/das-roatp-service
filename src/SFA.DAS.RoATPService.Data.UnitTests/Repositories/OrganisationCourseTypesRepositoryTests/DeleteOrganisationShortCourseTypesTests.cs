@@ -3,11 +3,10 @@ using SFA.DAS.RoATPService.Data.Repositories;
 using SFA.DAS.RoATPService.Domain.Entities;
 
 namespace SFA.DAS.RoATPService.Data.UnitTests.Repositories.OrganisationCourseTypesRepositoryTests;
-
-public class UpdateOrganisationCourseTypesTests
+public class DeleteOrganisationShortCourseTypesTests
 {
     [Test]
-    public async Task UpdateOrganisationCourseTypes_RemovesAndAddsCourses()
+    public async Task DeleteOrganisationShortCourseTypes_DeletesShortCourses()
     {
         // Arrange
         var options = new DbContextOptionsBuilder<RoatpDataContext>()
@@ -27,32 +26,36 @@ public class UpdateOrganisationCourseTypesTests
         context.Organisations.Add(organisation);
 
         // Seed a short course type and a non-short course type
-        var standardCourseType = new CourseType { Id = 1, Name = "Apprenticeship", LearningType = LearningType.Standard };
-        var shortCourseUnitType = new CourseType { Id = 2, Name = "Unit", LearningType = LearningType.ShortCourse };
-        var shortCourseBootcampType = new CourseType { Id = 3, Name = "Bootcamp", LearningType = LearningType.ShortCourse };
+        var standardCourseType = new CourseType { Id = 1, Name = "StandardCourse", LearningType = LearningType.Standard };
+        var shortCourseType1 = new CourseType { Id = 2, Name = "ShortCourse1", LearningType = LearningType.ShortCourse };
+        var shortCourseType2 = new CourseType { Id = 3, Name = "ShortCourse2", LearningType = LearningType.ShortCourse };
 
-        context.CourseTypes.AddRange(standardCourseType, shortCourseUnitType, shortCourseBootcampType);
+        context.CourseTypes.AddRange(standardCourseType, shortCourseType1, shortCourseType2);
 
         // Seed existing OrganisationCourseTypes
         context.OrganisationCourseTypes.AddRange(
             new OrganisationCourseType { Id = Guid.NewGuid(), OrganisationId = organisationId, CourseTypeId = standardCourseType.Id, CourseType = standardCourseType },
-            new OrganisationCourseType { Id = Guid.NewGuid(), OrganisationId = organisationId, CourseTypeId = shortCourseUnitType.Id, CourseType = shortCourseUnitType }
+            new OrganisationCourseType { Id = Guid.NewGuid(), OrganisationId = organisationId, CourseTypeId = shortCourseType1.Id, CourseType = shortCourseType1 },
+            new OrganisationCourseType { Id = Guid.NewGuid(), OrganisationId = organisationId, CourseTypeId = shortCourseType2.Id, CourseType = shortCourseType2 }
         );
+
         await context.SaveChangesAsync();
 
         var sut = new OrganisationCourseTypesRepository(context);
+
         var newUserId = "TestUserId";
 
         // Act
-        var newShortCourseIds = new[] { shortCourseBootcampType.Id }; // Only keep short course bootcamp type 
-        await sut.UpdateOrganisationCourseTypes(organisation, newShortCourseIds, newUserId, CancellationToken.None);
+        await sut.DeleteOrganisationShortCourseTypes(organisation, newUserId, CancellationToken.None);
 
         // Assert
-        var orgCourseTypes = context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId).ToList();
+        var organisationCourseTypes = context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisationId).ToList();
         Assert.Multiple(() =>
         {
-            Assert.That(orgCourseTypes, Has.Count.EqualTo(1));
-            Assert.That(orgCourseTypes.Exists(o => o.CourseTypeId == shortCourseBootcampType.Id), Is.True);
+            Assert.That(organisationCourseTypes, Has.Count.EqualTo(1));
+            Assert.That(organisationCourseTypes.Exists(o => o.CourseTypeId == standardCourseType.Id), Is.True);
+            Assert.That(organisationCourseTypes.Exists(o => o.CourseTypeId == shortCourseType1.Id), Is.False);
+            Assert.That(organisationCourseTypes.Exists(o => o.CourseTypeId == shortCourseType2.Id), Is.False);
             Assert.That(context.Audits.CountAsync().Result, Is.EqualTo(1));
             Assert.That(context.Organisations.First().UpdatedAt.GetValueOrDefault().Date, Is.EqualTo(DateTime.UtcNow.Date));
             Assert.That(context.Organisations.First().UpdatedBy, Is.EqualTo(newUserId));
