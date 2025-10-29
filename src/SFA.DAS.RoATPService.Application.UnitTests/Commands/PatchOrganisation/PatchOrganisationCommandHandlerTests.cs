@@ -18,7 +18,7 @@ public class PatchOrganisationCommandHandlerTests
     private const int OrganisationTypeId = 3;
 
     [Test, MoqAutoData]
-    public async Task Handle_UkprnNotFound_ReturnsFalseSuccessModel(
+    public async Task Handle_UkprnNotFound_ReturnsFalse(
         [Frozen] Mock<IOrganisationsRepository> organisationsRepositoryMock,
         PatchOrganisationCommand command,
         PatchOrganisationCommandHandler sut,

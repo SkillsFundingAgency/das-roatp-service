@@ -2,7 +2,6 @@
 using System.Linq;
 using FluentValidation;
 using Microsoft.AspNetCore.JsonPatch.Operations;
-using SFA.DAS.RoATPService.Application.Common;
 using SFA.DAS.RoATPService.Application.Common.Validators;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
@@ -30,8 +29,6 @@ public class PatchOrganisationCommandValidator : AbstractValidator<PatchOrganisa
             .Cascade(CascadeMode.Stop)
             .UkprnNotEmpty()
             .MustBeValidUkprnFormat();
-
-        RuleFor(x => x.UserId).NotEmpty().WithMessage(RequestingUserIdIsRequiredErrorMessage);
 
         RuleFor(x => x.PatchDoc.Operations).NotEmpty().WithMessage(PatchDocCannotBeEmptyErrorMessage);
 

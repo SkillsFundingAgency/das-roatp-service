@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SFA.DAS.RoATPService.Application.Common;
+namespace SFA.DAS.RoATPService.Application.Common.Validators;
 
 public static class EnumValidationHelper
 {
@@ -20,5 +20,5 @@ public static class EnumValidationHelper
     }
 
     public static bool IsValidEnumValue<TEnum>(this object value) where TEnum : struct, Enum
-        => IsValidEnumValue(value, typeof(TEnum));
+        => value.IsValidEnumValue(typeof(TEnum));
 }
