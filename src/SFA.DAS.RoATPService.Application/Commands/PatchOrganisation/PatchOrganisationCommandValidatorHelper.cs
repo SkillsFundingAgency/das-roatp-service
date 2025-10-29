@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 
 namespace SFA.DAS.RoATPService.Application.Commands.PatchOrganisation;
@@ -20,6 +21,6 @@ public static class PatchOrganisationCommandValidatorHelper
 
     public static Operation<PatchOrganisationModel> FindOperationWithPath(this List<Operation<PatchOrganisationModel>> operations, string path)
     {
-        return operations.Find(o => o.path.ToLowerInvariant() == path);
+        return operations.Find(o => o.path.Equals(path, StringComparison.OrdinalIgnoreCase));
     }
 }

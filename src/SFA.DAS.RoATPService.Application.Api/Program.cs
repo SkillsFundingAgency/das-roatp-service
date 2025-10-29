@@ -34,7 +34,6 @@ builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen(options =>
     {
-        //options.SchemaFilter<JsonPatchDocumentSchemaFilter>();
         options.SwaggerDoc(PolicyNames.Default, new OpenApiInfo { Title = "ROATP API" });
         options.CustomSchemaIds(type => type.FullName);
     });

@@ -65,13 +65,14 @@ public class PatchOrganisationCommandHandlerTests
                 o.UpdatedAt.GetValueOrDefault().Date == DateTime.UtcNow.Date
             ),
             It.Is<Audit>(a => a.AuditData.FieldChanges.Count == 4),
+            It.IsAny<OrganisationStatusEvent>(),
             cancellationToken), Times.Once);
 
         Assert.That(actual.Result.IsSuccess, Is.True);
     }
 
     [Test, RecursiveMoqAutoData]
-    public async Task Handle_UkprnFound_UpdatesOrganisationStatus(
+    public async Task Handle_UkprnFound_UpdatesOrganisationStatusAndCreatesStatusEvent(
         [Frozen] Mock<IOrganisationsRepository> organisationsRepositoryMock,
         Organisation organisation,
         string userId,
@@ -79,9 +80,12 @@ public class PatchOrganisationCommandHandlerTests
         CancellationToken cancellationToken)
     {
         organisation.Status = OrganisationStatus.OnBoarding;
+        organisation.RemovedReasonId = null;
+
+        var expectedStatus = OrganisationStatus.Active;
 
         var patchDoc = new JsonPatchDocument<PatchOrganisationModel>();
-        patchDoc.Replace(o => o.Status, OrganisationStatus.Removed);
+        patchDoc.Replace(o => o.Status, expectedStatus);
 
         PatchOrganisationCommand command = new(organisation.Ukprn, userId, patchDoc);
         organisationsRepositoryMock.Setup(x => x.GetOrganisationByUkprn(command.Ukprn, cancellationToken)).ReturnsAsync(organisation);
@@ -90,7 +94,8 @@ public class PatchOrganisationCommandHandlerTests
 
         organisationsRepositoryMock.Verify(x => x.UpdateOrganisation(
             It.Is<Organisation>(o =>
-                o.Status == OrganisationStatus.Removed &&
+                o.Status == expectedStatus &&
+                // below are unchanged
                 o.RemovedReasonId == organisation.RemovedReasonId &&
                 o.ProviderType == organisation.ProviderType &&
                 o.OrganisationTypeId == organisation.OrganisationTypeId
@@ -99,9 +104,89 @@ public class PatchOrganisationCommandHandlerTests
                 a.AuditData.FieldChanges.Count == 1
                 && a.AuditData.FieldChanges[0].FieldChanged == AuditLogField.OrganisationStatus
                 && a.AuditData.FieldChanges[0].PreviousValue == OrganisationStatus.OnBoarding.ToString()
-                && a.AuditData.FieldChanges[0].NewValue == OrganisationStatus.Removed.ToString()
+                && a.AuditData.FieldChanges[0].NewValue == expectedStatus.ToString()
+            ),
+            It.Is<OrganisationStatusEvent>(e =>
+                e.OrganisationStatus == expectedStatus
+                && e.Ukprn == organisation.Ukprn
             ),
             cancellationToken), Times.Once);
+
+        Assert.That(actual.Result.IsSuccess, Is.True);
+    }
+
+    [Test, RecursiveMoqAutoData]
+    public async Task Handle_UkprnFound_UpdatesStatusAndClearsRemovedReasonId(
+        [Frozen] Mock<IOrganisationsRepository> organisationsRepositoryMock,
+        Organisation organisation,
+        string userId,
+        PatchOrganisationCommandHandler sut,
+        CancellationToken cancellationToken)
+    {
+        organisation.Status = OrganisationStatus.Removed;
+        organisation.RemovedReasonId = 1;
+
+        var expectedStatus = OrganisationStatus.Active;
+
+        var patchDoc = new JsonPatchDocument<PatchOrganisationModel>();
+        patchDoc.Replace(o => o.Status, expectedStatus);
+
+        PatchOrganisationCommand command = new(organisation.Ukprn, userId, patchDoc);
+        organisationsRepositoryMock.Setup(x => x.GetOrganisationByUkprn(command.Ukprn, cancellationToken)).ReturnsAsync(organisation);
+
+        var actual = await sut.Handle(command, cancellationToken);
+
+        organisationsRepositoryMock.Verify(x => x.UpdateOrganisation(
+            It.Is<Organisation>(o =>
+                o.Status == expectedStatus &&
+                o.RemovedReasonId == null &&
+                // below are unchanged
+                o.ProviderType == organisation.ProviderType &&
+                o.OrganisationTypeId == organisation.OrganisationTypeId
+            ),
+            It.Is<Audit>(a =>
+                a.AuditData.FieldChanges.Count == 2
+                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogField.OrganisationStatus
+                && a.AuditData.FieldChanges[0].PreviousValue == OrganisationStatus.Removed.ToString()
+                && a.AuditData.FieldChanges[0].NewValue == expectedStatus.ToString()
+                && a.AuditData.FieldChanges[1].FieldChanged == AuditLogField.RemovedReason
+                && a.AuditData.FieldChanges[1].PreviousValue == "1"
+                && a.AuditData.FieldChanges[1].NewValue == "null"
+            ),
+            It.Is<OrganisationStatusEvent>(e =>
+                e.OrganisationStatus == expectedStatus
+                && e.Ukprn == organisation.Ukprn
+            ),
+            cancellationToken), Times.Once);
+
+        Assert.That(actual.Result.IsSuccess, Is.True);
+    }
+
+    [Test, RecursiveMoqAutoData]
+    public async Task Handle_UkprnFound_NoChanges_AvoidsRepositoryCall(
+        [Frozen] Mock<IOrganisationsRepository> organisationsRepositoryMock,
+        Organisation organisation,
+        string userId,
+        PatchOrganisationCommandHandler sut,
+        CancellationToken cancellationToken)
+    {
+
+        var patchDoc = new JsonPatchDocument<PatchOrganisationModel>();
+        patchDoc.Replace(o => o.Status, organisation.Status);
+        patchDoc.Replace(o => o.ProviderType, organisation.ProviderType);
+        patchDoc.Replace(o => o.RemovedReasonId, organisation.RemovedReasonId);
+        patchDoc.Replace(o => o.OrganisationTypeId, organisation.OrganisationTypeId);
+
+        PatchOrganisationCommand command = new(organisation.Ukprn, userId, patchDoc);
+        organisationsRepositoryMock.Setup(x => x.GetOrganisationByUkprn(command.Ukprn, cancellationToken)).ReturnsAsync(organisation);
+
+        var actual = await sut.Handle(command, cancellationToken);
+
+        organisationsRepositoryMock.Verify(x => x.UpdateOrganisation(
+            It.IsAny<Organisation>(),
+            It.IsAny<Audit>(),
+            It.IsAny<OrganisationStatusEvent>(),
+            It.IsAny<CancellationToken>()), Times.Never);
 
         Assert.That(actual.Result.IsSuccess, Is.True);
     }
@@ -133,6 +218,7 @@ public class PatchOrganisationCommandHandlerTests
                 && a.AuditData.FieldChanges[0].PreviousValue == "1"
                 && a.AuditData.FieldChanges[0].NewValue == OrganisationTypeId.ToString()
             ),
+            null,
             cancellationToken), Times.Once);
         Assert.That(actual.Result.IsSuccess, Is.True);
     }
@@ -164,6 +250,7 @@ public class PatchOrganisationCommandHandlerTests
                 && a.AuditData.FieldChanges[0].PreviousValue == ProviderType.Main.ToString()
                 && a.AuditData.FieldChanges[0].NewValue == ProviderType.Supporting.ToString()
             ),
+            null,
             cancellationToken), Times.Once);
         Assert.That(actual.Result.IsSuccess, Is.True);
     }
@@ -195,6 +282,7 @@ public class PatchOrganisationCommandHandlerTests
                 && a.AuditData.FieldChanges[0].PreviousValue == "null"
                 && a.AuditData.FieldChanges[0].NewValue == RemovedReasonId.ToString()
             ),
+            null,
             cancellationToken), Times.Once);
         Assert.That(actual.Result.IsSuccess, Is.True);
     }

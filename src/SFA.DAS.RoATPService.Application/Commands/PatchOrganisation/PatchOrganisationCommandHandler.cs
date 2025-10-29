@@ -23,7 +23,26 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
 
         request.PatchDoc.ApplyTo(patchModel);
 
+        // It is important that RemovedReasonId is cleared if status is not Removed and it is done before audit comparison
+        patchModel.RemovedReasonId = patchModel.Status == Domain.Entities.OrganisationStatus.Removed ? patchModel.RemovedReasonId : null;
+
         var auditRecord = GetAuditRecord(organisation, patchModel, request.UserId);
+
+        if (auditRecord.AuditData.FieldChanges.Count == 0)
+        {
+            return new ValidatedResponse<SuccessModel>(new SuccessModel(true));
+        }
+
+        OrganisationStatusEvent statusEvent = null;
+        if (organisation.Status != patchModel.Status)
+        {
+            statusEvent = new()
+            {
+                CreatedOn = DateTime.UtcNow,
+                OrganisationStatus = patchModel.Status,
+                Ukprn = organisation.Ukprn
+            };
+        }
 
         organisation.Status = patchModel.Status;
         organisation.RemovedReasonId = patchModel.RemovedReasonId;
@@ -32,12 +51,12 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
         organisation.UpdatedBy = request.UserId;
         organisation.UpdatedAt = DateTime.UtcNow;
 
-        await _organisationRepository.UpdateOrganisation(organisation, auditRecord, cancellationToken);
+        await _organisationRepository.UpdateOrganisation(organisation, auditRecord, statusEvent, cancellationToken);
 
         return new ValidatedResponse<SuccessModel>(new SuccessModel(true));
     }
 
-    private Audit GetAuditRecord(Domain.Entities.Organisation organisation, PatchOrganisationModel patchOrganisationModel, string userId)
+    private static Audit GetAuditRecord(Domain.Entities.Organisation organisation, PatchOrganisationModel patchOrganisationModel, string userId)
     {
         var auditData = new AuditData { FieldChanges = [], OrganisationId = organisation.Id, UpdatedAt = DateTime.Now, UpdatedBy = userId };
         if (organisation.Status != patchOrganisationModel.Status)

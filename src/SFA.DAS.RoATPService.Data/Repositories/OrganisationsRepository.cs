@@ -29,8 +29,12 @@ internal class OrganisationsRepository(RoatpDataContext _dataContext) : IOrganis
             .ThenInclude(oc => oc.CourseType)
             .ToListAsync(cancellationToken);
 
-    public Task UpdateOrganisation(Organisation organisation, Audit audit, CancellationToken cancellationToken)
+    public Task UpdateOrganisation(Organisation organisation, Audit audit, OrganisationStatusEvent statusEvent, CancellationToken cancellationToken)
     {
+        if (statusEvent != null)
+        {
+            _dataContext.OrganisationStatusEvents.Add(statusEvent);
+        }
         _dataContext.Organisations.Update(organisation);
         _dataContext.Audits.Add(audit);
         return _dataContext.SaveChangesAsync(cancellationToken);
