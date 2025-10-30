@@ -1,9 +1,9 @@
-﻿using FluentValidation.TestHelper;
+﻿using System.Threading.Tasks;
+using FluentValidation.TestHelper;
 using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.commands.DeleteOrganisationShortCourseTypes;
 using SFA.DAS.RoATPService.Application.Common.Validators;
 using SFA.DAS.Testing.AutoFixture;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.RoATPService.Application.UnitTests.Commands.DeleteOrganisationShortCourseTypes.DeleteOrganisationShortCourseTypesValidatorTests;
 public class MustHaveValidUkprnTests
@@ -23,7 +23,7 @@ public class MustHaveValidUkprnTests
         var result = await sut.TestValidateAsync(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(c => c.Ukprn).WithErrorMessage(DeleteOrganisationShortCourseTypesValidator.UkprnIsRequiredMessage);
+        result.ShouldHaveValidationErrorFor(c => c.Ukprn).WithErrorMessage(UkprnValidator.UkprnIsRequiredMessage);
     }
 
     [Test]

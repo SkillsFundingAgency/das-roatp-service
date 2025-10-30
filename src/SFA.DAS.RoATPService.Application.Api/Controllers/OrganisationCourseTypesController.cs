@@ -24,8 +24,9 @@ public class OrganisationCourseTypesController(IMediator _mediator, ILogger<Orga
     public async Task<IActionResult> UpdateCourseTypes([FromRoute] int ukprn, [FromBody] UpdateCourseTypesModel model, CancellationToken cancellationToken)
     {
         UpdateOrganisationCourseTypesCommand command = new(ukprn, model.CourseTypeIds, model.UserId);
-        ValidatedResponse validatedResponse = await _mediator.Send(command, cancellationToken);
-        return validatedResponse.IsValidResponse ? Ok() : new BadRequestObjectResult(validatedResponse.Errors);
+        ValidatedResponse<SuccessModel> validatedResponse = await _mediator.Send(command, cancellationToken);
+        if (!validatedResponse.IsValidResponse) return new BadRequestObjectResult(validatedResponse.Errors);
+        return validatedResponse.Result.IsSuccess ? NoContent() : NotFound();
     }
 
     [HttpDelete]

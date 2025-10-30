@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json.Converters;
 using SFA.DAS.Api.Common.Infrastructure;
 using SFA.DAS.RoATPService.Application.Api.AppStart;
 using SFA.DAS.RoATPService.Application.Api.Extensions;
@@ -34,7 +35,7 @@ builder.Services
     .AddSwaggerGen(options =>
     {
         options.SwaggerDoc(PolicyNames.Default, new OpenApiInfo { Title = "ROATP API" });
-        options.CustomSchemaIds(type => type.ToString());
+        options.CustomSchemaIds(type => type.FullName);
     });
 
 builder.Services
@@ -52,6 +53,7 @@ builder.Services
             options.Filters.Add(new AuthorizeFilter(policy));
         }
     })
+    .AddNewtonsoftJson(options => options.SerializerSettings.Converters.Add(new StringEnumConverter()))
     .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 var app = builder.Build();
