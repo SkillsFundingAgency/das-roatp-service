@@ -78,7 +78,7 @@ public class UpdateCourseTypesTests
         var result = await sut.UpdateCourseTypes(ukprn, model, CancellationToken.None);
 
         // Assert
-        var badRequestResult = result as NotFoundResult;
-        Assert.That(badRequestResult, Is.Not.Null);
+        var notFoundResult = result as NotFoundResult;
+        Assert.That(notFoundResult, Is.Not.Null);
     }
 }

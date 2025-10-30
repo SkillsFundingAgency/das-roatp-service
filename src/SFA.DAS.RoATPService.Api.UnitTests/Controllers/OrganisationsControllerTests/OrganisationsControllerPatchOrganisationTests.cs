@@ -84,7 +84,7 @@ public class OrganisationsControllerPatchOrganisationTests
         var result = await sut.PatchOrganisation(ukprn, model, userId, cancellationToken);
 
         // Assert
-        var badRequestResult = result as NotFoundResult;
-        Assert.That(badRequestResult, Is.Not.Null);
+        var notFoundResult = result as NotFoundResult;
+        Assert.That(notFoundResult, Is.Not.Null);
     }
 }
