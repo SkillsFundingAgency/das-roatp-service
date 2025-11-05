@@ -7,7 +7,7 @@ public class Organisation
 {
     public Guid Id { get; set; }
     public OrganisationStatus Status { get; set; }
-    public ProviderType ProviderType { get; set; }
+    public Common.ProviderType ProviderType { get; set; }
     public int OrganisationTypeId { get; set; }
     public int Ukprn { get; set; }
     public string LegalName { get; set; }

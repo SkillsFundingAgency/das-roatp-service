@@ -1,4 +1,4 @@
-﻿namespace SFA.DAS.RoATPService.Domain.Entities;
+﻿namespace SFA.DAS.RoATPService.Domain.Common;
 
 public enum ProviderType
 {

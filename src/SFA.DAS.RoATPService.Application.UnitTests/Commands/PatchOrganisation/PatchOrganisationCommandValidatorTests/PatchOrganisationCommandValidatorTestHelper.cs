@@ -1,6 +1,7 @@
 ﻿using System;
 using Moq;
 using SFA.DAS.RoATPService.Application.Commands.PatchOrganisation;
+using SFA.DAS.RoATPService.Domain.Common;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
 

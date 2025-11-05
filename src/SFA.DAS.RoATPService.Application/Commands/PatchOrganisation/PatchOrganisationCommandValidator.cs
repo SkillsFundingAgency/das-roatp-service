@@ -3,6 +3,7 @@ using System.Linq;
 using FluentValidation;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 using SFA.DAS.RoATPService.Application.Common.Validators;
+using SFA.DAS.RoATPService.Domain.Common;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
 
