@@ -4,7 +4,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using SFA.DAS.RoATPService.Application.Queries.GetAllCourseTypes;
 using SFA.DAS.RoATPService.Application.Queries.GetAllProviderTypes;
 
 namespace SFA.DAS.RoATPService.Application.Api.Controllers;
@@ -15,11 +14,11 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers;
 public class ProviderTypesController(IMediator _mediator, ILogger<ProviderTypesController> _logger) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetAllCourseTypesResult))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetAllProviderTypesQueryResult))]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Processing get all provider types");
         GetAllProviderTypesQueryResult result = await _mediator.Send(new GetAllProviderTypesQuery(), cancellationToken);
-        return Ok(result);
+        return Ok(result.ProviderTypes);
     }
 }
