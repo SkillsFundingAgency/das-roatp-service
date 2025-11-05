@@ -1,9 +1,9 @@
-﻿using FluentAssertions;
+﻿using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Queries.GetRemovedReasons;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.Testing.AutoFixture;
-using System.Linq;
 
 namespace SFA.DAS.RoATPService.Application.UnitTests.Queries.GetRemovedReasons;
 public class GetRemovedReasonsQueryResultTests
@@ -22,6 +22,6 @@ public class GetRemovedReasonsQueryResultTests
 
         // Assert
         result.Id.Should().Be(removedReason.Id);
-        result.Description.Should().Be(removedReason.Reason);
+        result.Description.Should().Be(removedReason.Description);
     }
 }

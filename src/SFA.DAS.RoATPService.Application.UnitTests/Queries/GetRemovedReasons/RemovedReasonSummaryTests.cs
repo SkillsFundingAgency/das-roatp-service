@@ -9,7 +9,7 @@ public class RemovedReasonSummaryTests
 {
     [Test, RecursiveMoqAutoData]
 
-    public void RemovedReasonSummary_MappsDataCorrectly(
+    public void RemovedReasonSummary_MapsDataCorrectly(
         RemovedReason removedReason)
     {
         // Act
@@ -17,6 +17,6 @@ public class RemovedReasonSummaryTests
 
         // Assert
         result.Id.Should().Be(removedReason.Id);
-        result.Description.Should().Be(removedReason.Reason);
+        result.Description.Should().Be(removedReason.Description);
     }
 }

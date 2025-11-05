@@ -27,7 +27,7 @@ public class OganisationModelTests
             Assert.That(sut.ApplicationDeterminedDate, Is.EqualTo(organisation.ApplicationDeterminedDate));
             Assert.That(sut.Status, Is.EqualTo(organisation.Status));
             Assert.That(sut.RemovedReasonId, Is.EqualTo(organisation.RemovedReasonId));
-            Assert.That(sut.RemovedReason, Is.EqualTo(organisation.RemovedReason.Reason));
+            Assert.That(sut.RemovedReason, Is.EqualTo(organisation.RemovedReason.Description));
             Assert.That(sut.AllowedCourseTypes.Count(), Is.EqualTo(organisation.OrganisationCourseTypes.Count));
         });
     }

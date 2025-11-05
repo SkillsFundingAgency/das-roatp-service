@@ -40,7 +40,7 @@ public class OrganisationModel
             CharityNumber = source.CharityNumber,
             ApplicationDeterminedDate = source.ApplicationDeterminedDate,
             RemovedReasonId = source.RemovedReasonId,
-            RemovedReason = source.RemovedReason?.Reason,
+            RemovedReason = source.RemovedReason?.Description,
             AllowedCourseTypes = source.OrganisationCourseTypes.Select(c => new AllowedCourseType(c.CourseType.Id, c.CourseType.Name, c.CourseType.LearningType)),
             StartDate = source.StartDate,
             LastUpdatedDate = source.UpdatedAt ?? source.CreatedAt

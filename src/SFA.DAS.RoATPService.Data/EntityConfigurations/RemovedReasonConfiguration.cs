@@ -11,5 +11,7 @@ public class RemovedReasonConfiguration : IEntityTypeConfiguration<RemovedReason
     public void Configure(EntityTypeBuilder<RemovedReason> builder)
     {
         builder.ToTable(nameof(RoatpDataContext.RemovedReasons));
+
+        builder.Property(r => r.Description).HasColumnName("RemovedReason");
     }
 }
