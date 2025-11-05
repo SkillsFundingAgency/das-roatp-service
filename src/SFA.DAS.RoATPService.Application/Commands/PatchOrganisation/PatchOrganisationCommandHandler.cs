@@ -24,7 +24,7 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
         request.PatchDoc.ApplyTo(patchModel);
 
         // It is important that RemovedReasonId is cleared if status is not Removed and it is done before audit comparison
-        patchModel.RemovedReasonId = patchModel.Status == Domain.Entities.OrganisationStatus.Removed ? patchModel.RemovedReasonId : null;
+        patchModel.RemovedReasonId = patchModel.Status == Domain.Common.OrganisationStatus.Removed ? patchModel.RemovedReasonId : null;
 
         var auditRecord = GetAuditRecord(organisation, patchModel, request.UserId);
 

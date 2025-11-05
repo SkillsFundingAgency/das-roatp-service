@@ -11,7 +11,7 @@ public class PatchOrganisationCommandTests
         //Arrange
         var organisation = new Domain.Entities.Organisation
         {
-            Status = Domain.Entities.OrganisationStatus.Active,
+            Status = OrganisationStatus.Active,
             RemovedReasonId = null,
             ProviderType = ProviderType.Main,
             OrganisationTypeId = 1

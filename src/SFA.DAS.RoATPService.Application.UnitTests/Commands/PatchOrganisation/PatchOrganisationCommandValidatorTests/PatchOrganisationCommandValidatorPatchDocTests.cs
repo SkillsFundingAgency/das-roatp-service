@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Commands.PatchOrganisation;
-using SFA.DAS.RoATPService.Domain.Entities;
+using SFA.DAS.RoATPService.Domain.Common;
 
 namespace SFA.DAS.RoATPService.Application.UnitTests.Commands.PatchOrganisation.PatchOrganisationCommandValidatorTests;
 
