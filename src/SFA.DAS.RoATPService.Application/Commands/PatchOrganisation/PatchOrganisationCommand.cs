@@ -14,7 +14,7 @@ public class PatchOrganisationModel
 {
     public OrganisationStatus Status { get; set; }
     public int? RemovedReasonId { get; set; }
-    public ProviderType ProviderType { get; set; }
+    public Domain.Common.ProviderType ProviderType { get; set; }
     public int OrganisationTypeId { get; set; }
 
     public static implicit operator PatchOrganisationModel(Organisation organisation) =>

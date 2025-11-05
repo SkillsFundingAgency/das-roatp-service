@@ -1,13 +1,15 @@
-﻿using MediatR;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.RoATPService.Application.Queries.GetRemovedReasons;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.RoATPService.Application.Api.Controllers;
+
 [Route("removed-reasons")]
+[Tags("LookupData")]
 [ApiController]
 public class RemovedReasonsController(IMediator _mediator, ILogger<RemovedReasonsController> _logger) : ControllerBase
 {

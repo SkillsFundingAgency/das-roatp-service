@@ -15,7 +15,7 @@ public class OrganisationModel
     public string TradingName { get; set; }
     public string CompanyNumber { get; set; }
     public string CharityNumber { get; set; }
-    public ProviderType ProviderType { get; set; }
+    public Domain.Common.ProviderType ProviderType { get; set; }
     public int OrganisationTypeId { get; set; }
     public string OrganisationType { get; set; }
     public OrganisationStatus Status { get; set; }

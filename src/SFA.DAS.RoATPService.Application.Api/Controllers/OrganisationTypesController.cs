@@ -8,8 +8,8 @@ using SFA.DAS.RoATPService.Application.Queries.GetOrganisationTypes;
 
 namespace SFA.DAS.RoATPService.Application.Api.Controllers;
 
-
 [Route("organisation-types")]
+[Tags("LookupData")]
 [ApiController]
 public class OrganisationTypesController(IMediator _mediator, ILogger<OrganisationTypesController> _logger) : ControllerBase
 {
