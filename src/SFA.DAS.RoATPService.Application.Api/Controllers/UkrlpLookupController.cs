@@ -33,15 +33,15 @@ public class UkrlpLookupController : ControllerBase
     [HttpGet]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UkprnLookupResponse))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
-    [Route("lookup/{ukprn}")]
-    public async Task<IActionResult> UkrlpLookup(string ukprn)
+    [Route("api/v1/ukrlp/lookup/{ukprn}")] // TODO delete after migration DS
+    [Route("/organisations/{ukprn}/ukrlp-data")]
+    public async Task<IActionResult> UkrlpLookup(int ukprn)
     {
         UkprnLookupResponse providerData;
 
-        long ukprnValue = Convert.ToInt64(ukprn);
         try
         {
-            providerData = await _retryPolicy.ExecuteAsync(context => _apiClient.GetTrainingProviderByUkprn(ukprnValue), new Context());
+            providerData = await _retryPolicy.ExecuteAsync(context => _apiClient.GetTrainingProviderByUkprn(ukprn), new Context());
         }
         catch (Exception ex)
         {
@@ -54,9 +54,6 @@ public class UkrlpLookupController : ControllerBase
         }
         return Ok(providerData);
     }
-
-
-
 
     private AsyncRetryPolicy GetRetryPolicy()
     {
