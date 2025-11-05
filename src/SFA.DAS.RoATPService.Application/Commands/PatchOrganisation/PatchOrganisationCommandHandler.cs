@@ -46,7 +46,7 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
 
         organisation.Status = patchModel.Status;
         organisation.RemovedReasonId = patchModel.RemovedReasonId;
-        organisation.ProviderType = patchModel.ProviderType;
+        organisation.ProviderTypeId = (int)patchModel.ProviderType;
         organisation.OrganisationTypeId = patchModel.OrganisationTypeId;
         organisation.UpdatedBy = request.UserId;
         organisation.UpdatedAt = DateTime.UtcNow;
@@ -78,13 +78,13 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
                 NewValue = patchOrganisationModel.RemovedReasonId?.ToString() ?? "null"
             });
         }
-
-        if (organisation.ProviderType != patchOrganisationModel.ProviderType)
+        var previousProviderTypeValue = (Domain.Common.ProviderType)organisation.ProviderTypeId;
+        if (previousProviderTypeValue != patchOrganisationModel.ProviderType)
         {
             auditData.FieldChanges.Add(new AuditLogEntry
             {
                 FieldChanged = AuditLogField.ProviderType,
-                PreviousValue = organisation.ProviderType.ToString(),
+                PreviousValue = previousProviderTypeValue.ToString(),
                 NewValue = patchOrganisationModel.ProviderType.ToString()
             });
         }

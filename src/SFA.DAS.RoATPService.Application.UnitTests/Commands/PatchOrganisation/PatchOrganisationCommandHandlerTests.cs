@@ -42,7 +42,7 @@ public class PatchOrganisationCommandHandlerTests
     {
         organisation.RemovedReason = null;
         organisation.Status = OrganisationStatus.Active;
-        organisation.ProviderType = Domain.Common.ProviderType.Main;
+        organisation.ProviderTypeId = (int)Domain.Common.ProviderType.Main;
         organisation.OrganisationTypeId = 1;
 
         var patchDoc = new JsonPatchDocument<PatchOrganisationModel>();
@@ -60,7 +60,7 @@ public class PatchOrganisationCommandHandlerTests
             It.Is<Organisation>(o =>
                 o.Status == OrganisationStatus.Removed &&
                 o.RemovedReasonId == RemovedReasonId &&
-                o.ProviderType == Domain.Common.ProviderType.Supporting &&
+                o.ProviderTypeId == (int)Domain.Common.ProviderType.Supporting &&
                 o.OrganisationTypeId == OrganisationTypeId &&
                 o.UpdatedBy == userId &&
                 o.UpdatedAt.GetValueOrDefault().Date == DateTime.UtcNow.Date
@@ -98,7 +98,7 @@ public class PatchOrganisationCommandHandlerTests
                 o.Status == expectedStatus &&
                 // below are unchanged
                 o.RemovedReasonId == organisation.RemovedReasonId &&
-                o.ProviderType == organisation.ProviderType &&
+                o.ProviderTypeId == organisation.ProviderTypeId &&
                 o.OrganisationTypeId == organisation.OrganisationTypeId
             ),
             It.Is<Audit>(a =>
@@ -142,7 +142,7 @@ public class PatchOrganisationCommandHandlerTests
                 o.Status == expectedStatus &&
                 o.RemovedReasonId == null &&
                 // below are unchanged
-                o.ProviderType == organisation.ProviderType &&
+                o.ProviderTypeId == organisation.ProviderTypeId &&
                 o.OrganisationTypeId == organisation.OrganisationTypeId
             ),
             It.Is<Audit>(a =>
@@ -174,7 +174,7 @@ public class PatchOrganisationCommandHandlerTests
 
         var patchDoc = new JsonPatchDocument<PatchOrganisationModel>();
         patchDoc.Replace(o => o.Status, organisation.Status);
-        patchDoc.Replace(o => o.ProviderType, organisation.ProviderType);
+        patchDoc.Replace(o => o.ProviderType, (Domain.Common.ProviderType)organisation.ProviderTypeId);
         patchDoc.Replace(o => o.RemovedReasonId, organisation.RemovedReasonId);
         patchDoc.Replace(o => o.OrganisationTypeId, organisation.OrganisationTypeId);
 
@@ -210,7 +210,7 @@ public class PatchOrganisationCommandHandlerTests
             It.Is<Organisation>(o =>
                 o.Status == organisation.Status &&
                 o.RemovedReasonId == organisation.RemovedReasonId &&
-                o.ProviderType == organisation.ProviderType &&
+                o.ProviderTypeId == organisation.ProviderTypeId &&
                 o.OrganisationTypeId == OrganisationTypeId
             ),
             It.Is<Audit>(a =>
@@ -232,7 +232,7 @@ public class PatchOrganisationCommandHandlerTests
         PatchOrganisationCommandHandler sut,
         CancellationToken cancellationToken)
     {
-        organisation.ProviderType = Domain.Common.ProviderType.Main;
+        organisation.ProviderTypeId = (int)Domain.Common.ProviderType.Main;
         var patchDoc = new JsonPatchDocument<PatchOrganisationModel>();
         patchDoc.Replace(o => o.ProviderType, Domain.Common.ProviderType.Supporting);
         PatchOrganisationCommand command = new(organisation.Ukprn, userId, patchDoc);
@@ -242,7 +242,7 @@ public class PatchOrganisationCommandHandlerTests
             It.Is<Organisation>(o =>
                 o.Status == organisation.Status &&
                 o.RemovedReasonId == organisation.RemovedReasonId &&
-                o.ProviderType == Domain.Common.ProviderType.Supporting &&
+                o.ProviderTypeId == (int)Domain.Common.ProviderType.Supporting &&
                 o.OrganisationTypeId == organisation.OrganisationTypeId
             ),
             It.Is<Audit>(a =>
@@ -274,7 +274,7 @@ public class PatchOrganisationCommandHandlerTests
             It.Is<Organisation>(o =>
                 o.Status == organisation.Status &&
                 o.RemovedReasonId == RemovedReasonId &&
-                o.ProviderType == organisation.ProviderType &&
+                o.ProviderTypeId == organisation.ProviderTypeId &&
                 o.OrganisationTypeId == organisation.OrganisationTypeId
             ),
             It.Is<Audit>(a =>

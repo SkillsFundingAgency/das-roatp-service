@@ -21,7 +21,7 @@ public class OganisationModelTests
             Assert.That(sut.TradingName, Is.EqualTo(organisation.TradingName));
             Assert.That(sut.CompanyNumber, Is.EqualTo(organisation.CompanyNumber));
             Assert.That(sut.CharityNumber, Is.EqualTo(organisation.CharityNumber));
-            Assert.That(sut.ProviderType, Is.EqualTo(organisation.ProviderType));
+            Assert.That(sut.ProviderType, Is.EqualTo((Domain.Common.ProviderType)organisation.ProviderTypeId));
             Assert.That(sut.OrganisationTypeId, Is.EqualTo(organisation.OrganisationType.Id));
             Assert.That(sut.OrganisationType, Is.EqualTo(organisation.OrganisationType.Type));
             Assert.That(sut.ApplicationDeterminedDate, Is.EqualTo(organisation.ApplicationDeterminedDate));

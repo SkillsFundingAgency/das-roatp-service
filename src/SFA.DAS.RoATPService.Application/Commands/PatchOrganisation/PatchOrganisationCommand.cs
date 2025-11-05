@@ -22,7 +22,7 @@ public class PatchOrganisationModel
         {
             Status = organisation.Status,
             RemovedReasonId = organisation.RemovedReasonId,
-            ProviderType = organisation.ProviderType,
+            ProviderType = (Domain.Common.ProviderType)organisation.ProviderTypeId,
             OrganisationTypeId = organisation.OrganisationTypeId
         };
 };
