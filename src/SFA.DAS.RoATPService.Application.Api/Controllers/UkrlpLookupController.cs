@@ -1,18 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
 using SFA.DAS.RoATPService.Api.Client.Interfaces;
 using SFA.DAS.RoATPService.Api.Client.Models.Ukrlp;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.RoATPService.Application.Api.Controllers;
 
 [ApiController]
-[Route("api/v1/ukrlp")]
+[Route("")]
+[Tags("Organisations")]
 public class UkrlpLookupController : ControllerBase
 {
     private readonly ILogger<UkrlpLookupController> _logger;
@@ -53,29 +55,6 @@ public class UkrlpLookupController : ControllerBase
         return Ok(providerData);
     }
 
-    [HttpGet]
-    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UkprnLookupResponse))]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
-    [Route("lookup/many")]
-    public async Task<IActionResult> UkrlpGetAll([FromQuery] List<long> ukprns)
-    {
-        UkprnLookupResponse providerData;
-
-        try
-        {
-            providerData = await _retryPolicy.ExecuteAsync(context => _apiClient.GetListOfTrainingProviders(ukprns), new Context());
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Unable to retrieve results from UKRLP");
-            providerData = new UkprnLookupResponse
-            {
-                Success = false,
-                Results = new List<ProviderDetails>()
-            };
-        }
-        return Ok(providerData);
-    }
 
 
 
