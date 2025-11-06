@@ -7,8 +7,7 @@ public class Organisation
 {
     public Guid Id { get; set; }
     public Common.OrganisationStatus Status { get; set; }
-    public int ProviderTypeId { get; set; }
-    public virtual ProviderType ProviderTypeDetails { get; set; }
+    public Common.ProviderType ProviderType { get; set; }
     public int OrganisationTypeId { get; set; }
     public int Ukprn { get; set; }
     public string LegalName { get; set; }

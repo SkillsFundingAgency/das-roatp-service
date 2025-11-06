@@ -16,7 +16,6 @@ public class OrganisationModel
     public string CompanyNumber { get; set; }
     public string CharityNumber { get; set; }
     public Domain.Common.ProviderType ProviderType { get; set; }
-    public string ProviderTypeName { get; set; }
     public int OrganisationTypeId { get; set; }
     public string OrganisationType { get; set; }
     public OrganisationStatus Status { get; set; }
@@ -34,7 +33,7 @@ public class OrganisationModel
             Ukprn = source.Ukprn,
             LegalName = source.LegalName,
             TradingName = source.TradingName,
-            ProviderType = (Domain.Common.ProviderType)source.ProviderTypeId,
+            ProviderType = source.ProviderType,
             Status = source.Status,
             OrganisationTypeId = source.OrganisationType.Id,
             OrganisationType = source.OrganisationType.Type,
@@ -45,7 +44,6 @@ public class OrganisationModel
             RemovedReason = source.RemovedReason?.Description,
             AllowedCourseTypes = source.OrganisationCourseTypes.Select(c => new AllowedCourseType(c.CourseType.Id, c.CourseType.Name, c.CourseType.LearningType)),
             StartDate = source.StartDate,
-            LastUpdatedDate = source.UpdatedAt ?? source.CreatedAt,
-            ProviderTypeName = source.ProviderTypeDetails.Name
+            LastUpdatedDate = source.UpdatedAt ?? source.CreatedAt
         };
 }

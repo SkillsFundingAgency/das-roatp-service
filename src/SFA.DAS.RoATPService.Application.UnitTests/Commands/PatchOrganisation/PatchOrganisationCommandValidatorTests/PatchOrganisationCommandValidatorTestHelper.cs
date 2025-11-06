@@ -44,7 +44,7 @@ public static class PatchOrganisationCommandValidatorTestHelper
             Ukprn = ValidUkprn,
             Status = organisationStatus,
             OrganisationTypeId = 1,
-            ProviderTypeId = (int)Domain.Common.ProviderType.Main
+            ProviderType = Domain.Common.ProviderType.Main
         });
         return mock;
     }

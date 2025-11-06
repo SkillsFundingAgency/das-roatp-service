@@ -13,7 +13,7 @@ public class PatchOrganisationCommandTests
         {
             Status = OrganisationStatus.Active,
             RemovedReasonId = null,
-            ProviderTypeId = (int)ProviderType.Main,
+            ProviderType = ProviderType.Main,
             OrganisationTypeId = 1
         };
         //Act
@@ -21,7 +21,7 @@ public class PatchOrganisationCommandTests
         //Assert
         Assert.AreEqual(organisation.Status, model.Status);
         Assert.AreEqual(organisation.RemovedReasonId, model.RemovedReasonId);
-        Assert.AreEqual(organisation.ProviderTypeId, (int)model.ProviderType);
+        Assert.AreEqual(organisation.ProviderType, model.ProviderType);
         Assert.AreEqual(organisation.OrganisationTypeId, model.OrganisationTypeId);
     }
 }

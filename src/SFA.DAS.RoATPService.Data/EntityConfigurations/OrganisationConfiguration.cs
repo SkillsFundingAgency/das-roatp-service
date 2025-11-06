@@ -23,14 +23,16 @@ public class OrganisationConfiguration : IEntityTypeConfiguration<Organisation>
             .Property(e => e.Status)
             .HasConversion<int>();
         builder
+            .Property(e => e.ProviderType)
+            .HasConversion<int>();
+        builder
             .Property(s => s.Status)
             .HasColumnName("StatusId")
             .HasConversion<int>();
         builder
-            .HasOne(o => o.ProviderTypeDetails)
-            .WithMany(t => t.Organisations)
-            .HasPrincipalKey(pt => pt.Id)
-            .HasForeignKey(o => o.ProviderTypeId);
+            .Property(e => e.ProviderType)
+            .HasColumnName("ProviderTypeId")
+            .HasConversion<int>();
 
         var options = new JsonSerializerOptions
         {

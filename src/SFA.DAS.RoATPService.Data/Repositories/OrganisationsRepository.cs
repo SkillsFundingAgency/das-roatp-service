@@ -14,7 +14,6 @@ internal class OrganisationsRepository(RoatpDataContext _dataContext) : IOrganis
     public Task<Organisation> GetOrganisationByUkprn(int ukprn, CancellationToken cancellationToken)
         => _dataContext
             .Organisations
-            .Include(o => o.ProviderTypeDetails)
             .Include(o => o.RemovedReason)
             .Include(o => o.OrganisationType)
             .Include(o => o.OrganisationCourseTypes)
@@ -24,7 +23,6 @@ internal class OrganisationsRepository(RoatpDataContext _dataContext) : IOrganis
     public Task<List<Organisation>> GetOrganisations(CancellationToken cancellationToken)
         => _dataContext
             .Organisations
-            .Include(o => o.ProviderTypeDetails)
             .Include(o => o.RemovedReason)
             .Include(o => o.OrganisationType)
             .Include(o => o.OrganisationCourseTypes)
