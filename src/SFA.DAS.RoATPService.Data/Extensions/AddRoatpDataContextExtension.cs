@@ -35,5 +35,6 @@ public static class AddRoatpDataContextExtension
         services.AddTransient<IRemovedReasonsRepository, RemovedReasonsRepository>();
         services.AddTransient<IOrganisationTypesRepository, OrganisationTypesRepository>();
         services.AddTransient<IProviderTypesRepository, ProviderTypesRepository>();
+        services.AddTransient<IProviderTypeOrganisationTypesRepository, ProviderTypeOrganisationTypesRepository>();
     }
 }
