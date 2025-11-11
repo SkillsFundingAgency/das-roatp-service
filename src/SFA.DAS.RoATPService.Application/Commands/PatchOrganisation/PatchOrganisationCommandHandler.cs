@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -8,6 +9,7 @@ using SFA.DAS.RoATPService.Application.Services;
 using SFA.DAS.RoATPService.Domain;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
+using ProviderType = SFA.DAS.RoATPService.Domain.ProviderType;
 
 namespace SFA.DAS.RoATPService.Application.Commands.PatchOrganisation;
 
@@ -44,6 +46,12 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
             };
         }
 
+        bool removeNonStandardCourseTypes =
+            ((int)organisation.ProviderType == ProviderType.EmployerProvider ||
+             (int)organisation.ProviderType == ProviderType.MainProvider) &&
+            patchModel.ProviderType == Domain.Entities.ProviderType.Supporting
+            && organisation.OrganisationCourseTypes.Any(x => x.CourseType.LearningType == LearningType.ShortCourse);
+
         organisation.Status = patchModel.Status;
         organisation.RemovedReasonId = patchModel.RemovedReasonId;
         organisation.ProviderType = patchModel.ProviderType;
@@ -51,7 +59,7 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
         organisation.UpdatedBy = request.UserId;
         organisation.UpdatedAt = DateTime.UtcNow;
 
-        await _organisationRepository.UpdateOrganisation(organisation, auditRecord, statusEvent, cancellationToken);
+        await _organisationRepository.UpdateOrganisation(organisation, auditRecord, statusEvent, removeNonStandardCourseTypes, request.UserId, cancellationToken);
 
         return new ValidatedResponse<SuccessModel>(new SuccessModel(true));
     }
