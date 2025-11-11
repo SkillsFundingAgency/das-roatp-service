@@ -46,7 +46,7 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
             };
         }
 
-        bool removeNonStandardCourseTypes =
+        bool removeShortCourses =
             ((int)organisation.ProviderType == ProviderType.EmployerProvider ||
              (int)organisation.ProviderType == ProviderType.MainProvider) &&
             patchModel.ProviderType == Domain.Entities.ProviderType.Supporting
@@ -59,7 +59,7 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
         organisation.UpdatedBy = request.UserId;
         organisation.UpdatedAt = DateTime.UtcNow;
 
-        await _organisationRepository.UpdateOrganisation(organisation, auditRecord, statusEvent, removeNonStandardCourseTypes, request.UserId, cancellationToken);
+        await _organisationRepository.UpdateOrganisation(organisation, auditRecord, statusEvent, removeShortCourses, request.UserId, cancellationToken);
 
         return new ValidatedResponse<SuccessModel>(new SuccessModel(true));
     }

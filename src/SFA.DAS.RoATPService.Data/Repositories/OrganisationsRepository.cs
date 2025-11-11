@@ -9,6 +9,7 @@ using SFA.DAS.RoATPService.Application.Services;
 using SFA.DAS.RoATPService.Domain;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
+using Organisation = SFA.DAS.RoATPService.Domain.Entities.Organisation;
 
 namespace SFA.DAS.RoATPService.Data.Repositories;
 
@@ -33,7 +34,7 @@ internal class OrganisationsRepository(RoatpDataContext _dataContext) : IOrganis
             .ThenInclude(oc => oc.CourseType)
             .ToListAsync(cancellationToken);
 
-    public async Task UpdateOrganisation(Domain.Entities.Organisation organisation, Audit audit, OrganisationStatusEvent statusEvent, bool removeNonStandardCourseTypes, string userId, CancellationToken cancellationToken)
+    public async Task UpdateOrganisation(Organisation organisation, Audit audit, OrganisationStatusEvent statusEvent, bool removeShortCourses, string userId, CancellationToken cancellationToken)
     {
         if (statusEvent != null)
         {
@@ -42,40 +43,48 @@ internal class OrganisationsRepository(RoatpDataContext _dataContext) : IOrganis
         _dataContext.Organisations.Update(organisation);
         _dataContext.Audits.Add(audit);
 
-        if (removeNonStandardCourseTypes)
+        if (removeShortCourses)
         {
-            List<OrganisationCourseType> courseTypesToRemove = await _dataContext.OrganisationCourseTypes.Where(o => o.OrganisationId == organisation.Id && o.CourseType.LearningType == LearningType.ShortCourse).ToListAsync(cancellationToken);
-
-            _dataContext.OrganisationCourseTypes.RemoveRange(courseTypesToRemove);
-
-            List<int> removedCourseTypeIds = courseTypesToRemove.Select(c => c.CourseTypeId).ToList();
-
-            AuditLogEntry entry = new()
-            {
-                FieldChanged = AuditLogField.CourseTypes,
-                NewValue = null,
-                PreviousValue = string.Join(",", removedCourseTypeIds)
-            };
-
-            AuditData auditData = new()
-            {
-                OrganisationId = organisation.Id,
-                UpdatedBy = userId,
-                UpdatedAt = DateTime.UtcNow,
-                FieldChanges = [entry]
-            };
-
-            Audit auditRecord = new()
-            {
-                OrganisationId = organisation.Id,
-                UpdatedBy = userId,
-                UpdatedAt = DateTime.UtcNow,
-                AuditData = auditData
-            };
-
-            _dataContext.Audits.Add(auditRecord);
+            await RemoveShortCourses(organisation, userId, _dataContext, cancellationToken);
         }
 
         await _dataContext.SaveChangesAsync(cancellationToken);
+    }
+
+    private static async Task RemoveShortCourses(Organisation organisation, string userId, RoatpDataContext dataContext,
+        CancellationToken cancellationToken)
+    {
+        List<OrganisationCourseType> courseTypesToRemove = await dataContext.OrganisationCourseTypes
+            .Where(o => o.OrganisationId == organisation.Id && o.CourseType.LearningType == LearningType.ShortCourse)
+            .ToListAsync(cancellationToken);
+
+        dataContext.OrganisationCourseTypes.RemoveRange(courseTypesToRemove);
+
+        List<int> removedCourseTypeIds = courseTypesToRemove.Select(c => c.CourseTypeId).ToList();
+
+        AuditLogEntry entry = new()
+        {
+            FieldChanged = AuditLogField.CourseTypes,
+            NewValue = null,
+            PreviousValue = string.Join(",", removedCourseTypeIds)
+        };
+
+        AuditData auditData = new()
+        {
+            OrganisationId = organisation.Id,
+            UpdatedBy = userId,
+            UpdatedAt = DateTime.UtcNow,
+            FieldChanges = [entry]
+        };
+
+        Audit auditRecord = new()
+        {
+            OrganisationId = organisation.Id,
+            UpdatedBy = userId,
+            UpdatedAt = DateTime.UtcNow,
+            AuditData = auditData
+        };
+
+        dataContext.Audits.Add(auditRecord);
     }
 }
