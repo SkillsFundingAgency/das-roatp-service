@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SFA.DAS.RoATPService.Domain.Common;
 using SFA.DAS.RoATPService.Domain.Entities;
 
 
@@ -14,7 +15,7 @@ public class OrganisationModel
     public string TradingName { get; set; }
     public string CompanyNumber { get; set; }
     public string CharityNumber { get; set; }
-    public ProviderType ProviderType { get; set; }
+    public Domain.Common.ProviderType ProviderType { get; set; }
     public int OrganisationTypeId { get; set; }
     public string OrganisationType { get; set; }
     public OrganisationStatus Status { get; set; }
@@ -40,7 +41,7 @@ public class OrganisationModel
             CharityNumber = source.CharityNumber,
             ApplicationDeterminedDate = source.ApplicationDeterminedDate,
             RemovedReasonId = source.RemovedReasonId,
-            RemovedReason = source.RemovedReason?.Reason,
+            RemovedReason = source.RemovedReason?.Description,
             AllowedCourseTypes = source.OrganisationCourseTypes.Select(c => new AllowedCourseType(c.CourseType.Id, c.CourseType.Name, c.CourseType.LearningType)),
             StartDate = source.StartDate,
             LastUpdatedDate = source.UpdatedAt ?? source.CreatedAt

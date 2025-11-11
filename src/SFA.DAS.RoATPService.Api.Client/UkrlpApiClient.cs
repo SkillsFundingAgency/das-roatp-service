@@ -29,16 +29,6 @@ public class UkrlpApiClient : IUkrlpApiClient
         _serializer = serializer;
     }
 
-    public async Task<UkprnLookupResponse> GetListOfTrainingProviders(List<long> ukprns)
-    {
-        _logger.LogInformation("Calling UKRLP API to get details for multiple UKPRNs");
-
-        var request = _serializer.BuildGetAllUkrlpSoapRequest(ukprns, _config.StakeholderId,
-            _config.QueryId);
-
-        return await GetUkprnLookupResponse(request);
-    }
-
     public async Task<UkprnLookupResponse> GetTrainingProviderByUkprn(long ukprn)
     {
         // Due to a bug in .net core, we have to parse the SOAP XML from UKRLP by hand

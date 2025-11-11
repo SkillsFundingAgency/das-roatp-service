@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Common.Validators;
+using SFA.DAS.RoATPService.Domain.Common;
 
 namespace SFA.DAS.RoATPService.Application.UnitTests.Common.Validators;
 public class EnumValidationHelperTests
@@ -8,7 +9,7 @@ public class EnumValidationHelperTests
     public void IsValidEnumValue_WithInValidValueType_ReturnsFalse()
     {
         // Arrange
-        var value = Domain.Entities.OrganisationStatus.Active;
+        var value = OrganisationStatus.Active;
         // Act
         var result = EnumValidationHelper.IsValidEnumValue(value, typeof(Domain.Entities.Organisation));
         // Assert
@@ -19,9 +20,9 @@ public class EnumValidationHelperTests
     public void IsValidEnumValue_WithValidEnumValueType_ReturnsTrue()
     {
         // Arrange
-        var value = Domain.Entities.OrganisationStatus.Active;
+        var value = OrganisationStatus.Active;
         // Act
-        var result = EnumValidationHelper.IsValidEnumValue(value, typeof(Domain.Entities.OrganisationStatus));
+        var result = EnumValidationHelper.IsValidEnumValue(value, typeof(OrganisationStatus));
         // Assert
         Assert.IsTrue(result);
     }
@@ -32,7 +33,7 @@ public class EnumValidationHelperTests
     {
         // Arrange
         // Act
-        var result = EnumValidationHelper.IsValidEnumValue<Domain.Entities.OrganisationStatus>(value);
+        var result = EnumValidationHelper.IsValidEnumValue<OrganisationStatus>(value);
         // Assert
         Assert.IsTrue(result);
     }
@@ -43,7 +44,7 @@ public class EnumValidationHelperTests
     {
         // Arrange
         // Act
-        var result = EnumValidationHelper.IsValidEnumValue<Domain.Entities.OrganisationStatus>(value);
+        var result = EnumValidationHelper.IsValidEnumValue<OrganisationStatus>(value);
         // Assert
         Assert.IsFalse(result);
     }

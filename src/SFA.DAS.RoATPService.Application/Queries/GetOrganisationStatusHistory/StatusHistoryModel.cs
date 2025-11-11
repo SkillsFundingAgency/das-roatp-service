@@ -1,5 +1,5 @@
 ﻿using System;
-using SFA.DAS.RoATPService.Domain.Entities;
+using SFA.DAS.RoATPService.Domain.Common;
 
 namespace SFA.DAS.RoATPService.Application.Queries.GetOrganisationStatusHistory;
 

@@ -1,5 +1,6 @@
 ﻿using MediatR;
+using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
 
 namespace SFA.DAS.RoATPService.Application.Queries.GetOrganisationTypes;
 
-public class GetOrganisationTypesQuery : IRequest<GetOrganisationTypesQueryResult>;
+public record GetOrganisationTypesQuery(int? ProviderTypeId) : IRequest<ValidatedResponse<GetOrganisationTypesQueryResult>>;

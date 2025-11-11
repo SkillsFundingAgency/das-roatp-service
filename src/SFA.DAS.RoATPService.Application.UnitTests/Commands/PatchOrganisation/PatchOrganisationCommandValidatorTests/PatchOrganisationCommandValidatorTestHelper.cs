@@ -1,6 +1,7 @@
 ﻿using System;
 using Moq;
 using SFA.DAS.RoATPService.Application.Commands.PatchOrganisation;
+using SFA.DAS.RoATPService.Domain.Common;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
 
@@ -28,8 +29,8 @@ public static class PatchOrganisationCommandValidatorTestHelper
         Mock<IRemovedReasonsRepository> mock = new();
         mock.Setup(r => r.GetAllRemovedReasons(It.IsAny<System.Threading.CancellationToken>())).ReturnsAsync(
         [
-            new RemovedReason { Id = 1, Reason = "reason 1"},
-            new RemovedReason { Id = 2, Reason = "reason 2"}
+            new RemovedReason { Id = 1, Description = "reason 1"},
+            new RemovedReason { Id = 2, Description = "reason 2"}
         ]);
         return mock;
     }
@@ -43,7 +44,7 @@ public static class PatchOrganisationCommandValidatorTestHelper
             Ukprn = ValidUkprn,
             Status = organisationStatus,
             OrganisationTypeId = 1,
-            ProviderType = ProviderType.Main
+            ProviderType = Domain.Common.ProviderType.Main
         });
         return mock;
     }

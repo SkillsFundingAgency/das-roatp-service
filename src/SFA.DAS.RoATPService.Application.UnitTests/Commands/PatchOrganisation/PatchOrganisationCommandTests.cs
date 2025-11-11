@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Commands.PatchOrganisation;
+using SFA.DAS.RoATPService.Domain.Common;
 
 namespace SFA.DAS.RoATPService.Application.UnitTests.Commands.PatchOrganisation;
 public class PatchOrganisationCommandTests
@@ -10,9 +11,9 @@ public class PatchOrganisationCommandTests
         //Arrange
         var organisation = new Domain.Entities.Organisation
         {
-            Status = Domain.Entities.OrganisationStatus.Active,
+            Status = OrganisationStatus.Active,
             RemovedReasonId = null,
-            ProviderType = Domain.Entities.ProviderType.Main,
+            ProviderType = ProviderType.Main,
             OrganisationTypeId = 1
         };
         //Act
