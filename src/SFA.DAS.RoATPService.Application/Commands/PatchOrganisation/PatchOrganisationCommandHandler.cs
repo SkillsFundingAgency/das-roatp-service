@@ -42,8 +42,9 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
             {
                 CreatedOn = DateTime.UtcNow,
                 OrganisationStatus = patchModel.Status,
-                Ukprn = organisation.Ukprn
+                Ukprn = organisation.Ukprn,
             };
+            organisation.StatusDate = DateTime.UtcNow;
         }
 
         var isMovingFromMainEmployerToSupporting =

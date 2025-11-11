@@ -82,6 +82,7 @@ public class PatchOrganisationCommandHandlerTests
         CancellationToken cancellationToken)
     {
         organisation.Status = OrganisationStatus.OnBoarding;
+        organisation.StatusDate = DateTime.UtcNow.AddDays(-10);
         organisation.RemovedReasonId = null;
 
         var expectedStatus = OrganisationStatus.Active;
@@ -100,7 +101,8 @@ public class PatchOrganisationCommandHandlerTests
                 // below are unchanged
                 o.RemovedReasonId == organisation.RemovedReasonId &&
                 o.ProviderType == organisation.ProviderType &&
-                o.OrganisationTypeId == organisation.OrganisationTypeId
+                o.OrganisationTypeId == organisation.OrganisationTypeId &&
+                organisation.StatusDate.Date == DateTime.UtcNow.Date
             ),
             It.Is<Audit>(a =>
                 a.AuditData.FieldChanges.Count == 1
