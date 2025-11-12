@@ -49,7 +49,7 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
         bool removeShortCourses =
             ((int)organisation.ProviderType == ProviderType.EmployerProvider ||
              (int)organisation.ProviderType == ProviderType.MainProvider) &&
-            patchModel.ProviderType == Domain.Entities.ProviderType.Supporting
+            (int)patchModel.ProviderType == Domain.ProviderType.SupportingProvider
             && organisation.OrganisationCourseTypes.Any(x => x.CourseType.LearningType == LearningType.ShortCourse);
 
         organisation.Status = patchModel.Status;

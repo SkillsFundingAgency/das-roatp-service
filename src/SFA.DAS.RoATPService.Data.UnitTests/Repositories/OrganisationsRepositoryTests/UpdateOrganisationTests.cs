@@ -124,7 +124,7 @@ public class UpdateOrganisationTests
             LegalName = "Test Organisation",
             UpdatedAt = DateTime.UtcNow.AddDays(-1),
             UpdatedBy = "InitialUser",
-            ProviderType = ProviderType.Main
+            ProviderType = Domain.Common.ProviderType.Main
         };
 
         Audit audit = new Audit();
@@ -146,7 +146,7 @@ public class UpdateOrganisationTests
 
         await context.SaveChangesAsync(cancellationToken);
         organisation.LegalName = newOrganisationName;
-        organisation.ProviderType = ProviderType.Supporting;
+        organisation.ProviderType = Domain.Common.ProviderType.Supporting;
 
         var expectedAuditCount = context.Audits.Count() + 2;
         var expectedOrganisationStatusEventCount = context.OrganisationStatusEvents.Count() + 1;
