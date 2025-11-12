@@ -58,15 +58,25 @@ internal class OrganisationsRepository(RoatpDataContext _dataContext) : IOrganis
             .Where(o => o.OrganisationId == organisation.Id && o.CourseType.LearningType == LearningType.ShortCourse)
             .ToListAsync(cancellationToken);
 
+        List<OrganisationCourseType> allCourseTypes = await dataContext.OrganisationCourseTypes
+            .Where(o => o.OrganisationId == organisation.Id)
+            .ToListAsync(cancellationToken);
+
+        List<OrganisationCourseType> courseTypesRemaining = await dataContext.OrganisationCourseTypes
+            .Where(o => o.OrganisationId == organisation.Id && o.CourseType.LearningType != LearningType.ShortCourse)
+            .ToListAsync(cancellationToken);
+
         dataContext.OrganisationCourseTypes.RemoveRange(courseTypesToRemove);
 
         List<int> removedCourseTypeIds = courseTypesToRemove.Select(c => c.CourseTypeId).ToList();
+        List<int> allCourseTypeIds = allCourseTypes.Select(c => c.CourseTypeId).ToList();
+        List<int> remainingCourseTypeIds = courseTypesRemaining.Select(c => c.CourseTypeId).ToList();
 
         AuditLogEntry entry = new()
         {
             FieldChanged = AuditLogField.CourseTypes,
-            NewValue = null,
-            PreviousValue = string.Join(",", removedCourseTypeIds)
+            NewValue = string.Join(",", remainingCourseTypeIds),
+            PreviousValue = string.Join(",", allCourseTypeIds)
         };
 
         AuditData auditData = new()
