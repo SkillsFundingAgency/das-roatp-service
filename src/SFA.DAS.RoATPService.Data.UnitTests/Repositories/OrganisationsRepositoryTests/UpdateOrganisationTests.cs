@@ -7,7 +7,7 @@ namespace SFA.DAS.RoATPService.Data.UnitTests.Repositories.OrganisationsReposito
 public class UpdateOrganisationTests
 {
     [Test]
-    public async Task UpdateOrganisation_NoStatusEvent_NoRemovedShortCourses()
+    public async Task UpdateOrganisation_OrganisationDetailsUpdated()
     {
         var options = new DbContextOptionsBuilder<RoatpDataContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
@@ -32,29 +32,23 @@ public class UpdateOrganisationTests
         Audit audit = new Audit();
 
         context.Organisations.Add(organisation);
-        context.OrganisationCourseTypes.Add(new OrganisationCourseType { CourseType = new CourseType { Id = 1, IsActive = true, LearningType = LearningType.Standard } });
 
         await context.SaveChangesAsync(cancellationToken);
         organisation.LegalName = newOrganisationName;
-
-        var expectedOrganisationStatusEventsCount = context.OrganisationStatusEvents.Count();
-        var expectedAuditCount = context.Audits.Count() + 1;
+        organisation.UpdatedAt = DateTime.UtcNow;
+        organisation.UpdatedBy = userId;
 
         var sut = new OrganisationsRepository(context);
 
-        await sut.UpdateOrganisation(organisation, audit, null, false, userId, cancellationToken);
-
+        await sut.UpdateOrganisation(organisation, audit, null, cancellationToken);
         var updatedOrganisation = context.Organisations.First(s => s.Id == organisationId);
-
-        expectedOrganisationStatusEventsCount.Should().Be(context.OrganisationStatusEvents.Count());
-        expectedAuditCount.Should().Be(context.Audits.Count());
         updatedOrganisation.LegalName.Should().Be(newOrganisationName);
-        context.OrganisationStatusEvents.Count().Should().Be(0);
-        context.OrganisationCourseTypes.Count().Should().Be(1);
+        updatedOrganisation.UpdatedBy.Should().Be(userId);
+        updatedOrganisation.UpdatedAt!.Value.Date.Should().Be(DateTime.UtcNow.Date);
     }
 
     [Test]
-    public async Task UpdateOrganisation_StatusEventAdded_NoRemovedShortCourses()
+    public async Task UpdateOrganisation_AuditAdded()
     {
         var options = new DbContextOptionsBuilder<RoatpDataContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
@@ -64,9 +58,43 @@ public class UpdateOrganisationTests
 
         CancellationToken cancellationToken = new CancellationToken();
         var newOrganisationName = "new name";
-        var userId = "user name";
-        var organisationStatusEvent = new OrganisationStatusEvent();
 
+        var organisationId = Guid.NewGuid();
+
+        Organisation organisation = new()
+        {
+            Id = organisationId,
+            LegalName = "Test Organisation",
+            UpdatedAt = DateTime.UtcNow.AddDays(-1),
+            UpdatedBy = "InitialUser"
+        };
+
+        Audit audit = new Audit();
+
+        context.Organisations.Add(organisation);
+
+        await context.SaveChangesAsync(cancellationToken);
+        organisation.LegalName = newOrganisationName;
+        var expectedAuditCount = context.Audits.Count() + 1;
+
+        var sut = new OrganisationsRepository(context);
+
+        await sut.UpdateOrganisation(organisation, audit, null, cancellationToken);
+        expectedAuditCount.Should().Be(context.Audits.Count());
+    }
+
+    [Test]
+    public async Task UpdateOrganisation_StatusEventAdded()
+    {
+        var options = new DbContextOptionsBuilder<RoatpDataContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+
+        await using var context = new RoatpDataContext(options);
+
+        CancellationToken cancellationToken = new CancellationToken();
+        var newOrganisationName = "new name";
+        var organisationStatusEvent = new OrganisationStatusEvent();
 
         var organisationId = Guid.NewGuid();
 
@@ -85,81 +113,11 @@ public class UpdateOrganisationTests
         await context.SaveChangesAsync(cancellationToken);
         organisation.LegalName = newOrganisationName;
 
-        var expectedAuditCount = context.Audits.Count() + 1;
         var expectedOrganisationStatusEventCount = context.OrganisationStatusEvents.Count() + 1;
 
         var sut = new OrganisationsRepository(context);
 
-        await sut.UpdateOrganisation(organisation, audit, organisationStatusEvent, false, userId, cancellationToken);
-
-        var updatedOrganisation = context.Organisations.First(s => s.Id == organisationId);
-
+        await sut.UpdateOrganisation(organisation, audit, organisationStatusEvent, cancellationToken);
         expectedOrganisationStatusEventCount.Should().Be(context.OrganisationStatusEvents.Count());
-        expectedAuditCount.Should().Be(context.Audits.Count());
-        updatedOrganisation.LegalName.Should().Be(newOrganisationName);
-    }
-
-
-    [Test]
-    public async Task UpdateOrganisation_StatusEventAdded_RemoveShortCourses()
-    {
-        var removeShortCourses = true;
-        var options = new DbContextOptionsBuilder<RoatpDataContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        await using var context = new RoatpDataContext(options);
-
-        CancellationToken cancellationToken = new CancellationToken();
-        var newOrganisationName = "new name";
-        var userId = "user name";
-        var organisationStatusEvent = new OrganisationStatusEvent();
-
-
-        var organisationId = Guid.NewGuid();
-
-        Organisation organisation = new()
-        {
-            Id = organisationId,
-            LegalName = "Test Organisation",
-            UpdatedAt = DateTime.UtcNow.AddDays(-1),
-            UpdatedBy = "InitialUser",
-            ProviderType = Domain.Common.ProviderType.Main
-        };
-
-        Audit audit = new Audit();
-
-        context.Organisations.Add(organisation);
-        context.OrganisationCourseTypes.Add(
-            new OrganisationCourseType
-            {
-                OrganisationId = organisationId,
-                CourseType = new CourseType { Id = 1, IsActive = true, LearningType = LearningType.Standard }
-            });
-        context.OrganisationCourseTypes.Add(
-            new OrganisationCourseType
-            {
-                OrganisationId = organisationId,
-                CourseType = new CourseType { Id = 2, IsActive = true, LearningType = LearningType.ShortCourse }
-            });
-
-
-        await context.SaveChangesAsync(cancellationToken);
-        organisation.LegalName = newOrganisationName;
-        organisation.ProviderType = Domain.Common.ProviderType.Supporting;
-
-        var expectedAuditCount = context.Audits.Count() + 2;
-        var expectedOrganisationStatusEventCount = context.OrganisationStatusEvents.Count() + 1;
-        var expectedOrganisationCourseTypesCount = context.OrganisationCourseTypes.Count() - 1;
-        var sut = new OrganisationsRepository(context);
-
-        await sut.UpdateOrganisation(organisation, audit, organisationStatusEvent, removeShortCourses, userId, cancellationToken);
-
-        var updatedOrganisation = context.Organisations.First(s => s.Id == organisationId);
-
-        expectedOrganisationStatusEventCount.Should().Be(context.OrganisationStatusEvents.Count());
-        expectedAuditCount.Should().Be(context.Audits.Count());
-        updatedOrganisation.LegalName.Should().Be(newOrganisationName);
-        expectedOrganisationCourseTypesCount.Should().Be(context.OrganisationCourseTypes.Count());
     }
 }

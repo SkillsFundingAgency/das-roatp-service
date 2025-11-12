@@ -13,7 +13,7 @@ using ProviderType = SFA.DAS.RoATPService.Domain.ProviderType;
 
 namespace SFA.DAS.RoATPService.Application.Commands.PatchOrganisation;
 
-public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisationRepository) : IRequestHandler<PatchOrganisationCommand, ValidatedResponse<SuccessModel>>
+public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisationRepository, IOrganisationCourseTypesRepository _organisationCourseTypesRepository) : IRequestHandler<PatchOrganisationCommand, ValidatedResponse<SuccessModel>>
 {
     public async Task<ValidatedResponse<SuccessModel>> Handle(PatchOrganisationCommand request, CancellationToken cancellationToken)
     {
@@ -46,11 +46,10 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
             };
         }
 
-        bool removeShortCourses =
+        var isMovingFromMainEmployerToSupporting =
             ((int)organisation.ProviderType == ProviderType.EmployerProvider ||
              (int)organisation.ProviderType == ProviderType.MainProvider) &&
-            (int)patchModel.ProviderType == Domain.ProviderType.SupportingProvider
-            && organisation.OrganisationCourseTypes.Any(x => x.CourseType.LearningType == LearningType.ShortCourse);
+            (int)patchModel.ProviderType == ProviderType.SupportingProvider;
 
         organisation.Status = patchModel.Status;
         organisation.RemovedReasonId = patchModel.RemovedReasonId;
@@ -59,7 +58,12 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
         organisation.UpdatedBy = request.UserId;
         organisation.UpdatedAt = DateTime.UtcNow;
 
-        await _organisationRepository.UpdateOrganisation(organisation, auditRecord, statusEvent, removeShortCourses, request.UserId, cancellationToken);
+        if (isMovingFromMainEmployerToSupporting && organisation.OrganisationCourseTypes.Select(o => o.CourseType.LearningType).Contains(LearningType.ShortCourse))
+        {
+            await _organisationCourseTypesRepository.DeleteOrganisationShortCourseTypes(organisation, request.UserId, cancellationToken);
+        }
+
+        await _organisationRepository.UpdateOrganisation(organisation, auditRecord, statusEvent, cancellationToken);
 
         return new ValidatedResponse<SuccessModel>(new SuccessModel(true));
     }
