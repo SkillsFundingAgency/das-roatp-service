@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture.NUnit3;
@@ -48,7 +49,7 @@ public class PatchOrganisationCommandHandlerTests
         var patchDoc = new JsonPatchDocument<PatchOrganisationModel>();
         patchDoc.Replace(o => o.Status, OrganisationStatus.Removed);
         patchDoc.Replace(o => o.RemovedReasonId, RemovedReasonId);
-        patchDoc.Replace(o => o.ProviderType, Domain.Common.ProviderType.Supporting);
+        patchDoc.Replace(o => o.ProviderType, Domain.Common.ProviderType.Employer);
         patchDoc.Replace(o => o.OrganisationTypeId, OrganisationTypeId);
 
         PatchOrganisationCommand command = new(organisation.Ukprn, userId, patchDoc);
@@ -60,7 +61,7 @@ public class PatchOrganisationCommandHandlerTests
             It.Is<Organisation>(o =>
                 o.Status == OrganisationStatus.Removed &&
                 o.RemovedReasonId == RemovedReasonId &&
-                o.ProviderType == Domain.Common.ProviderType.Supporting &&
+                o.ProviderType == Domain.Common.ProviderType.Employer &&
                 o.OrganisationTypeId == OrganisationTypeId &&
                 o.UpdatedBy == userId &&
                 o.UpdatedAt.GetValueOrDefault().Date == DateTime.UtcNow.Date
@@ -187,7 +188,9 @@ public class PatchOrganisationCommandHandlerTests
             It.IsAny<Organisation>(),
             It.IsAny<Audit>(),
             It.IsAny<OrganisationStatusEvent>(),
-            It.IsAny<CancellationToken>()), Times.Never);
+            It.IsAny<CancellationToken>()),
+
+            Times.Never);
 
         Assert.That(actual.Result.IsSuccess, Is.True);
     }
@@ -234,7 +237,7 @@ public class PatchOrganisationCommandHandlerTests
     {
         organisation.ProviderType = Domain.Common.ProviderType.Main;
         var patchDoc = new JsonPatchDocument<PatchOrganisationModel>();
-        patchDoc.Replace(o => o.ProviderType, Domain.Common.ProviderType.Supporting);
+        patchDoc.Replace(o => o.ProviderType, Domain.Common.ProviderType.Employer);
         PatchOrganisationCommand command = new(organisation.Ukprn, userId, patchDoc);
         organisationsRepositoryMock.Setup(x => x.GetOrganisationByUkprn(command.Ukprn, cancellationToken)).ReturnsAsync(organisation);
         var actual = await sut.Handle(command, cancellationToken);
@@ -242,14 +245,14 @@ public class PatchOrganisationCommandHandlerTests
             It.Is<Organisation>(o =>
                 o.Status == organisation.Status &&
                 o.RemovedReasonId == organisation.RemovedReasonId &&
-                o.ProviderType == Domain.Common.ProviderType.Supporting &&
+                o.ProviderType == Domain.Common.ProviderType.Employer &&
                 o.OrganisationTypeId == organisation.OrganisationTypeId
             ),
             It.Is<Audit>(a =>
                 a.AuditData.FieldChanges.Count == 1
                 && a.AuditData.FieldChanges[0].FieldChanged == AuditLogField.ProviderType
                 && a.AuditData.FieldChanges[0].PreviousValue == Domain.Common.ProviderType.Main.ToString()
-                && a.AuditData.FieldChanges[0].NewValue == Domain.Common.ProviderType.Supporting.ToString()
+                && a.AuditData.FieldChanges[0].NewValue == Domain.Common.ProviderType.Employer.ToString()
             ),
             null,
             cancellationToken), Times.Once);
@@ -285,6 +288,98 @@ public class PatchOrganisationCommandHandlerTests
             ),
             null,
             cancellationToken), Times.Once);
+        Assert.That(actual.Result.IsSuccess, Is.True);
+    }
+
+    [Test, RecursiveMoqAutoData]
+    public async Task Handle_UkprnFound_UpdatesProviderTypeToSupportingWithShortCourses(
+        [Frozen] Mock<IOrganisationsRepository> organisationsRepositoryMock,
+        [Frozen] Mock<IOrganisationCourseTypesRepository> organisationCourseTypesRepositoryMock,
+        Organisation organisation,
+        string userId,
+        PatchOrganisationCommandHandler sut,
+        CancellationToken cancellationToken)
+    {
+        organisation.ProviderType = Domain.Common.ProviderType.Main;
+        organisation.OrganisationCourseTypes = new List<OrganisationCourseType>
+        {
+            new() { CourseType = new CourseType { Id = (int)LearningType.Standard, IsActive = true, LearningType = LearningType.Standard } },
+            new() { CourseType = new CourseType { Id = (int)LearningType.ShortCourse, IsActive = true, LearningType = LearningType.ShortCourse } }
+        };
+
+        var patchDoc = new JsonPatchDocument<PatchOrganisationModel>();
+        patchDoc.Replace(o => o.ProviderType, Domain.Common.ProviderType.Supporting);
+        PatchOrganisationCommand command = new(organisation.Ukprn, userId, patchDoc);
+        organisationsRepositoryMock.Setup(x => x.GetOrganisationByUkprn(command.Ukprn, cancellationToken)).ReturnsAsync(organisation);
+        var actual = await sut.Handle(command, cancellationToken);
+        organisationsRepositoryMock.Verify(x => x.UpdateOrganisation(
+            It.Is<Organisation>(o =>
+                o.Status == organisation.Status &&
+                o.RemovedReasonId == organisation.RemovedReasonId &&
+                o.ProviderType == Domain.Common.ProviderType.Supporting &&
+                o.OrganisationTypeId == organisation.OrganisationTypeId
+            ),
+            It.Is<Audit>(a =>
+                a.AuditData.FieldChanges.Count == 1
+                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogField.ProviderType
+                && a.AuditData.FieldChanges[0].PreviousValue == Domain.Common.ProviderType.Main.ToString()
+                && a.AuditData.FieldChanges[0].NewValue == Domain.Common.ProviderType.Supporting.ToString()
+            ),
+            null,
+            cancellationToken), Times.Once);
+
+        organisationCourseTypesRepositoryMock.Verify(x => x.DeleteOrganisationShortCourseTypes(
+            It.Is<Organisation>(o =>
+                o.Status == organisation.Status &&
+                o.RemovedReasonId == organisation.RemovedReasonId &&
+                o.ProviderType == Domain.Common.ProviderType.Supporting &&
+                o.OrganisationTypeId == organisation.OrganisationTypeId
+            ),
+            It.IsAny<string>(),
+            cancellationToken), Times.Once);
+        Assert.That(actual.Result.IsSuccess, Is.True);
+    }
+
+    [Test, RecursiveMoqAutoData]
+    public async Task Handle_UkprnFound_UpdatesProviderTypeToSupportingWithoutShortCourses(
+       [Frozen] Mock<IOrganisationsRepository> organisationsRepositoryMock,
+       [Frozen] Mock<IOrganisationCourseTypesRepository> organisationCourseTypesRepositoryMock,
+       Organisation organisation,
+       string userId,
+       PatchOrganisationCommandHandler sut,
+       CancellationToken cancellationToken)
+    {
+        organisation.ProviderType = Domain.Common.ProviderType.Main;
+        organisation.OrganisationCourseTypes = new List<OrganisationCourseType>
+        {
+            new() { CourseType = new CourseType { Id = (int)LearningType.Standard, IsActive = true, LearningType = LearningType.Standard } }
+        };
+
+        var patchDoc = new JsonPatchDocument<PatchOrganisationModel>();
+        patchDoc.Replace(o => o.ProviderType, Domain.Common.ProviderType.Supporting);
+        PatchOrganisationCommand command = new(organisation.Ukprn, userId, patchDoc);
+        organisationsRepositoryMock.Setup(x => x.GetOrganisationByUkprn(command.Ukprn, cancellationToken)).ReturnsAsync(organisation);
+        var actual = await sut.Handle(command, cancellationToken);
+        organisationsRepositoryMock.Verify(x => x.UpdateOrganisation(
+            It.Is<Organisation>(o =>
+                o.Status == organisation.Status &&
+                o.RemovedReasonId == organisation.RemovedReasonId &&
+                o.ProviderType == Domain.Common.ProviderType.Supporting &&
+                o.OrganisationTypeId == organisation.OrganisationTypeId
+            ),
+            It.Is<Audit>(a =>
+                a.AuditData.FieldChanges.Count == 1
+                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogField.ProviderType
+                && a.AuditData.FieldChanges[0].PreviousValue == Domain.Common.ProviderType.Main.ToString()
+                && a.AuditData.FieldChanges[0].NewValue == Domain.Common.ProviderType.Supporting.ToString()
+            ),
+            null,
+            cancellationToken), Times.Once);
+
+        organisationCourseTypesRepositoryMock.Verify(x => x.DeleteOrganisationShortCourseTypes(
+            It.IsAny<Organisation>(),
+            It.IsAny<string>(),
+            cancellationToken), Times.Never);
         Assert.That(actual.Result.IsSuccess, Is.True);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -8,10 +9,11 @@ using SFA.DAS.RoATPService.Application.Services;
 using SFA.DAS.RoATPService.Domain;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
+using ProviderType = SFA.DAS.RoATPService.Domain.ProviderType;
 
 namespace SFA.DAS.RoATPService.Application.Commands.PatchOrganisation;
 
-public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisationRepository) : IRequestHandler<PatchOrganisationCommand, ValidatedResponse<SuccessModel>>
+public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisationRepository, IOrganisationCourseTypesRepository _organisationCourseTypesRepository) : IRequestHandler<PatchOrganisationCommand, ValidatedResponse<SuccessModel>>
 {
     public async Task<ValidatedResponse<SuccessModel>> Handle(PatchOrganisationCommand request, CancellationToken cancellationToken)
     {
@@ -44,12 +46,22 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
             };
         }
 
+        var isMovingFromMainEmployerToSupporting =
+            ((int)organisation.ProviderType == ProviderType.EmployerProvider ||
+             (int)organisation.ProviderType == ProviderType.MainProvider) &&
+            (int)patchModel.ProviderType == ProviderType.SupportingProvider;
+
         organisation.Status = patchModel.Status;
         organisation.RemovedReasonId = patchModel.RemovedReasonId;
         organisation.ProviderType = patchModel.ProviderType;
         organisation.OrganisationTypeId = patchModel.OrganisationTypeId;
         organisation.UpdatedBy = request.UserId;
         organisation.UpdatedAt = DateTime.UtcNow;
+
+        if (isMovingFromMainEmployerToSupporting && organisation.OrganisationCourseTypes.Select(o => o.CourseType.LearningType).Contains(LearningType.ShortCourse))
+        {
+            await _organisationCourseTypesRepository.DeleteOrganisationShortCourseTypes(organisation, request.UserId, cancellationToken);
+        }
 
         await _organisationRepository.UpdateOrganisation(organisation, auditRecord, statusEvent, cancellationToken);
 

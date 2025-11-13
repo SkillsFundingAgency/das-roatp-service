@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
+using Organisation = SFA.DAS.RoATPService.Domain.Entities.Organisation;
 
 namespace SFA.DAS.RoATPService.Data.Repositories;
 
 [ExcludeFromCodeCoverage]
 internal class OrganisationsRepository(RoatpDataContext _dataContext) : IOrganisationsRepository
 {
-    public Task<Organisation> GetOrganisationByUkprn(int ukprn, CancellationToken cancellationToken)
+    public Task<Domain.Entities.Organisation> GetOrganisationByUkprn(int ukprn, CancellationToken cancellationToken)
         => _dataContext
             .Organisations
             .Include(o => o.RemovedReason)
@@ -20,7 +21,7 @@ internal class OrganisationsRepository(RoatpDataContext _dataContext) : IOrganis
             .ThenInclude(oc => oc.CourseType)
             .FirstOrDefaultAsync(o => o.Ukprn == ukprn, cancellationToken);
 
-    public Task<List<Organisation>> GetOrganisations(CancellationToken cancellationToken)
+    public Task<List<Domain.Entities.Organisation>> GetOrganisations(CancellationToken cancellationToken)
         => _dataContext
             .Organisations
             .Include(o => o.RemovedReason)
@@ -29,14 +30,17 @@ internal class OrganisationsRepository(RoatpDataContext _dataContext) : IOrganis
             .ThenInclude(oc => oc.CourseType)
             .ToListAsync(cancellationToken);
 
-    public Task UpdateOrganisation(Organisation organisation, Audit audit, OrganisationStatusEvent statusEvent, CancellationToken cancellationToken)
+    public async Task UpdateOrganisation(Organisation organisation, Audit audit, OrganisationStatusEvent statusEvent,
+        CancellationToken cancellationToken)
     {
         if (statusEvent != null)
         {
             _dataContext.OrganisationStatusEvents.Add(statusEvent);
         }
+
         _dataContext.Organisations.Update(organisation);
         _dataContext.Audits.Add(audit);
-        return _dataContext.SaveChangesAsync(cancellationToken);
+
+        await _dataContext.SaveChangesAsync(cancellationToken);
     }
 }
