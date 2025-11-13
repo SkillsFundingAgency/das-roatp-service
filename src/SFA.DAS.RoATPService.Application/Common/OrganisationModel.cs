@@ -19,6 +19,7 @@ public class OrganisationModel
     public int OrganisationTypeId { get; set; }
     public string OrganisationType { get; set; }
     public OrganisationStatus Status { get; set; }
+    public DateTime StatusDate { get; set; }
     public DateTime? ApplicationDeterminedDate { get; set; }
     public int? RemovedReasonId { get; set; }
     public string RemovedReason { get; set; }
@@ -35,6 +36,7 @@ public class OrganisationModel
             TradingName = source.TradingName,
             ProviderType = source.ProviderType,
             Status = source.Status,
+            StatusDate = source.StatusDate,
             OrganisationTypeId = source.OrganisationType.Id,
             OrganisationType = source.OrganisationType.Type,
             CompanyNumber = source.CompanyNumber,
