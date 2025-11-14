@@ -36,10 +36,10 @@ public class OrganisationsController(IMediator _mediator, ILogger<OrganisationsC
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetOrganisationsQueryResult))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetOrganisations(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetOrganisations([FromQuery] string searchTerm, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Processing Organisations-GetOrganisations");
-        GetOrganisationsQueryResult result = await _mediator.Send(new GetOrganisationsQuery(), cancellationToken);
+        GetOrganisationsQueryResult result = await _mediator.Send(new GetOrganisationsQuery(searchTerm), cancellationToken);
         return Ok(result);
     }
 
@@ -60,5 +60,3 @@ public class OrganisationsController(IMediator _mediator, ILogger<OrganisationsC
         return result.Result.IsSuccess ? NoContent() : NotFound();
     }
 }
-
-
