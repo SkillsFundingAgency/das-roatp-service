@@ -19,11 +19,12 @@ public class GetOrganisationsQueryHandlerTests
     public async Task Handle_OrganisationsFound_ReturnsOrganisations(
         [Frozen] Mock<IOrganisationsRepository> organisationRepositoryMock,
         GetOrganisationsQueryHandler sut,
-        GetOrganisationsQuery query,
         List<Organisation> expectedOrganisations,
         CancellationToken cancellationToken)
     {
+        GetOrganisationsQuery query = new(null);
         organisationRepositoryMock.Setup(x => x.GetOrganisations(cancellationToken)).ReturnsAsync(expectedOrganisations);
+
         GetOrganisationsQueryResult actual = await sut.Handle(query, cancellationToken);
 
         actual.Organisations.Should().BeEquivalentTo(
@@ -33,5 +34,38 @@ public class GetOrganisationsQueryHandlerTests
                 .Excluding(o => o.OrganisationTypeId)
                 .Excluding(x => x.OrganisationType)
         );
+    }
+
+    [Test, RecursiveMoqAutoData]
+    public async Task Handle_NoSearchTerm_GetAllOrganisations(
+        [Frozen] Mock<IOrganisationsRepository> organisationRepositoryMock,
+        GetOrganisationsQueryHandler sut,
+        List<Organisation> expectedOrganisations,
+        CancellationToken cancellationToken)
+    {
+        GetOrganisationsQuery query = new(null);
+        organisationRepositoryMock.Setup(x => x.GetOrganisations(cancellationToken)).ReturnsAsync(expectedOrganisations);
+
+        await sut.Handle(query, cancellationToken);
+
+        organisationRepositoryMock.Verify(x => x.GetOrganisations(It.IsAny<CancellationToken>()), Times.Once);
+        organisationRepositoryMock.Verify(x => x.GetOrganisationsBySearchTerm(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Test, RecursiveMoqAutoData]
+    public async Task Handle_NoSearchTerm_GetAllOrganisations(
+        [Frozen] Mock<IOrganisationsRepository> organisationRepositoryMock,
+        GetOrganisationsQueryHandler sut,
+        string searchTerm,
+        List<Organisation> expectedOrganisations,
+        CancellationToken cancellationToken)
+    {
+        GetOrganisationsQuery query = new(searchTerm);
+        organisationRepositoryMock.Setup(x => x.GetOrganisationsBySearchTerm(query.SearchTerm, cancellationToken)).ReturnsAsync(expectedOrganisations);
+
+        await sut.Handle(query, cancellationToken);
+
+        organisationRepositoryMock.Verify(x => x.GetOrganisationsBySearchTerm(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+        organisationRepositoryMock.Verify(x => x.GetOrganisations(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

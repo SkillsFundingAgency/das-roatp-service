@@ -33,7 +33,6 @@ public class UkrlpLookupController : ControllerBase
     [HttpGet]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UkprnLookupResponse))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
-    [Route("api/v1/ukrlp/lookup/{ukprn}")] // TODO delete after migration DS
     [Route("/organisations/{ukprn}/ukrlp-data")]
     public async Task<IActionResult> UkrlpLookup(int ukprn)
     {

@@ -17,23 +17,25 @@ public class OrganisationsControllerGetOrganisationsTests
     public async Task GetOrganisations_InvokesMediator(
         [Frozen] Mock<IMediator> meditorMock,
         [Greedy] OrganisationsController sut,
+        string searchTerm,
         CancellationToken cancellationToken)
     {
-        await sut.GetOrganisations(cancellationToken);
+        await sut.GetOrganisations(searchTerm, cancellationToken);
 
-        meditorMock.Verify(m => m.Send(It.IsAny<GetOrganisationsQuery>(), cancellationToken), Times.Once);
+        meditorMock.Verify(m => m.Send(It.Is<GetOrganisationsQuery>(q => q.SearchTerm == searchTerm), cancellationToken), Times.Once);
     }
 
     [Test, MoqAutoData]
     public async Task GetOrganisations_ReturnsExpectedResult(
-    [Frozen] Mock<IMediator> meditorMock,
-    [Greedy] OrganisationsController sut,
-    GetOrganisationsQueryResult expected,
-    CancellationToken cancellationToken)
+        [Frozen] Mock<IMediator> meditorMock,
+        [Greedy] OrganisationsController sut,
+        GetOrganisationsQueryResult expected,
+        string searchTerm,
+        CancellationToken cancellationToken)
     {
         meditorMock.Setup(m => m.Send(It.IsAny<GetOrganisationsQuery>(), cancellationToken)).ReturnsAsync(expected);
 
-        IActionResult actual = await sut.GetOrganisations(cancellationToken);
+        IActionResult actual = await sut.GetOrganisations(searchTerm, cancellationToken);
 
         actual.As<OkObjectResult>().Value.Should().Be(expected);
     }

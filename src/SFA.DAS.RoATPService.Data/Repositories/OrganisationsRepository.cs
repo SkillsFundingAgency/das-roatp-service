@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,7 @@ namespace SFA.DAS.RoATPService.Data.Repositories;
 [ExcludeFromCodeCoverage]
 internal class OrganisationsRepository(RoatpDataContext _dataContext) : IOrganisationsRepository
 {
-    public Task<Domain.Entities.Organisation> GetOrganisationByUkprn(int ukprn, CancellationToken cancellationToken)
+    public Task<Organisation> GetOrganisationByUkprn(int ukprn, CancellationToken cancellationToken)
         => _dataContext
             .Organisations
             .Include(o => o.RemovedReason)
@@ -21,13 +22,23 @@ internal class OrganisationsRepository(RoatpDataContext _dataContext) : IOrganis
             .ThenInclude(oc => oc.CourseType)
             .FirstOrDefaultAsync(o => o.Ukprn == ukprn, cancellationToken);
 
-    public Task<List<Domain.Entities.Organisation>> GetOrganisations(CancellationToken cancellationToken)
+    public Task<List<Organisation>> GetOrganisations(CancellationToken cancellationToken)
         => _dataContext
             .Organisations
             .Include(o => o.RemovedReason)
             .Include(o => o.OrganisationType)
             .Include(o => o.OrganisationCourseTypes)
             .ThenInclude(oc => oc.CourseType)
+            .ToListAsync(cancellationToken);
+
+    public Task<List<Organisation>> GetOrganisationsBySearchTerm(string searchTerm, CancellationToken cancellationToken)
+        => _dataContext
+            .Organisations
+            .Include(o => o.RemovedReason)
+            .Include(o => o.OrganisationType)
+            .Include(o => o.OrganisationCourseTypes)
+            .ThenInclude(oc => oc.CourseType)
+            .Where(o => o.LegalName.Contains(searchTerm))
             .ToListAsync(cancellationToken);
 
     public async Task UpdateOrganisation(Organisation organisation, Audit audit, OrganisationStatusEvent statusEvent,
