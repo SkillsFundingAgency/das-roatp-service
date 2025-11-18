@@ -38,7 +38,7 @@ internal class OrganisationsRepository(RoatpDataContext _dataContext) : IOrganis
             .Include(o => o.OrganisationType)
             .Include(o => o.OrganisationCourseTypes)
             .ThenInclude(oc => oc.CourseType)
-            .Where(o => o.LegalName.Contains(searchTerm) || o.TradingName.Contains(searchTerm))
+            .Where(o => o.LegalName.Contains(searchTerm))
             .ToListAsync(cancellationToken);
 
     public async Task UpdateOrganisation(Organisation organisation, Audit audit, OrganisationStatusEvent statusEvent,
