@@ -34,6 +34,7 @@ public class UkrlpLookupController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UkprnLookupResponse))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
     [Route("/organisations/{ukprn}/ukrlp-data")]
+    [Route("api/v1/ukrlp/lookup/{ukprn}")]
     public async Task<IActionResult> UkrlpLookup(int ukprn)
     {
         UkprnLookupResponse providerData;
