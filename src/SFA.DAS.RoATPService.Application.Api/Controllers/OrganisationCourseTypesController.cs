@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using SFA.DAS.RoATPService.Application.Api.Common;
 using SFA.DAS.RoATPService.Application.Api.Filters;
 using SFA.DAS.RoATPService.Application.Api.Models;
-using SFA.DAS.RoATPService.Application.commands.DeleteOrganisationShortCourseTypes;
+using SFA.DAS.RoATPService.Application.Commands.DeleteOrganisationShortCourseTypes;
 using SFA.DAS.RoATPService.Application.Commands.UpdateOrganisationCourseTypes;
 using SFA.DAS.RoATPService.Application.Common.Models;
 using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;

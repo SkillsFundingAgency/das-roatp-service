@@ -8,7 +8,7 @@ using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
 
-namespace SFA.DAS.RoATPService.Application.commands.DeleteOrganisationShortCourseTypes;
+namespace SFA.DAS.RoATPService.Application.Commands.DeleteOrganisationShortCourseTypes;
 public class DeleteOrganisationShortCourseTypesCommandHandler(IOrganisationsRepository _organisationsRepository, IOrganisationCourseTypesRepository _organisationCourseTypesRepository, ILogger<DeleteOrganisationShortCourseTypesCommandHandler> _logger) : IRequestHandler<DeleteOrganisationShortCourseTypesCommand, ValidatedResponse<SuccessModel>>
 {
     public async Task<ValidatedResponse<SuccessModel>> Handle(DeleteOrganisationShortCourseTypesCommand request, CancellationToken cancellationToken)

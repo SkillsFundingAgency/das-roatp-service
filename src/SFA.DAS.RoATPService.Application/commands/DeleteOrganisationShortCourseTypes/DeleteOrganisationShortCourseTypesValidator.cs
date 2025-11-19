@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using SFA.DAS.RoATPService.Application.Common.Validators;
 
-namespace SFA.DAS.RoATPService.Application.commands.DeleteOrganisationShortCourseTypes;
+namespace SFA.DAS.RoATPService.Application.Commands.DeleteOrganisationShortCourseTypes;
 public class DeleteOrganisationShortCourseTypesValidator : AbstractValidator<DeleteOrganisationShortCourseTypesCommand>
 {
     public DeleteOrganisationShortCourseTypesValidator()

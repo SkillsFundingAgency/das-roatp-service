@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using SFA.DAS.RoATPService.Application.Api.Common;
 using SFA.DAS.RoATPService.Application.Api.Filters;
 using SFA.DAS.RoATPService.Application.Commands.PatchOrganisation;
+using SFA.DAS.RoATPService.Application.Commands.PostOrganisation;
 using SFA.DAS.RoATPService.Application.Common;
 using SFA.DAS.RoATPService.Application.Common.Models;
 using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
@@ -22,7 +24,7 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers;
 public class OrganisationsController(IMediator _mediator, ILogger<OrganisationsController> _logger) : ControllerBase
 {
     [HttpGet]
-    [Route("{ukprn:int}")]
+    [Route("{ukprn:int}", Name = "GetOrganisationByUkprn")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OrganisationModel))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetOrganisationByUkprn([FromRoute] int ukprn, CancellationToken cancellationToken)
@@ -58,5 +60,18 @@ public class OrganisationsController(IMediator _mediator, ILogger<OrganisationsC
         if (!result.IsValidResponse) return BadRequest(result.Errors);
 
         return result.Result.IsSuccess ? NoContent() : NotFound();
+    }
+
+    [HttpPost]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
+    [Route("")]
+    public async Task<IActionResult> PostOrganisation([FromBody] PostOrganisationCommand command,
+        CancellationToken cancellationToken)
+    {
+        ValidatedResponse<SuccessModel> validatedResponse = await _mediator.Send(command, cancellationToken);
+        if (!validatedResponse.IsValidResponse) return new BadRequestObjectResult(validatedResponse.Errors);
+
+        return Created(Url.RouteUrl("GetOrganisationByUkprn", new { ukprn = command.Ukprn }), null);
     }
 }
