@@ -54,4 +54,18 @@ internal class OrganisationsRepository(RoatpDataContext _dataContext) : IOrganis
 
         await _dataContext.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task CreateOrganisation(Organisation organisation, Audit audit, OrganisationStatusEvent statusEvent,
+        CancellationToken cancellationToken)
+    {
+        if (statusEvent != null)
+        {
+            _dataContext.OrganisationStatusEvents.Add(statusEvent);
+        }
+
+        _dataContext.Organisations.Add(organisation);
+        _dataContext.Audits.Add(audit);
+
+        await _dataContext.SaveChangesAsync(cancellationToken);
+    }
 }

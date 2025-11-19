@@ -5,7 +5,7 @@ using AutoFixture.NUnit3;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.RoATPService.Application.commands.DeleteOrganisationShortCourseTypes;
+using SFA.DAS.RoATPService.Application.Commands.DeleteOrganisationShortCourseTypes;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
 using SFA.DAS.Testing.AutoFixture;
