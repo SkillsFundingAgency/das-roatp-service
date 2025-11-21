@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using FluentValidation.TestHelper;
 using NUnit.Framework;
-using SFA.DAS.RoATPService.Application.commands.DeleteOrganisationShortCourseTypes;
+using SFA.DAS.RoATPService.Application.Commands.DeleteOrganisationShortCourseTypes;
 using SFA.DAS.RoATPService.Application.Common.Validators;
 using SFA.DAS.Testing.AutoFixture;
 
