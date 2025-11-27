@@ -45,6 +45,17 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
                 Ukprn = organisation.Ukprn,
             };
             organisation.StatusDate = DateTime.UtcNow;
+
+            var isMainEmployerAndStatusBecomingActive =
+                ((int)organisation.ProviderType == ProviderType.EmployerProvider ||
+                 (int)organisation.ProviderType == ProviderType.MainProvider) &&
+                (int)patchModel.Status == OrganisationStatus.Active;
+
+            if (isMainEmployerAndStatusBecomingActive)
+            {
+                organisation.StartDate = DateTime.UtcNow;
+            }
+
         }
 
         var isMovingFromMainEmployerToSupporting =

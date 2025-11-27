@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Api.Controllers;
-using SFA.DAS.RoATPService.Application.commands.DeleteOrganisationShortCourseTypes;
+using SFA.DAS.RoATPService.Application.Commands.DeleteOrganisationShortCourseTypes;
 using SFA.DAS.RoATPService.Application.Common.Models;
 using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
 using SFA.DAS.Testing.AutoFixture;

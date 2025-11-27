@@ -12,6 +12,7 @@ using SFA.DAS.RoATPService.Domain.Common;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
 using SFA.DAS.Testing.AutoFixture;
+using ProviderType = SFA.DAS.RoATPService.Domain.Common.ProviderType;
 
 namespace SFA.DAS.RoATPService.Application.UnitTests.Commands.PatchOrganisation;
 public class PatchOrganisationCommandHandlerTests
@@ -114,6 +115,56 @@ public class PatchOrganisationCommandHandlerTests
                 e.OrganisationStatus == expectedStatus
                 && e.Ukprn == organisation.Ukprn
             ),
+            cancellationToken), Times.Once);
+
+        Assert.That(actual.Result.IsSuccess, Is.True);
+    }
+
+
+    [Test]
+    [RecursiveMoqInlineAutoData(OrganisationStatus.Removed, OrganisationStatus.Active, ProviderType.Employer, true)]
+    [RecursiveMoqInlineAutoData(OrganisationStatus.Removed, OrganisationStatus.Active, ProviderType.Main, true)]
+    [RecursiveMoqInlineAutoData(OrganisationStatus.Removed, OrganisationStatus.Active, ProviderType.Supporting, false)]
+    [RecursiveMoqInlineAutoData(OrganisationStatus.OnBoarding, OrganisationStatus.Active, ProviderType.Employer, true)]
+    [RecursiveMoqInlineAutoData(OrganisationStatus.OnBoarding, OrganisationStatus.Active, ProviderType.Main, true)]
+    [RecursiveMoqInlineAutoData(OrganisationStatus.OnBoarding, OrganisationStatus.Active, ProviderType.Supporting, false)]
+    [RecursiveMoqInlineAutoData(OrganisationStatus.ActiveNoStarts, OrganisationStatus.Active, ProviderType.Employer, true)]
+    [RecursiveMoqInlineAutoData(OrganisationStatus.ActiveNoStarts, OrganisationStatus.Active, ProviderType.Main, true)]
+    [RecursiveMoqInlineAutoData(OrganisationStatus.ActiveNoStarts, OrganisationStatus.Active, ProviderType.Supporting, false)]
+    public async Task Handle_UpdatesOrganisationStatusAndConditionallyUpdatedStartDate(
+        OrganisationStatus priorStatus,
+        OrganisationStatus newStatus,
+        ProviderType providerType,
+        bool isStartDateSet,
+        [Frozen] Mock<IOrganisationsRepository> organisationsRepositoryMock,
+        Organisation organisation,
+        string userId,
+        PatchOrganisationCommandHandler sut,
+        CancellationToken cancellationToken)
+    {
+        organisation.Status = priorStatus;
+        organisation.StatusDate = DateTime.UtcNow.AddDays(-10);
+        organisation.RemovedReasonId = null;
+        organisation.StartDate = null;
+        organisation.ProviderType = providerType;
+
+        var patchDoc = new JsonPatchDocument<PatchOrganisationModel>();
+        patchDoc.Replace(o => o.Status, newStatus);
+
+        PatchOrganisationCommand command = new(organisation.Ukprn, userId, patchDoc);
+        organisationsRepositoryMock.Setup(x => x.GetOrganisationByUkprn(command.Ukprn, cancellationToken)).ReturnsAsync(organisation);
+
+        var actual = await sut.Handle(command, cancellationToken);
+
+        organisationsRepositoryMock.Verify(x => x.UpdateOrganisation(
+            It.Is<Organisation>(o =>
+                o.Status == newStatus &&
+                isStartDateSet
+                ? organisation.StartDate.Value.Date == DateTime.UtcNow.Date
+                : organisation.StartDate == null
+            ),
+            It.IsAny<Audit>(),
+            It.IsAny<OrganisationStatusEvent>(),
             cancellationToken), Times.Once);
 
         Assert.That(actual.Result.IsSuccess, Is.True);
