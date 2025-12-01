@@ -28,7 +28,7 @@ public class UpdateOrganisationCourseTypesTests
 
         // Seed a short course type and a non-short course type
         var standardCourseType = new CourseType { Id = 1, Name = "Apprenticeship", LearningType = LearningType.Standard };
-        var shortCourseUnitType = new CourseType { Id = 2, Name = "Unit", LearningType = LearningType.ShortCourse };
+        var shortCourseUnitType = new CourseType { Id = 2, Name = "ApprenticeshipUnit", LearningType = LearningType.ShortCourse };
         var shortCourseBootcampType = new CourseType { Id = 3, Name = "Bootcamp", LearningType = LearningType.ShortCourse };
 
         context.CourseTypes.AddRange(standardCourseType, shortCourseUnitType, shortCourseBootcampType);

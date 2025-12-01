@@ -7,7 +7,7 @@
 
 INSERT INTO #TempCourseTypes (Id, Name, LearningType, IsActive) VALUES 
     (1, 'Apprenticeship', 'Standard', 1), 
-    (2, 'Unit', 'ShortCourse', 1);
+    (2, 'ApprenticeshipUnit', 'ShortCourse', 1);
 
 MERGE INTO dbo.CourseTypes AS target
 USING #TempCourseTypes AS source
