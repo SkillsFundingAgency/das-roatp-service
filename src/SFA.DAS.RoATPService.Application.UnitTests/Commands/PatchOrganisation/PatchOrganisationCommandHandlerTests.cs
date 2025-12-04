@@ -435,4 +435,77 @@ public class PatchOrganisationCommandHandlerTests
             cancellationToken), Times.Never);
         Assert.That(actual.Result.IsSuccess, Is.True);
     }
+
+    [Test, RecursiveMoqAutoData]
+    public async Task Handle_UkprnFound_UpdatesProviderTypeToMain_CurrentStatusNotOnboarding(
+        [Frozen] Mock<IOrganisationsRepository> organisationsRepositoryMock,
+        Organisation organisation,
+        string userId,
+        PatchOrganisationCommandHandler sut,
+        CancellationToken cancellationToken)
+    {
+        organisation.ProviderType = Domain.Common.ProviderType.Employer;
+        organisation.Status = OrganisationStatus.Active;
+        organisation.RemovedReasonId = null;
+
+        var patchDoc = new JsonPatchDocument<PatchOrganisationModel>();
+        patchDoc.Replace(o => o.ProviderType, ProviderType.Main);
+        PatchOrganisationCommand command = new(organisation.Ukprn, userId, patchDoc);
+        organisationsRepositoryMock.Setup(x => x.GetOrganisationByUkprn(command.Ukprn, cancellationToken)).ReturnsAsync(organisation);
+        var actual = await sut.Handle(command, cancellationToken);
+        organisationsRepositoryMock.Verify(x => x.UpdateOrganisation(
+            It.Is<Organisation>(
+            o => o.Status == OrganisationStatus.OnBoarding &&
+                 o.RemovedReasonId == organisation.RemovedReasonId &&
+                 o.ProviderType == Domain.Common.ProviderType.Main &&
+                 o.OrganisationTypeId == organisation.OrganisationTypeId
+            ),
+            It.Is<Audit>(a =>
+                a.AuditData.FieldChanges.Count == 2
+                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogField.OrganisationStatus
+                && a.AuditData.FieldChanges[0].PreviousValue == OrganisationStatus.Active.ToString()
+                && a.AuditData.FieldChanges[0].NewValue == OrganisationStatus.OnBoarding.ToString()
+                && a.AuditData.FieldChanges[1].FieldChanged == AuditLogField.ProviderType
+                && a.AuditData.FieldChanges[1].PreviousValue == ProviderType.Employer.ToString()
+                && a.AuditData.FieldChanges[1].NewValue == ProviderType.Main.ToString()
+            ),
+            It.IsAny<OrganisationStatusEvent>(),
+            cancellationToken), Times.Once);
+        Assert.That(actual.Result.IsSuccess, Is.True);
+    }
+
+    [Test, RecursiveMoqAutoData]
+    public async Task Handle_UkprnFound_UpdatesProviderTypeToMain_CurrentStatusOnboarding(
+        [Frozen] Mock<IOrganisationsRepository> organisationsRepositoryMock,
+        Organisation organisation,
+        string userId,
+        PatchOrganisationCommandHandler sut,
+        CancellationToken cancellationToken)
+    {
+        organisation.ProviderType = ProviderType.Employer;
+        organisation.Status = OrganisationStatus.OnBoarding;
+        organisation.RemovedReasonId = null;
+
+        var patchDoc = new JsonPatchDocument<PatchOrganisationModel>();
+        patchDoc.Replace(o => o.ProviderType, ProviderType.Main);
+        PatchOrganisationCommand command = new(organisation.Ukprn, userId, patchDoc);
+        organisationsRepositoryMock.Setup(x => x.GetOrganisationByUkprn(command.Ukprn, cancellationToken)).ReturnsAsync(organisation);
+        var actual = await sut.Handle(command, cancellationToken);
+        organisationsRepositoryMock.Verify(x => x.UpdateOrganisation(
+            It.Is<Organisation>(
+            o => o.Status == OrganisationStatus.OnBoarding &&
+                 o.RemovedReasonId == organisation.RemovedReasonId &&
+                 o.ProviderType == Domain.Common.ProviderType.Main &&
+                 o.OrganisationTypeId == organisation.OrganisationTypeId
+            ),
+            It.Is<Audit>(a =>
+                a.AuditData.FieldChanges.Count == 1
+                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogField.ProviderType
+                && a.AuditData.FieldChanges[0].PreviousValue == ProviderType.Employer.ToString()
+                && a.AuditData.FieldChanges[0].NewValue == ProviderType.Main.ToString()
+            ),
+            It.IsAny<OrganisationStatusEvent>(),
+            cancellationToken), Times.Once);
+        Assert.That(actual.Result.IsSuccess, Is.True);
+    }
 }

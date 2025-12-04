@@ -28,6 +28,13 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
         // It is important that RemovedReasonId is cleared if status is not Removed and it is done before audit comparison
         patchModel.RemovedReasonId = patchModel.Status == Domain.Common.OrganisationStatus.Removed ? patchModel.RemovedReasonId : null;
 
+        if (organisation.ProviderType != Domain.Common.ProviderType.Main &&
+            patchModel.ProviderType == Domain.Common.ProviderType.Main
+            && organisation.Status != Domain.Common.OrganisationStatus.OnBoarding)
+        {
+            patchModel.Status = Domain.Common.OrganisationStatus.OnBoarding;
+        }
+
         var auditRecord = GetAuditRecord(organisation, patchModel, request.UserId);
 
         if (auditRecord.AuditData.FieldChanges.Count == 0)
@@ -55,7 +62,6 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
             {
                 organisation.StartDate = DateTime.UtcNow;
             }
-
         }
 
         var isMovingFromMainEmployerToSupporting =
