@@ -1,35 +1,32 @@
 ﻿using System.Threading.Tasks;
 using FluentValidation.TestHelper;
 using NUnit.Framework;
-using SFA.DAS.RoATPService.Application.Commands.PostOrganisation;
+using SFA.DAS.RoATPService.Application.Commands.UpsertOrganisation;
 using SFA.DAS.RoATPService.Domain.Common;
 
-namespace SFA.DAS.RoATPService.Application.UnitTests.Commands.PostOrgansation.PostOrganisationCommandValidatorTests;
-
-
+namespace SFA.DAS.RoATPService.Application.UnitTests.Commands.UpsertOrgansation.UpsertOrganisationCommandValidatorTests;
 
 [TestFixture]
-public class PostOrganisationCommandValidatorLegalNameTests
+public class UpsertOrganisationCommandValidatorLegalNameTests
 {
-    private PostOrganisationCommand _command;
+    private UpsertOrganisationCommand _command;
     [SetUp]
     public void SetUp()
     {
-        _command = new PostOrganisationCommand
+        _command = new UpsertOrganisationCommand
         {
-            Ukprn = PostOrganisationCommandValidatorTestHelper.AbsentUkprn,
+            Ukprn = UpsertOrganisationCommandValidatorTestHelper.AbsentUkprn,
             ProviderType = ProviderType.Main,
             OrganisationTypeId = 1,
             LegalName = "provider legal name",
-            RequestingUserId = PostOrganisationCommandValidatorTestHelper.ValidUserId
+            RequestingUserId = UpsertOrganisationCommandValidatorTestHelper.ValidUserId
         };
     }
-
 
     [Test]
     public async Task Validate_LegalName_IsValid()
     {
-        var sut = PostOrganisationCommandValidatorTestHelper.GetValidator();
+        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
         var result = await sut.TestValidateAsync(_command);
         result.ShouldNotHaveValidationErrorFor(c => c.LegalName);
     }
@@ -37,10 +34,10 @@ public class PostOrganisationCommandValidatorLegalNameTests
     [Test]
     public async Task Validate_LegalName_IsNotPresent()
     {
-        var sut = PostOrganisationCommandValidatorTestHelper.GetValidator();
+        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
         _command.LegalName = "";
         var result = await sut.TestValidateAsync(_command);
-        result.ShouldHaveValidationErrorFor(c => c.LegalName).WithErrorMessage(PostOrganisationCommandValidator.LegalNameIsRequiredErrorMessage);
+        result.ShouldHaveValidationErrorFor(c => c.LegalName).WithErrorMessage(UpsertOrganisationCommandValidator.LegalNameIsRequiredErrorMessage);
     }
 
     [TestCase(199, true)]
@@ -48,7 +45,7 @@ public class PostOrganisationCommandValidatorLegalNameTests
     [TestCase(201, false)]
     public async Task Validate_LegalName_Length_Validation(int lengthOfLegalName, bool isValid)
     {
-        var sut = PostOrganisationCommandValidatorTestHelper.GetValidator();
+        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
 
         _command.LegalName = new string('A', lengthOfLegalName);
         var result = await sut.TestValidateAsync(_command);
@@ -60,7 +57,7 @@ public class PostOrganisationCommandValidatorLegalNameTests
         else
         {
             result.ShouldHaveValidationErrorFor(c => c.LegalName)
-                .WithErrorMessage(PostOrganisationCommandValidator.LegalNameTooLongErrorMessage);
+                .WithErrorMessage(UpsertOrganisationCommandValidator.LegalNameTooLongErrorMessage);
         }
     }
 }

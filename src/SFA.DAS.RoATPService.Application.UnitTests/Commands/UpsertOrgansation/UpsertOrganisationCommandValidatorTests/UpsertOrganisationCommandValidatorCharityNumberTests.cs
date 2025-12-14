@@ -1,25 +1,25 @@
 ﻿using System.Threading.Tasks;
 using FluentValidation.TestHelper;
 using NUnit.Framework;
-using SFA.DAS.RoATPService.Application.Commands.PostOrganisation;
+using SFA.DAS.RoATPService.Application.Commands.UpsertOrganisation;
 using SFA.DAS.RoATPService.Domain.Common;
 
-namespace SFA.DAS.RoATPService.Application.UnitTests.Commands.PostOrgansation.PostOrganisationCommandValidatorTests;
+namespace SFA.DAS.RoATPService.Application.UnitTests.Commands.UpsertOrgansation.UpsertOrganisationCommandValidatorTests;
 
 [TestFixture]
-public class PostOrganisationCommandValidatorCharityNumberTests
+public class UpsertOrganisationCommandValidatorCharityNumberTests
 {
-    private PostOrganisationCommand _command;
+    private UpsertOrganisationCommand _command;
     [SetUp]
     public void SetUp()
     {
-        _command = new PostOrganisationCommand
+        _command = new UpsertOrganisationCommand
         {
-            Ukprn = PostOrganisationCommandValidatorTestHelper.AbsentUkprn,
+            Ukprn = UpsertOrganisationCommandValidatorTestHelper.AbsentUkprn,
             ProviderType = ProviderType.Main,
-            OrganisationTypeId = PostOrganisationCommandValidatorTestHelper.ValidOrganisationTypeId,
+            OrganisationTypeId = UpsertOrganisationCommandValidatorTestHelper.ValidOrganisationTypeId,
             LegalName = "provider legal name",
-            RequestingUserId = PostOrganisationCommandValidatorTestHelper.ValidUserId
+            RequestingUserId = UpsertOrganisationCommandValidatorTestHelper.ValidUserId
         };
     }
 
@@ -28,7 +28,7 @@ public class PostOrganisationCommandValidatorCharityNumberTests
     [TestCase(" ")]
     public async Task Validate_EmptyCharityNumber_IsValid(string charityNumber)
     {
-        var sut = PostOrganisationCommandValidatorTestHelper.GetValidator();
+        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
         _command.CharityNumber = charityNumber;
         var result = await sut.TestValidateAsync(_command);
         result.ShouldNotHaveValidationErrorFor(c => c.CharityNumber);
@@ -37,8 +37,8 @@ public class PostOrganisationCommandValidatorCharityNumberTests
     [Test]
     public async Task Validate_CharityNumberNotAlreadyUsed_IsValid()
     {
-        var sut = PostOrganisationCommandValidatorTestHelper.GetValidator();
-        _command.CharityNumber = PostOrganisationCommandValidatorTestHelper.UnmatchedCharityNumber;
+        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
+        _command.CharityNumber = UpsertOrganisationCommandValidatorTestHelper.UnmatchedCharityNumber;
         var result = await sut.TestValidateAsync(_command);
         result.ShouldNotHaveValidationErrorFor(c => c.CharityNumber);
     }
@@ -52,10 +52,10 @@ public class PostOrganisationCommandValidatorCharityNumberTests
     [TestCase("123456789012345")]
     public async Task Validate_IncorrectFormat_Invalid(string charityNumber)
     {
-        var sut = PostOrganisationCommandValidatorTestHelper.GetValidator();
+        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
         _command.CharityNumber = charityNumber;
         var result = await sut.TestValidateAsync(_command);
-        result.ShouldHaveValidationErrorFor(c => c.CharityNumber).WithErrorMessage(PostOrganisationCommandValidator.CharityNumberIsInvalidErrorMessage);
+        result.ShouldHaveValidationErrorFor(c => c.CharityNumber).WithErrorMessage(UpsertOrganisationCommandValidator.CharityNumberIsInvalidErrorMessage);
     }
 
     [TestCase("123456")]
@@ -63,7 +63,7 @@ public class PostOrganisationCommandValidatorCharityNumberTests
     [TestCase("12345678901234")]
     public async Task Validate_CorrectFormat_IsValid(string charityNumber)
     {
-        var sut = PostOrganisationCommandValidatorTestHelper.GetValidator();
+        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
         _command.CharityNumber = charityNumber;
         var result = await sut.TestValidateAsync(_command);
         result.ShouldNotHaveValidationErrorFor(c => c.CharityNumber);
@@ -72,9 +72,9 @@ public class PostOrganisationCommandValidatorCharityNumberTests
     [Test]
     public async Task Validate_AlreadyUsed_IsInvalid()
     {
-        var sut = PostOrganisationCommandValidatorTestHelper.GetValidator();
-        _command.CharityNumber = PostOrganisationCommandValidatorTestHelper.ExistingCharityNumber;
+        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
+        _command.CharityNumber = UpsertOrganisationCommandValidatorTestHelper.ExistingCharityNumber;
         var result = await sut.TestValidateAsync(_command);
-        result.ShouldHaveValidationErrorFor(c => c.CharityNumber).WithErrorMessage(PostOrganisationCommandValidator.CharityNumberIsUsedErrorMessage);
+        result.ShouldHaveValidationErrorFor(c => c.CharityNumber).WithErrorMessage(UpsertOrganisationCommandValidator.CharityNumberIsUsedErrorMessage);
     }
 }

@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.RoATPService.Application.Common.Models;
-using SFA.DAS.RoATPService.Application.Interfaces;
 using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
 using SFA.DAS.RoATPService.Domain;
 using SFA.DAS.RoATPService.Domain.Entities;
@@ -11,11 +10,11 @@ using SFA.DAS.RoATPService.Domain.Repositories;
 using OrganisationStatus = SFA.DAS.RoATPService.Domain.Common.OrganisationStatus;
 using ProviderType = SFA.DAS.RoATPService.Domain.Common.ProviderType;
 
-namespace SFA.DAS.RoATPService.Application.Commands.PostOrganisation;
+namespace SFA.DAS.RoATPService.Application.Commands.UpsertOrganisation;
 
-public class PostOrganisationCommandHandler(IOrganisationsRepository organisationsRepository, ITextSanitiser textSanitiser) : IRequestHandler<PostOrganisationCommand, ValidatedResponse<SuccessModel>>
+public class UpsertOrganisationCommandHandler(IOrganisationsRepository organisationsRepository) : IRequestHandler<UpsertOrganisationCommand, ValidatedResponse<SuccessModel>>
 {
-    public async Task<ValidatedResponse<SuccessModel>> Handle(PostOrganisationCommand command, CancellationToken cancellationToken)
+    public async Task<ValidatedResponse<SuccessModel>> Handle(UpsertOrganisationCommand command, CancellationToken cancellationToken)
     {
         var organisationId = Guid.NewGuid();
 
@@ -53,8 +52,8 @@ public class PostOrganisationCommandHandler(IOrganisationsRepository organisatio
             ProviderType = command.ProviderType,
             OrganisationTypeId = command.OrganisationTypeId!.Value,
             Ukprn = command.Ukprn,
-            LegalName = textSanitiser.SanitiseInputText(command.LegalName),
-            TradingName = textSanitiser.SanitiseInputText(command.TradingName),
+            LegalName = command.LegalName,
+            TradingName = command.TradingName,
             StatusDate = DateTime.UtcNow,
             OrganisationData = organisationData,
             CompanyNumber = command.CompanyNumber,

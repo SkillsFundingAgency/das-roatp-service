@@ -2,13 +2,12 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using FluentValidation;
-using SFA.DAS.RoATPService.Application.Commands.PostOrganisation;
 using SFA.DAS.RoATPService.Application.Common.Validators;
 using SFA.DAS.RoATPService.Domain.Repositories;
 
-namespace SFA.DAS.RoATPService.Application.Commands.PostOrganisation;
+namespace SFA.DAS.RoATPService.Application.Commands.UpsertOrganisation;
 
-public class PostOrganisationCommandValidator : AbstractValidator<PostOrganisationCommand>
+public class UpsertOrganisationCommandValidator : AbstractValidator<UpsertOrganisationCommand>
 {
     private const string CompaniesHouseNumberRegex = "[A-Za-z0-9]{2}[0-9]{4}[A-Za-z0-9]{2}";
     private const string CharityNumberInvalidCharactersRegex = "[^a-zA-Z0-9\\-]";
@@ -28,7 +27,7 @@ public class PostOrganisationCommandValidator : AbstractValidator<PostOrganisati
     public const string CharityNumberIsInvalidErrorMessage = "Charity number is an invalid format";
     public const string CharityNumberIsUsedErrorMessage = "Charity number is already used for an existing organisation";
 
-    public PostOrganisationCommandValidator(IOrganisationsRepository organisationsRepository, IOrganisationTypesRepository organisationTypesRepository)
+    public UpsertOrganisationCommandValidator(IOrganisationsRepository organisationsRepository, IOrganisationTypesRepository organisationTypesRepository)
     {
         RuleFor(x => x.Ukprn)
             .Cascade(CascadeMode.Stop)

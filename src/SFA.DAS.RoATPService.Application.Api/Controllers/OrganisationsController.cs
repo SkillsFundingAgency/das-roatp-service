@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using SFA.DAS.RoATPService.Application.Api.Common;
 using SFA.DAS.RoATPService.Application.Api.Filters;
 using SFA.DAS.RoATPService.Application.Commands.PatchOrganisation;
-using SFA.DAS.RoATPService.Application.Commands.PostOrganisation;
+using SFA.DAS.RoATPService.Application.Commands.UpsertOrganisation;
 using SFA.DAS.RoATPService.Application.Common;
 using SFA.DAS.RoATPService.Application.Common.Models;
 using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
@@ -66,7 +66,7 @@ public class OrganisationsController(IMediator _mediator, ILogger<OrganisationsC
     [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
     [Route("")]
-    public async Task<IActionResult> PostOrganisation([FromBody] PostOrganisationCommand command,
+    public async Task<IActionResult> PostOrganisation([FromBody] UpsertOrganisationCommand command,
         CancellationToken cancellationToken)
     {
         ValidatedResponse<SuccessModel> validatedResponse = await _mediator.Send(command, cancellationToken);

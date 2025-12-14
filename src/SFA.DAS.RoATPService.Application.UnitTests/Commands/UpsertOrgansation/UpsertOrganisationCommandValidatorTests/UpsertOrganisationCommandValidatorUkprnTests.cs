@@ -1,28 +1,26 @@
 ﻿using System.Threading.Tasks;
 using FluentValidation.TestHelper;
 using NUnit.Framework;
-using SFA.DAS.RoATPService.Application.Commands.PostOrganisation;
+using SFA.DAS.RoATPService.Application.Commands.UpsertOrganisation;
 using SFA.DAS.RoATPService.Application.Common.Validators;
 using SFA.DAS.RoATPService.Domain.Common;
 
-namespace SFA.DAS.RoATPService.Application.UnitTests.Commands.PostOrgansation.PostOrganisationCommandValidatorTests;
-
-
+namespace SFA.DAS.RoATPService.Application.UnitTests.Commands.UpsertOrgansation.UpsertOrganisationCommandValidatorTests;
 
 [TestFixture]
-public class PostOrganisationCommandValidatorUkprnTests
+public class UpsertOrganisationCommandValidatorUkprnTests
 {
-    private PostOrganisationCommand _command;
+    private UpsertOrganisationCommand _command;
     [SetUp]
     public void SetUp()
     {
-        _command = new PostOrganisationCommand
+        _command = new UpsertOrganisationCommand
         {
-            Ukprn = PostOrganisationCommandValidatorTestHelper.AbsentUkprn,
+            Ukprn = UpsertOrganisationCommandValidatorTestHelper.AbsentUkprn,
             ProviderType = ProviderType.Main,
             OrganisationTypeId = 1,
             LegalName = "provider legal name",
-            RequestingUserId = PostOrganisationCommandValidatorTestHelper.ValidUserId
+            RequestingUserId = UpsertOrganisationCommandValidatorTestHelper.ValidUserId
         };
     }
 
@@ -31,7 +29,7 @@ public class PostOrganisationCommandValidatorUkprnTests
     [TestCase(23456789)]
     public async Task Validate_Ukprn_ShouldBeCorrectFormat(int ukprn)
     {
-        var sut = PostOrganisationCommandValidatorTestHelper.GetValidator();
+        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
 
         _command.Ukprn = ukprn;
         var result = await sut.TestValidateAsync(_command);
@@ -41,7 +39,7 @@ public class PostOrganisationCommandValidatorUkprnTests
     [Test]
     public async Task Validate_Ukprn_IsNotAlreadyPresent()
     {
-        var sut = PostOrganisationCommandValidatorTestHelper.GetValidator();
+        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
 
         var result = await sut.TestValidateAsync(_command);
         result.ShouldNotHaveValidationErrorFor(c => c.Ukprn);
@@ -50,9 +48,9 @@ public class PostOrganisationCommandValidatorUkprnTests
     [Test]
     public async Task Validate_Ukprn_IsAlreadyPresent()
     {
-        var sut = PostOrganisationCommandValidatorTestHelper.GetValidator();
-        _command.Ukprn = PostOrganisationCommandValidatorTestHelper.ExistingUkprn;
+        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
+        _command.Ukprn = UpsertOrganisationCommandValidatorTestHelper.ExistingUkprn;
         var result = await sut.TestValidateAsync(_command);
-        result.ShouldHaveValidationErrorFor(c => c.Ukprn).WithErrorMessage(PostOrganisationCommandValidator.UkprnAlreadyPresentErrorMessage);
+        result.ShouldHaveValidationErrorFor(c => c.Ukprn).WithErrorMessage(UpsertOrganisationCommandValidator.UkprnAlreadyPresentErrorMessage);
     }
 }

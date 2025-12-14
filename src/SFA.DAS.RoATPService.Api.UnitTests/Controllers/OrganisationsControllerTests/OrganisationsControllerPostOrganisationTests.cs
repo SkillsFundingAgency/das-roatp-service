@@ -9,7 +9,7 @@ using Moq;
 using NUnit.Framework;
 using SFA.DAS.RoATPService.Api.UnitTests.TestHelpers;
 using SFA.DAS.RoATPService.Application.Api.Controllers;
-using SFA.DAS.RoATPService.Application.Commands.PostOrganisation;
+using SFA.DAS.RoATPService.Application.Commands.UpsertOrganisation;
 using SFA.DAS.RoATPService.Application.Common.Models;
 using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
 using SFA.DAS.Testing.AutoFixture;
@@ -22,7 +22,7 @@ public class OrganisationsControllerPostOrganisationTests
         [Frozen] Mock<IMediator> mediatorMock,
         [Greedy] OrganisationsController sut,
         int ukprn,
-        PostOrganisationCommand model,
+        UpsertOrganisationCommand model,
         string userId,
         string getOrganisationByUkprnLink,
         CancellationToken cancellationToken)
@@ -33,7 +33,7 @@ public class OrganisationsControllerPostOrganisationTests
         ValidatedResponse<SuccessModel> validatedResponse = new(new SuccessModel(true));
 
         mediatorMock
-            .Setup(m => m.Send(It.IsAny<PostOrganisationCommand>(), It.IsAny<CancellationToken>()))
+            .Setup(m => m.Send(It.IsAny<UpsertOrganisationCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(validatedResponse);
 
         var result = await sut.PostOrganisation(model, cancellationToken) as CreatedResult;
@@ -47,14 +47,14 @@ public class OrganisationsControllerPostOrganisationTests
         [Frozen] Mock<IMediator> mediatorMock,
         [Greedy] OrganisationsController sut,
         int ukprn,
-        PostOrganisationCommand model,
+        UpsertOrganisationCommand model,
         string userId,
         List<ValidationError> errors,
         CancellationToken cancellationToken)
     {
         var validatedResponse = new ValidatedResponse<SuccessModel>(errors);
         mediatorMock
-            .Setup(m => m.Send(It.IsAny<PostOrganisationCommand>(), It.IsAny<CancellationToken>()))
+            .Setup(m => m.Send(It.IsAny<UpsertOrganisationCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(validatedResponse);
 
         var result = await sut.PostOrganisation(model, cancellationToken);

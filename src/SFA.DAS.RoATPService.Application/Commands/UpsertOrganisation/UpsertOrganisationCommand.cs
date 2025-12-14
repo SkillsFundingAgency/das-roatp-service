@@ -2,8 +2,9 @@
 using SFA.DAS.RoATPService.Application.Common.Models;
 using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
 
-namespace SFA.DAS.RoATPService.Application.Commands.PostOrganisation;
-public class PostOrganisationCommand : IRequest<ValidatedResponse<SuccessModel>>
+namespace SFA.DAS.RoATPService.Application.Commands.UpsertOrganisation;
+
+public class UpsertOrganisationCommand : IRequest<ValidatedResponse<SuccessModel>>
 {
     public int Ukprn { get; set; }
     public string LegalName { get; set; }
