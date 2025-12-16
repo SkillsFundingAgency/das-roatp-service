@@ -2,18 +2,18 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using FluentValidation;
-using SFA.DAS.RoATPService.Application.Commands.PostOrganisation;
 using SFA.DAS.RoATPService.Application.Common.Validators;
 using SFA.DAS.RoATPService.Domain.Repositories;
 
-namespace SFA.DAS.RoATPService.Application.Commands.PostOrganisation;
+namespace SFA.DAS.RoATPService.Application.Commands.UpsertOrganisation;
 
-public class PostOrganisationCommandValidator : AbstractValidator<PostOrganisationCommand>
+public class UpsertOrganisationCommandValidator : AbstractValidator<UpsertOrganisationCommand>
 {
     private const string CompaniesHouseNumberRegex = "[A-Za-z0-9]{2}[0-9]{4}[A-Za-z0-9]{2}";
     private const string CharityNumberInvalidCharactersRegex = "[^a-zA-Z0-9\\-]";
 
-    public const string UkprnAlreadyPresentErrorMessage = "Ukprn is already present in organisations table";
+    public const string UkprnAlreadyOnRegistertErrorMessage = "Provider with Ukprn is already on the register";
+    public const string UkprnNotOnRegisterErrorMessage = "Provider with Ukprn not found on the register";
     public const string LegalNameIsRequiredErrorMessage = "Legal name is required";
     public const string LegalNameTooLongErrorMessage = "Legal name should be 200 characters or less";
     public const string TradingNameTooLongErrorMessage = "Trading name should be 200 characters or less";
@@ -28,18 +28,17 @@ public class PostOrganisationCommandValidator : AbstractValidator<PostOrganisati
     public const string CharityNumberIsInvalidErrorMessage = "Charity number is an invalid format";
     public const string CharityNumberIsUsedErrorMessage = "Charity number is already used for an existing organisation";
 
-    public PostOrganisationCommandValidator(IOrganisationsRepository organisationsRepository, IOrganisationTypesRepository organisationTypesRepository)
+    public UpsertOrganisationCommandValidator(IOrganisationsRepository organisationsRepository, IOrganisationTypesRepository organisationTypesRepository)
     {
         RuleFor(x => x.Ukprn)
             .Cascade(CascadeMode.Stop)
             .MustBeValidUkprnFormat()
-            .MustAsync(async (ukprn, cancellationToken) =>
+            .MustAsync(async (command, ukprn, cancellationToken) =>
             {
-
                 var org = await organisationsRepository.GetOrganisationByUkprn(ukprn, cancellationToken);
-                return org == null;
+                return command.IsNewOrganisation ? org == null : org != null;
             })
-            .WithMessage(UkprnAlreadyPresentErrorMessage);
+            .WithMessage((command, ukprn) => command.IsNewOrganisation ? UkprnAlreadyOnRegistertErrorMessage : UkprnNotOnRegisterErrorMessage);
 
         RuleFor(c => c.LegalName)
             .Cascade(CascadeMode.Stop)
@@ -76,8 +75,9 @@ public class PostOrganisationCommandValidator : AbstractValidator<PostOrganisati
             .Cascade(CascadeMode.Stop)
             .Must(IsValidCompanyNumber)
             .WithMessage(CompanyNumberIsInvalidErrorMessage)
-            .MustAsync(async (companyNumber, cancellationToken) =>
+            .MustAsync(async (command, companyNumber, cancellationToken) =>
             {
+                if (!command.IsNewOrganisation) return true;
                 if (string.IsNullOrWhiteSpace(companyNumber)) return true;
                 var organisations = await organisationsRepository.GetOrganisations(cancellationToken);
                 return organisations.All(o => o.CompanyNumber != companyNumber);
@@ -88,8 +88,9 @@ public class PostOrganisationCommandValidator : AbstractValidator<PostOrganisati
             .Cascade(CascadeMode.Stop)
             .Must(IsValidCharityNumber)
             .WithMessage(CharityNumberIsInvalidErrorMessage)
-            .MustAsync(async (charityNumber, cancellationToken) =>
+            .MustAsync(async (command, charityNumber, cancellationToken) =>
             {
+                if (!command.IsNewOrganisation) return true;
                 if (string.IsNullOrWhiteSpace(charityNumber)) return true;
                 var organisations = await organisationsRepository.GetOrganisations(cancellationToken);
                 return organisations.All(o => o.CharityNumber != charityNumber);

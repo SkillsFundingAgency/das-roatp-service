@@ -9,8 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.RoATPService.Application.Api.Common;
 using SFA.DAS.RoATPService.Application.Api.Filters;
+using SFA.DAS.RoATPService.Application.Api.Models;
 using SFA.DAS.RoATPService.Application.Commands.PatchOrganisation;
-using SFA.DAS.RoATPService.Application.Commands.PostOrganisation;
+using SFA.DAS.RoATPService.Application.Commands.UpsertOrganisation;
 using SFA.DAS.RoATPService.Application.Common;
 using SFA.DAS.RoATPService.Application.Common.Models;
 using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
@@ -66,12 +67,30 @@ public class OrganisationsController(IMediator _mediator, ILogger<OrganisationsC
     [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
     [Route("")]
-    public async Task<IActionResult> PostOrganisation([FromBody] PostOrganisationCommand command,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> PostOrganisation([FromBody] CreateOrganisationModel model, CancellationToken cancellationToken)
     {
+        UpsertOrganisationCommand command = model;
+        command.IsNewOrganisation = true;
         ValidatedResponse<SuccessModel> validatedResponse = await _mediator.Send(command, cancellationToken);
         if (!validatedResponse.IsValidResponse) return new BadRequestObjectResult(validatedResponse.Errors);
 
         return Created(Url.RouteUrl("GetOrganisationByUkprn", new { ukprn = command.Ukprn }), null);
+    }
+
+    [HttpPut]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Route("{ukprn:int}")]
+    public async Task<IActionResult> PutOrganisation([FromRoute] int ukprn, [FromBody] UpdateOrganisationModel model, CancellationToken cancellationToken)
+    {
+        UpsertOrganisationCommand command = model;
+        command.Ukprn = ukprn;
+        command.IsNewOrganisation = false;
+
+        ValidatedResponse<SuccessModel> validatedResponse = await _mediator.Send(command, cancellationToken);
+
+        if (!validatedResponse.IsValidResponse) return new BadRequestObjectResult(validatedResponse.Errors);
+
+        return NoContent();
     }
 }

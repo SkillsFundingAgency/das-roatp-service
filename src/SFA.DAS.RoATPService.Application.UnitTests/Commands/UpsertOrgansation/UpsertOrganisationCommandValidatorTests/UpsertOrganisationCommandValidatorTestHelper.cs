@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using Moq;
-using SFA.DAS.RoATPService.Application.Commands.PostOrganisation;
+using SFA.DAS.RoATPService.Application.Commands.UpsertOrganisation;
 using SFA.DAS.RoATPService.Domain.Common;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
 
-namespace SFA.DAS.RoATPService.Application.UnitTests.Commands.PostOrgansation.PostOrganisationCommandValidatorTests;
+namespace SFA.DAS.RoATPService.Application.UnitTests.Commands.UpsertOrgansation.UpsertOrganisationCommandValidatorTests;
 
-public static class PostOrganisationCommandValidatorTestHelper
+public static class UpsertOrganisationCommandValidatorTestHelper
 {
     public const string ValidUserId = "userid";
     public const int ExistingUkprn = 12345678;
@@ -20,9 +20,7 @@ public static class PostOrganisationCommandValidatorTestHelper
     public const string UnmatchedCompanyNumber = "87654321";
     public const string ExistingCharityNumber = "1089332";
     public const string UnmatchedCharityNumber = "1654321";
-    public static PostOrganisationCommandValidator GetValidator() => new PostOrganisationCommandValidator(GetOrganisationRepositoryMock().Object, GetOganisationTypesRepositoryMock().Object);
-
-
+    public static UpsertOrganisationCommandValidator GetValidator() => new UpsertOrganisationCommandValidator(GetOrganisationRepositoryMock().Object, GetOganisationTypesRepositoryMock().Object);
 
     public static Mock<IOrganisationsRepository> GetOrganisationRepositoryMock()
     {

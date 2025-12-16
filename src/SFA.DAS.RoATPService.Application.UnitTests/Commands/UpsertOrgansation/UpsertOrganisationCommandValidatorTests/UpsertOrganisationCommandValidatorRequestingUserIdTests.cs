@@ -1,32 +1,32 @@
 ﻿using System.Threading.Tasks;
 using FluentValidation.TestHelper;
 using NUnit.Framework;
-using SFA.DAS.RoATPService.Application.Commands.PostOrganisation;
+using SFA.DAS.RoATPService.Application.Commands.UpsertOrganisation;
 using SFA.DAS.RoATPService.Domain.Common;
 
-namespace SFA.DAS.RoATPService.Application.UnitTests.Commands.PostOrgansation.PostOrganisationCommandValidatorTests;
+namespace SFA.DAS.RoATPService.Application.UnitTests.Commands.UpsertOrgansation.UpsertOrganisationCommandValidatorTests;
 
 [TestFixture]
-public class PostOrganisationCommandValidatorRequestingUserIdTests
+public class UpsertOrganisationCommandValidatorRequestingUserIdTests
 {
-    private PostOrganisationCommand _command;
+    private UpsertOrganisationCommand _command;
     [SetUp]
     public void SetUp()
     {
-        _command = new PostOrganisationCommand
+        _command = new UpsertOrganisationCommand
         {
-            Ukprn = PostOrganisationCommandValidatorTestHelper.AbsentUkprn,
+            Ukprn = UpsertOrganisationCommandValidatorTestHelper.AbsentUkprn,
             ProviderType = ProviderType.Main,
             OrganisationTypeId = 1,
             LegalName = "provider legal name",
-            RequestingUserId = PostOrganisationCommandValidatorTestHelper.ValidUserId
+            RequestingUserId = UpsertOrganisationCommandValidatorTestHelper.ValidUserId
         };
     }
 
     [Test]
     public async Task Validate_RequestingUserId_IsPresent()
     {
-        var sut = PostOrganisationCommandValidatorTestHelper.GetValidator();
+        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
         var result = await sut.TestValidateAsync(_command);
         result.ShouldNotHaveValidationErrorFor(c => c.RequestingUserId);
     }
@@ -35,13 +35,13 @@ public class PostOrganisationCommandValidatorRequestingUserIdTests
     [TestCase(null)]
     public async Task Validate_RequestingUserId_NotSet(string userId)
     {
-        var sut = PostOrganisationCommandValidatorTestHelper.GetValidator();
+        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
 
         _command.RequestingUserId = userId;
         var result = await sut.TestValidateAsync(_command);
 
         result.ShouldHaveValidationErrorFor(c => c.RequestingUserId)
-                .WithErrorMessage(PostOrganisationCommandValidator.RequestingUserIdRequiredErrorMessage);
+                .WithErrorMessage(UpsertOrganisationCommandValidator.RequestingUserIdRequiredErrorMessage);
 
     }
 }
