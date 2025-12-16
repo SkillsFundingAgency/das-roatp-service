@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using FluentValidation.TestHelper;
+using Moq;
 using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Commands.UpsertOrganisation;
 using SFA.DAS.RoATPService.Domain.Common;
@@ -26,45 +28,67 @@ public class UpsertOrganisationCommandValidatorCompanyNumberTests
     [TestCase(null)]
     [TestCase("")]
     [TestCase(" ")]
-    public async Task Validate_EmptyCompanyNumber_IsValid(string companyNumber)
+    public async Task ValidateCompanyNumber_IsNewOrganisation_Empty_IsValid(string companyNumber)
     {
-        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
         _command.CompanyNumber = companyNumber;
+        _command.IsNewOrganisation = true;
+        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
+
         var result = await sut.TestValidateAsync(_command);
+
         result.ShouldNotHaveValidationErrorFor(c => c.CompanyNumber);
     }
 
     [Test]
-    public async Task Validate_CompanyNumberNotAlreadyUsed_IsValid()
+    public async Task ValidateCompanyNumber_IsNewOrganisation_NotAlreadyUsed_IsValid()
     {
-        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
         _command.CompanyNumber = UpsertOrganisationCommandValidatorTestHelper.UnmatchedCompanyNumber;
+        _command.IsNewOrganisation = true;
+        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
+
         var result = await sut.TestValidateAsync(_command);
+
         result.ShouldNotHaveValidationErrorFor(c => c.CompanyNumber);
     }
 
-    [TestCase("1")]
-    [TestCase("12")]
-    [TestCase("123")]
-    [TestCase("1234")]
-    [TestCase("12345")]
-    [TestCase("123456")]
-    [TestCase("1234567")]
-    [TestCase("!1234567")]
-    public async Task Validate_IncorrectFormat_Invalid(string companyNumber)
+    [TestCase("1", true)]
+    [TestCase("!1234567", true)]
+    [TestCase("1", false)]
+    [TestCase("!1234567", false)]
+    public async Task ValidateCompanyNumber_IncorrectFormat_IsInvalid(string companyNumber, bool isNewProvider)
     {
-        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
         _command.CompanyNumber = companyNumber;
+        _command.IsNewOrganisation = isNewProvider;
+        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
+
         var result = await sut.TestValidateAsync(_command);
+
         result.ShouldHaveValidationErrorFor(c => c.CompanyNumber).WithErrorMessage(UpsertOrganisationCommandValidator.CompanyNumberIsInvalidErrorMessage);
     }
 
     [Test]
-    public async Task Validate_CompanyNumberAlreadyUsed_IsInvalid()
+    public async Task ValidateCompanyNumber_IsNewOrganisation_AlreadyUsed_IsInvalid()
     {
-        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
         _command.CompanyNumber = UpsertOrganisationCommandValidatorTestHelper.ExistingCompanyNumber;
+        _command.IsNewOrganisation = true;
+        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
+
         var result = await sut.TestValidateAsync(_command);
+
         result.ShouldHaveValidationErrorFor(c => c.CompanyNumber).WithErrorMessage(UpsertOrganisationCommandValidator.CompanyNumberIsUsedErrorMessage);
+    }
+
+    [Test]
+    public async Task ValidateCompanyNumber_IsNotNewProvider_AlreadyUsed_IsValid()
+    {
+        _command.CompanyNumber = UpsertOrganisationCommandValidatorTestHelper.ExistingCompanyNumber;
+        _command.IsNewOrganisation = false;
+        var repoMock = UpsertOrganisationCommandValidatorTestHelper.GetOrganisationRepositoryMock();
+        var sut = UpsertOrganisationCommandValidatorTestHelper.GetValidator();
+
+        var result = await sut.TestValidateAsync(_command);
+
+        result.ShouldNotHaveValidationErrorFor(c => c.CompanyNumber);
+        repoMock.Verify(r => r.GetOrganisationByUkprn(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

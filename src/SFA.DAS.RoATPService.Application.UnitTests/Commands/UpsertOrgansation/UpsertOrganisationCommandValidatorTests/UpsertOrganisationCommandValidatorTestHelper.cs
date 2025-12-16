@@ -22,8 +22,6 @@ public static class UpsertOrganisationCommandValidatorTestHelper
     public const string UnmatchedCharityNumber = "1654321";
     public static UpsertOrganisationCommandValidator GetValidator() => new UpsertOrganisationCommandValidator(GetOrganisationRepositoryMock().Object, GetOganisationTypesRepositoryMock().Object);
 
-
-
     public static Mock<IOrganisationsRepository> GetOrganisationRepositoryMock()
     {
         Mock<IOrganisationsRepository> mock = new();

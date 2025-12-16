@@ -15,6 +15,7 @@ using SFA.DAS.Testing.AutoFixture;
 using ProviderType = SFA.DAS.RoATPService.Domain.Common.ProviderType;
 
 namespace SFA.DAS.RoATPService.Application.UnitTests.Commands.PatchOrganisation;
+
 public class PatchOrganisationCommandHandlerTests
 {
     private const int RemovedReasonId = 2;
@@ -44,13 +45,13 @@ public class PatchOrganisationCommandHandlerTests
     {
         organisation.RemovedReason = null;
         organisation.Status = OrganisationStatus.Active;
-        organisation.ProviderType = Domain.Common.ProviderType.Main;
+        organisation.ProviderType = ProviderType.Main;
         organisation.OrganisationTypeId = 1;
 
         var patchDoc = new JsonPatchDocument<PatchOrganisationModel>();
         patchDoc.Replace(o => o.Status, OrganisationStatus.Removed);
         patchDoc.Replace(o => o.RemovedReasonId, RemovedReasonId);
-        patchDoc.Replace(o => o.ProviderType, Domain.Common.ProviderType.Employer);
+        patchDoc.Replace(o => o.ProviderType, ProviderType.Employer);
         patchDoc.Replace(o => o.OrganisationTypeId, OrganisationTypeId);
 
         PatchOrganisationCommand command = new(organisation.Ukprn, userId, patchDoc);
@@ -62,7 +63,7 @@ public class PatchOrganisationCommandHandlerTests
             It.Is<Organisation>(o =>
                 o.Status == OrganisationStatus.Removed &&
                 o.RemovedReasonId == RemovedReasonId &&
-                o.ProviderType == Domain.Common.ProviderType.Employer &&
+                o.ProviderType == ProviderType.Employer &&
                 o.OrganisationTypeId == OrganisationTypeId &&
                 o.UpdatedBy == userId &&
                 o.UpdatedAt.GetValueOrDefault().Date == DateTime.UtcNow.Date

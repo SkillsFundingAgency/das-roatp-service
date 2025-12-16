@@ -12,5 +12,4 @@ public interface IOrganisationsRepository
     Task<List<Entities.Organisation>> GetOrganisationsBySearchTerm(string searchTerm, CancellationToken cancellationToken);
     Task UpdateOrganisation(Entities.Organisation organisation, Audit audit, OrganisationStatusEvent statusEvent, CancellationToken cancellationToken);
     Task CreateOrganisation(Entities.Organisation organisation, Audit audit, OrganisationStatusEvent statusEvent, CancellationToken cancellationToken);
-
 }

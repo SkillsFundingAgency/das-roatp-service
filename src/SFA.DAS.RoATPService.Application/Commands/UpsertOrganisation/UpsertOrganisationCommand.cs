@@ -6,6 +6,7 @@ namespace SFA.DAS.RoATPService.Application.Commands.UpsertOrganisation;
 
 public class UpsertOrganisationCommand : IRequest<ValidatedResponse<SuccessModel>>
 {
+    public bool IsNewOrganisation { get; set; }
     public int Ukprn { get; set; }
     public string LegalName { get; set; }
     public string TradingName { get; set; }
