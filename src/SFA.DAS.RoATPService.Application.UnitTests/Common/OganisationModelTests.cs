@@ -38,7 +38,7 @@ public class OganisationModelTests
     {
         // Arrange
         var courseType1 = new CourseType { Id = 1, Name = "Apprenticeship", LearningType = LearningType.Standard };
-        var courseType2 = new CourseType { Id = 2, Name = "Unit", LearningType = LearningType.ShortCourse };
+        var courseType2 = new CourseType { Id = 2, Name = "ApprenticeshipUnit", LearningType = LearningType.ShortCourse };
 
         var orgCourseType1 = new OrganisationCourseType { CourseType = courseType1 };
         var orgCourseType2 = new OrganisationCourseType { CourseType = courseType2 };
