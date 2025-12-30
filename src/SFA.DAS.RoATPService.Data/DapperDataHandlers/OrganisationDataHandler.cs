@@ -1,11 +1,13 @@
 ﻿namespace SFA.DAS.RoatpService.Data.DapperTypeHandlers
 {
+    using System;
     using System.Data;
     using Dapper;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
     using RoATPService.Domain;
 
+    [Obsolete]
     public class OrganisationDataHandler : SqlMapper.TypeHandler<OrganisationData>
     {
         private const string RoatpDateTimeFormat = "yyyy-MM-dd HH:mm:ss";

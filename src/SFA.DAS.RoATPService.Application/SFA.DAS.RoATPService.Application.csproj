@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Mappers\" />
     <Folder Include="Mediatr\Responses\" />
   </ItemGroup>
 
