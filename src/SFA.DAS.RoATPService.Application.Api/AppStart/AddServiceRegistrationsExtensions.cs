@@ -34,12 +34,9 @@ public static class AddServiceRegistrationsExtensions
         services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
         services.AddTransient<IDownloadRegisterRepository, DownloadRegisterRepository>();
         services.AddTransient<ILookupDataRepository, LookupDataRepository>();
-        services.AddTransient<IOrganisationSearchRepository, OrganisationSearchRepository>();
         services.AddTransient<IOrganisationCategoryValidator, OrganisationCategoryValidator>();
         services.AddTransient<ICacheHelper, CacheHelper>();
         services.AddTransient<IProviderTypeValidator, ProviderTypeValidator>();
-        services.AddTransient<IOrganisationSearchValidator, OrganisationSearchValidator>();
-        services.AddTransient<IOrganisationSearchValidator, OrganisationSearchValidator>();
         services.AddTransient<ITextSanitiser, TextSanitiser>();
         services.AddHttpClient<IUkrlpApiClient, UkrlpApiClient>();
         services.AddTransient<IOrganisationStatusManager, OrganisationStatusManager>();
