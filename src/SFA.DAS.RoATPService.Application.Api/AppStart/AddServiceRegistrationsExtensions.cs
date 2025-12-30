@@ -9,7 +9,6 @@ using SFA.DAS.RoATPService.Api.Client;
 using SFA.DAS.RoATPService.Api.Client.AutoMapper;
 using SFA.DAS.RoATPService.Api.Client.Interfaces;
 using SFA.DAS.RoATPService.Application.Api.Configuration;
-using SFA.DAS.RoATPService.Application.Api.Helpers;
 using SFA.DAS.RoATPService.Application.Handlers;
 using SFA.DAS.RoATPService.Application.Interfaces;
 using SFA.DAS.RoATPService.Application.Mappers;
@@ -43,7 +42,6 @@ public static class AddServiceRegistrationsExtensions
         services.AddTransient<IOrganisationSearchRepository, OrganisationSearchRepository>();
         services.AddTransient<IUpdateOrganisationRepository, UpdateOrganisationRepository>();
         services.AddTransient<IOrganisationCategoryValidator, OrganisationCategoryValidator>();
-        services.AddTransient<IDataTableHelper, DataTableHelper>();
         services.AddTransient<ICacheHelper, CacheHelper>();
         services.AddTransient<IProviderTypeValidator, ProviderTypeValidator>();
         services.AddTransient<IOrganisationSearchValidator, OrganisationSearchValidator>();
