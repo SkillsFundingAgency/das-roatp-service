@@ -33,7 +33,6 @@ public static class AddServiceRegistrationsExtensions
 
         services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
         services.AddTransient<IDownloadRegisterRepository, DownloadRegisterRepository>();
-        services.AddTransient<IFatDataExportRepository, FatDataExportRepository>();
         services.AddTransient<ILookupDataRepository, LookupDataRepository>();
         services.AddTransient<IOrganisationSearchRepository, OrganisationSearchRepository>();
         services.AddTransient<IOrganisationCategoryValidator, OrganisationCategoryValidator>();
@@ -48,7 +47,6 @@ public static class AddServiceRegistrationsExtensions
         services.AddTransient<IEventsRepository, EventsRepository>();
 
         services.AddTransient<IDbConnectionHelper, DbConnectionHelper>();
-        services.AddTransient<IFatDataExportService, FatDataExportService>();
 
         services.AddValidatorsFromAssembly(typeof(ValidationBehavior<,>).Assembly);
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehaviour<,>));

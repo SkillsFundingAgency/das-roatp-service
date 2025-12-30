@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.3.32901.215
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11222.15 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SFA.DAS.RoATPService.Database", "SFA.DAS.RoATPService.Database\SFA.DAS.RoATPService.Database.sqlproj", "{8BC5F439-3B71-47DF-A7DB-F4DDD73592D1}"
 EndProject
@@ -26,8 +26,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.RoATPService.Api.Client.IntegrationTests", "SFA.DAS.RoATPService.Api.Client.IntegrationTests\SFA.DAS.RoATPService.Api.Client.IntegrationTests.csproj", "{785E8F0C-5FA5-46C6-9150-0B45F6E83DD7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.RoATPService.Infrastructure", "SFA.DAS.RoATPService.Infrastructure\SFA.DAS.RoATPService.Infrastructure.csproj", "{1D5A3B4E-9A83-4DF1-A413-20762E38ACBF}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.RoATPService.Domain.UnitTests", "SFA.DAS.RoATPService.Domain.UnitTests\SFA.DAS.RoATPService.Domain.UnitTests.csproj", "{706CF08C-3429-40B1-AD80-63D2C89EDEE2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.RoATPService.Data.UnitTests", "SFA.DAS.RoATPService.Data.UnitTests\SFA.DAS.RoATPService.Data.UnitTests.csproj", "{78F8F8C4-0D70-401D-BAAD-F833C2F25146}"
 EndProject
@@ -83,10 +81,6 @@ Global
 		{1D5A3B4E-9A83-4DF1-A413-20762E38ACBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D5A3B4E-9A83-4DF1-A413-20762E38ACBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D5A3B4E-9A83-4DF1-A413-20762E38ACBF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{706CF08C-3429-40B1-AD80-63D2C89EDEE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{706CF08C-3429-40B1-AD80-63D2C89EDEE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{706CF08C-3429-40B1-AD80-63D2C89EDEE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{706CF08C-3429-40B1-AD80-63D2C89EDEE2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{78F8F8C4-0D70-401D-BAAD-F833C2F25146}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{78F8F8C4-0D70-401D-BAAD-F833C2F25146}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78F8F8C4-0D70-401D-BAAD-F833C2F25146}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -99,7 +93,6 @@ Global
 		{5740747C-1320-4F60-AE06-5C1C251931BD} = {A41E0780-CADF-4AEC-B37C-D37DAB8A79E5}
 		{08EE85C1-621E-4FE0-AB48-7091C440AAED} = {A41E0780-CADF-4AEC-B37C-D37DAB8A79E5}
 		{785E8F0C-5FA5-46C6-9150-0B45F6E83DD7} = {A41E0780-CADF-4AEC-B37C-D37DAB8A79E5}
-		{706CF08C-3429-40B1-AD80-63D2C89EDEE2} = {A41E0780-CADF-4AEC-B37C-D37DAB8A79E5}
 		{78F8F8C4-0D70-401D-BAAD-F833C2F25146} = {A41E0780-CADF-4AEC-B37C-D37DAB8A79E5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
