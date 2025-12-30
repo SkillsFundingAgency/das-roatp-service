@@ -13,8 +13,8 @@ using SFA.DAS.RoATPService.Api.Client.Models.Ukrlp;
 namespace SFA.DAS.RoATPService.Application.Api.Controllers;
 
 [ApiController]
-[Route("")]
-[Tags("Organisations")]
+[Route("organisations")]
+[Tags("Ukrlp-Lookup")]
 public class UkrlpLookupController : ControllerBase
 {
     private readonly ILogger<UkrlpLookupController> _logger;
@@ -33,8 +33,7 @@ public class UkrlpLookupController : ControllerBase
     [HttpGet]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UkprnLookupResponse))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
-    [Route("/organisations/{ukprn}/ukrlp-data")]
-    [Route("api/v1/ukrlp/lookup/{ukprn}")]
+    [Route("{ukprn}/ukrlp-data")]
     public async Task<IActionResult> UkrlpLookup(int ukprn)
     {
         UkprnLookupResponse providerData;
