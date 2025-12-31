@@ -5,8 +5,7 @@ using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.RoATPService.Application.Common.Models;
 using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
-using SFA.DAS.RoATPService.Application.Services;
-using SFA.DAS.RoATPService.Domain;
+using SFA.DAS.RoATPService.Domain.AuditModels;
 using SFA.DAS.RoATPService.Domain.Common;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
@@ -93,7 +92,7 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
         {
             auditData.FieldChanges.Add(new AuditLogEntry
             {
-                FieldChanged = AuditLogField.OrganisationStatus,
+                FieldChanged = AuditLogFields.OrganisationStatus,
                 PreviousValue = organisation.Status.ToString(),
                 NewValue = patchOrganisationModel.Status.ToString()
             });
@@ -103,7 +102,7 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
         {
             auditData.FieldChanges.Add(new AuditLogEntry
             {
-                FieldChanged = AuditLogField.RemovedReason,
+                FieldChanged = AuditLogFields.RemovedReason,
                 PreviousValue = organisation.RemovedReasonId?.ToString() ?? "null",
                 NewValue = patchOrganisationModel.RemovedReasonId?.ToString() ?? "null"
             });
@@ -113,7 +112,7 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
         {
             auditData.FieldChanges.Add(new AuditLogEntry
             {
-                FieldChanged = AuditLogField.ProviderType,
+                FieldChanged = AuditLogFields.ProviderType,
                 PreviousValue = organisation.ProviderType.ToString(),
                 NewValue = patchOrganisationModel.ProviderType.ToString()
             });
@@ -123,7 +122,7 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
         {
             auditData.FieldChanges.Add(new AuditLogEntry
             {
-                FieldChanged = AuditLogField.OrganisationType,
+                FieldChanged = AuditLogFields.OrganisationType,
                 PreviousValue = organisation.OrganisationTypeId.ToString(),
                 NewValue = patchOrganisationModel.OrganisationTypeId.ToString()
             });

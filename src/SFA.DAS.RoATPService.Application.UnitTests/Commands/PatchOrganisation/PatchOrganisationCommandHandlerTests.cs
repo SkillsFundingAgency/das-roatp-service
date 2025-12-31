@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Commands.PatchOrganisation;
-using SFA.DAS.RoATPService.Application.Services;
+using SFA.DAS.RoATPService.Domain.AuditModels;
 using SFA.DAS.RoATPService.Domain.Common;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
@@ -108,7 +108,7 @@ public class PatchOrganisationCommandHandlerTests
             ),
             It.Is<Audit>(a =>
                 a.AuditData.FieldChanges.Count == 1
-                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogField.OrganisationStatus
+                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogFields.OrganisationStatus
                 && a.AuditData.FieldChanges[0].PreviousValue == OrganisationStatus.OnBoarding.ToString()
                 && a.AuditData.FieldChanges[0].NewValue == expectedStatus.ToString()
             ),
@@ -202,10 +202,10 @@ public class PatchOrganisationCommandHandlerTests
             ),
             It.Is<Audit>(a =>
                 a.AuditData.FieldChanges.Count == 2
-                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogField.OrganisationStatus
+                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogFields.OrganisationStatus
                 && a.AuditData.FieldChanges[0].PreviousValue == OrganisationStatus.Removed.ToString()
                 && a.AuditData.FieldChanges[0].NewValue == expectedStatus.ToString()
-                && a.AuditData.FieldChanges[1].FieldChanged == AuditLogField.RemovedReason
+                && a.AuditData.FieldChanges[1].FieldChanged == AuditLogFields.RemovedReason
                 && a.AuditData.FieldChanges[1].PreviousValue == "1"
                 && a.AuditData.FieldChanges[1].NewValue == "null"
             ),
@@ -272,7 +272,7 @@ public class PatchOrganisationCommandHandlerTests
             ),
             It.Is<Audit>(a =>
                 a.AuditData.FieldChanges.Count == 1
-                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogField.OrganisationType
+                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogFields.OrganisationType
                 && a.AuditData.FieldChanges[0].PreviousValue == "1"
                 && a.AuditData.FieldChanges[0].NewValue == OrganisationTypeId.ToString()
             ),
@@ -304,7 +304,7 @@ public class PatchOrganisationCommandHandlerTests
             ),
             It.Is<Audit>(a =>
                 a.AuditData.FieldChanges.Count == 1
-                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogField.ProviderType
+                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogFields.ProviderType
                 && a.AuditData.FieldChanges[0].PreviousValue == Domain.Common.ProviderType.Main.ToString()
                 && a.AuditData.FieldChanges[0].NewValue == Domain.Common.ProviderType.Employer.ToString()
             ),
@@ -336,7 +336,7 @@ public class PatchOrganisationCommandHandlerTests
             ),
             It.Is<Audit>(a =>
                 a.AuditData.FieldChanges.Count == 1
-                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogField.RemovedReason
+                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogFields.RemovedReason
                 && a.AuditData.FieldChanges[0].PreviousValue == "null"
                 && a.AuditData.FieldChanges[0].NewValue == RemovedReasonId.ToString()
             ),
@@ -375,7 +375,7 @@ public class PatchOrganisationCommandHandlerTests
             ),
             It.Is<Audit>(a =>
                 a.AuditData.FieldChanges.Count == 1
-                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogField.ProviderType
+                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogFields.ProviderType
                 && a.AuditData.FieldChanges[0].PreviousValue == Domain.Common.ProviderType.Main.ToString()
                 && a.AuditData.FieldChanges[0].NewValue == Domain.Common.ProviderType.Supporting.ToString()
             ),
@@ -423,7 +423,7 @@ public class PatchOrganisationCommandHandlerTests
             ),
             It.Is<Audit>(a =>
                 a.AuditData.FieldChanges.Count == 1
-                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogField.ProviderType
+                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogFields.ProviderType
                 && a.AuditData.FieldChanges[0].PreviousValue == Domain.Common.ProviderType.Main.ToString()
                 && a.AuditData.FieldChanges[0].NewValue == Domain.Common.ProviderType.Supporting.ToString()
             ),
@@ -463,10 +463,10 @@ public class PatchOrganisationCommandHandlerTests
             ),
             It.Is<Audit>(a =>
                 a.AuditData.FieldChanges.Count == 2
-                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogField.OrganisationStatus
+                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogFields.OrganisationStatus
                 && a.AuditData.FieldChanges[0].PreviousValue == OrganisationStatus.Active.ToString()
                 && a.AuditData.FieldChanges[0].NewValue == OrganisationStatus.OnBoarding.ToString()
-                && a.AuditData.FieldChanges[1].FieldChanged == AuditLogField.ProviderType
+                && a.AuditData.FieldChanges[1].FieldChanged == AuditLogFields.ProviderType
                 && a.AuditData.FieldChanges[1].PreviousValue == ProviderType.Employer.ToString()
                 && a.AuditData.FieldChanges[1].NewValue == ProviderType.Main.ToString()
             ),
@@ -501,7 +501,7 @@ public class PatchOrganisationCommandHandlerTests
             ),
             It.Is<Audit>(a =>
                 a.AuditData.FieldChanges.Count == 1
-                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogField.ProviderType
+                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogFields.ProviderType
                 && a.AuditData.FieldChanges[0].PreviousValue == ProviderType.Employer.ToString()
                 && a.AuditData.FieldChanges[0].NewValue == ProviderType.Main.ToString()
             ),

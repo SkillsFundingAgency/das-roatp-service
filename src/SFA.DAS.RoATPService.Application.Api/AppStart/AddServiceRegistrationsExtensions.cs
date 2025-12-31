@@ -7,13 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using SFA.DAS.RoATPService.Api.Client;
 using SFA.DAS.RoATPService.Api.Client.Interfaces;
 using SFA.DAS.RoATPService.Application.Api.Configuration;
-using SFA.DAS.RoATPService.Application.Interfaces;
 using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
 using SFA.DAS.RoATPService.Application.Queries.GetOrganisation;
-using SFA.DAS.RoATPService.Data;
 using SFA.DAS.RoATPService.Domain.Configuration;
-using SFA.DAS.RoATPService.Infrastructure.Database;
-using SFA.DAS.RoATPService.Infrastructure.Interfaces;
 
 namespace SFA.DAS.RoATPService.Application.Api.AppStart;
 
@@ -26,11 +22,8 @@ public static class AddServiceRegistrationsExtensions
         services.AddMediatR(c => c.RegisterServicesFromAssembly(typeof(GetOrganisationQueryHandler).Assembly));
 
         services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
-        services.AddTransient<IDownloadRegisterRepository, DownloadRegisterRepository>();
         services.AddHttpClient<IUkrlpApiClient, UkrlpApiClient>();
         services.AddTransient<IUkrlpSoapSerializer, UkrlpSoapSerializer>();
-
-        services.AddTransient<IDbConnectionHelper, DbConnectionHelper>();
 
         services.AddValidatorsFromAssembly(typeof(ValidationBehavior<,>).Assembly);
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehaviour<,>));
