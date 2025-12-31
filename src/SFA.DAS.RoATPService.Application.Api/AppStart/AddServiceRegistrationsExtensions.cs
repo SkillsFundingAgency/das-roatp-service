@@ -9,13 +9,10 @@ using SFA.DAS.RoATPService.Api.Client;
 using SFA.DAS.RoATPService.Api.Client.AutoMapper;
 using SFA.DAS.RoATPService.Api.Client.Interfaces;
 using SFA.DAS.RoATPService.Application.Api.Configuration;
-using SFA.DAS.RoATPService.Application.Handlers;
 using SFA.DAS.RoATPService.Application.Interfaces;
 using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
-using SFA.DAS.RoATPService.Application.Services;
-using SFA.DAS.RoATPService.Application.Validators;
+using SFA.DAS.RoATPService.Application.Queries.GetOrganisation;
 using SFA.DAS.RoATPService.Data;
-using SFA.DAS.RoATPService.Data.Helpers;
 using SFA.DAS.RoATPService.Domain.Configuration;
 using SFA.DAS.RoATPService.Infrastructure.Database;
 using SFA.DAS.RoATPService.Infrastructure.Interfaces;
@@ -29,19 +26,12 @@ public static class AddServiceRegistrationsExtensions
     {
         AddMappings();
         RegisterConfigurations(services, configuration);
-        services.AddMediatR(c => c.RegisterServicesFromAssembly(typeof(GetProviderTypesHandler).Assembly));
+        services.AddMediatR(c => c.RegisterServicesFromAssembly(typeof(GetOrganisationQueryHandler).Assembly));
 
         services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
         services.AddTransient<IDownloadRegisterRepository, DownloadRegisterRepository>();
-        services.AddTransient<ILookupDataRepository, LookupDataRepository>();
-        services.AddTransient<IOrganisationCategoryValidator, OrganisationCategoryValidator>();
-        services.AddTransient<ICacheHelper, CacheHelper>();
-        services.AddTransient<IProviderTypeValidator, ProviderTypeValidator>();
-        services.AddTransient<ITextSanitiser, TextSanitiser>();
         services.AddHttpClient<IUkrlpApiClient, UkrlpApiClient>();
-        services.AddTransient<IOrganisationStatusManager, OrganisationStatusManager>();
         services.AddTransient<IUkrlpSoapSerializer, UkrlpSoapSerializer>();
-        services.AddTransient<IEventsRepository, EventsRepository>();
 
         services.AddTransient<IDbConnectionHelper, DbConnectionHelper>();
 

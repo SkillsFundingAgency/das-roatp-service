@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.0.11222.15 d18.0
+VisualStudioVersion = 18.0.11222.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SFA.DAS.RoATPService.Database", "SFA.DAS.RoATPService.Database\SFA.DAS.RoATPService.Database.sqlproj", "{8BC5F439-3B71-47DF-A7DB-F4DDD73592D1}"
 EndProject
@@ -10,8 +10,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.RoATPService.Domain", "SFA.DAS.RoATPService.Domain\SFA.DAS.RoATPService.Domain.csproj", "{E68804D5-D5BE-40CA-A631-9B0BFD48F50A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A41E0780-CADF-4AEC-B37C-D37DAB8A79E5}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.RoATPService.Api.Types", "SFA.DAS.RoATPService.Api.Types\SFA.DAS.RoATPService.Api.Types.csproj", "{981AD788-F221-4041-A836-D9345D188878}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.RoATPService.Application", "SFA.DAS.RoATPService.Application\SFA.DAS.RoATPService.Application.csproj", "{4ED66CC5-A193-4E61-B70C-4EC8770F4167}"
 EndProject
@@ -49,10 +47,6 @@ Global
 		{E68804D5-D5BE-40CA-A631-9B0BFD48F50A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E68804D5-D5BE-40CA-A631-9B0BFD48F50A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E68804D5-D5BE-40CA-A631-9B0BFD48F50A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{981AD788-F221-4041-A836-D9345D188878}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{981AD788-F221-4041-A836-D9345D188878}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{981AD788-F221-4041-A836-D9345D188878}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{981AD788-F221-4041-A836-D9345D188878}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4ED66CC5-A193-4E61-B70C-4EC8770F4167}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4ED66CC5-A193-4E61-B70C-4EC8770F4167}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4ED66CC5-A193-4E61-B70C-4EC8770F4167}.Release|Any CPU.ActiveCfg = Release|Any CPU

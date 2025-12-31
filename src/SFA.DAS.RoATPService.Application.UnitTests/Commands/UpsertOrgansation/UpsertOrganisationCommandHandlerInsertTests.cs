@@ -6,7 +6,6 @@ using AutoFixture.NUnit3;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Commands.UpsertOrganisation;
-using SFA.DAS.RoATPService.Application.Interfaces;
 using SFA.DAS.RoATPService.Application.Services;
 using SFA.DAS.RoATPService.Domain.Common;
 using SFA.DAS.RoATPService.Domain.Entities;
@@ -96,7 +95,6 @@ public class UpsertOrganisationCommandHandlerInsertTests
     [RecursiveMoqAutoData]
     public async Task Handle_CallsRepositoryWithExpectedAudit(
         [Frozen] Mock<IOrganisationsRepository> organisationsRepositoryMock,
-        [Frozen] Mock<ITextSanitiser> textSanitiserMock,
         UpsertOrganisationCommand command,
         string userId,
         UpsertOrganisationCommandHandler sut,
