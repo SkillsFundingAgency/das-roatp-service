@@ -27,4 +27,8 @@
     <ProjectReference Include="..\SFA.DAS.RoATPService.Application\SFA.DAS.RoATPService.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\FatDataExportServiceTests\" />
+  </ItemGroup>
+
 </Project>

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SFA.DAS.RoATPService.Api.Client.Models.Ukrlp;
+using SFA.DAS.RoATPService.Api.Client.Models;
 
 namespace SFA.DAS.RoATPService.Api.Client.Interfaces;
 

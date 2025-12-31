@@ -1,4 +1,5 @@
 ﻿using System;
+using SFA.DAS.RoATPService.Domain.AuditModels;
 
 namespace SFA.DAS.RoATPService.Domain.Entities;
 

@@ -4,8 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.RoATPService.Application.Common.Models;
 using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
-using SFA.DAS.RoATPService.Application.Services;
-using SFA.DAS.RoATPService.Domain;
+using SFA.DAS.RoATPService.Domain.AuditModels;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
 using OrganisationStatus = SFA.DAS.RoATPService.Domain.Common.OrganisationStatus;
@@ -118,7 +117,7 @@ public class UpsertOrganisationCommandHandler(IOrganisationsRepository organisat
         {
             auditData.FieldChanges.Add(new AuditLogEntry
             {
-                FieldChanged = AuditLogField.LegalName,
+                FieldChanged = AuditLogFields.LegalName,
                 PreviousValue = organisation.LegalName,
                 NewValue = command.LegalName
             });
@@ -128,7 +127,7 @@ public class UpsertOrganisationCommandHandler(IOrganisationsRepository organisat
         {
             auditData.FieldChanges.Add(new AuditLogEntry
             {
-                FieldChanged = AuditLogField.TradingName,
+                FieldChanged = AuditLogFields.TradingName,
                 PreviousValue = organisation.TradingName,
                 NewValue = command.TradingName
             });
@@ -138,7 +137,7 @@ public class UpsertOrganisationCommandHandler(IOrganisationsRepository organisat
         {
             auditData.FieldChanges.Add(new AuditLogEntry
             {
-                FieldChanged = AuditLogField.CompanyNumber,
+                FieldChanged = AuditLogFields.CompanyNumber,
                 PreviousValue = organisation.CompanyNumber,
                 NewValue = command.CompanyNumber
             });
@@ -148,7 +147,7 @@ public class UpsertOrganisationCommandHandler(IOrganisationsRepository organisat
         {
             auditData.FieldChanges.Add(new AuditLogEntry
             {
-                FieldChanged = AuditLogField.CharityNumber,
+                FieldChanged = AuditLogFields.CharityNumber,
                 PreviousValue = organisation.CharityNumber,
                 NewValue = command.CharityNumber
             });
@@ -158,7 +157,7 @@ public class UpsertOrganisationCommandHandler(IOrganisationsRepository organisat
         {
             auditData.FieldChanges.Add(new AuditLogEntry
             {
-                FieldChanged = AuditLogField.ProviderType,
+                FieldChanged = AuditLogFields.ProviderType,
                 PreviousValue = organisation.ProviderType.ToString(),
                 NewValue = command.ProviderType.ToString()
             });
@@ -168,7 +167,7 @@ public class UpsertOrganisationCommandHandler(IOrganisationsRepository organisat
         {
             auditData.FieldChanges.Add(new AuditLogEntry
             {
-                FieldChanged = AuditLogField.OrganisationType,
+                FieldChanged = AuditLogFields.OrganisationType,
                 PreviousValue = organisation.OrganisationTypeId.ToString(),
                 NewValue = command.OrganisationTypeId.ToString()
             });

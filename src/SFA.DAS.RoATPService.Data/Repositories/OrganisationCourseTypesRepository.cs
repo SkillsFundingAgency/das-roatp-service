@@ -4,8 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using SFA.DAS.RoATPService.Application.Services;
-using SFA.DAS.RoATPService.Domain;
+using SFA.DAS.RoATPService.Domain.AuditModels;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
 
@@ -65,7 +64,7 @@ internal class OrganisationCourseTypesRepository(RoatpDataContext context) : IOr
 
         AuditLogEntry entry = new()
         {
-            FieldChanged = AuditLogField.CourseTypes,
+            FieldChanged = AuditLogFields.CourseTypes,
             NewValue = null,
             PreviousValue = string.Join(",", removedCourseTypeIds)
         };

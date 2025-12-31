@@ -1,10 +1,9 @@
+using System.Linq;
 using System.Net.Http;
-using AutoMapper;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.RoATPService.Api.Client.AutoMapper;
 using SFA.DAS.RoATPService.Application.Api.Configuration;
 
 namespace SFA.DAS.RoATPService.Api.Client.IntegrationTests;
@@ -18,20 +17,6 @@ public class UkrlpLookupTests
     [SetUp]
     public void Before_each_test()
     {
-        Mapper.Reset();
-
-        Mapper.Initialize(cfg =>
-        {
-            cfg.AddProfile<UkrlpVerificationDetailsProfile>();
-            cfg.AddProfile<UkrlpContactPersonalDetailsProfile>();
-            cfg.AddProfile<UkrlpContactAddressProfile>();
-            cfg.AddProfile<UkrlpProviderAliasProfile>();
-            cfg.AddProfile<UkrlpProviderContactProfile>();
-            cfg.AddProfile<UkrlpProviderDetailsProfile>();
-        });
-
-        Mapper.AssertConfigurationIsValid();
-
         _logger = new Mock<ILogger<UkrlpApiClient>>();
         _config = new UkrlpApiAuthentication()
         {
@@ -55,12 +40,12 @@ public class UkrlpLookupTests
         var matchResult = result.Results[0];
         matchResult.UKPRN.Should().Be(ukprn.ToString());
         matchResult.ProviderStatus.Should().Be("Active");
-        matchResult.ContactDetails.Find(x => x.ContactType == "L").Should().NotBeNull();
+        matchResult.ContactDetails.Select(x => x.ContactType == "L").Should().NotBeNull();
         matchResult.VerificationDate.Should().NotBeNull();
         matchResult.VerificationDetails
-            .Find(x => x.VerificationAuthority == "Charity Commission")
+            .Select(x => x.VerificationAuthority == "Charity Commission")
             .Should().NotBeNull();
-        matchResult.ProviderAliases.Count.Should().Be(1);
+        matchResult.ProviderAliases.Count().Should().Be(1);
     }
 
     [Test]
@@ -77,7 +62,7 @@ public class UkrlpLookupTests
         var matchResult = result.Results[0];
         matchResult.UKPRN.Should().Be(ukprn.ToString());
         var primaryVerification =
-            matchResult.VerificationDetails.Find(x => x.PrimaryVerificationSource);
+            matchResult.VerificationDetails.First(x => x.PrimaryVerificationSource);
         primaryVerification.VerificationAuthority.Should().Be("Charity Commission");
     }
 

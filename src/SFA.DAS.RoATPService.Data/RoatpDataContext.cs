@@ -17,6 +17,7 @@ public class RoatpDataContext : DbContext
     public DbSet<RemovedReason> RemovedReasons => Set<RemovedReason>();
     public DbSet<ProviderType> ProviderTypes => Set<ProviderType>();
     public DbSet<ProviderTypeOrganisationType> ProviderTypeOrganisationTypes => Set<ProviderTypeOrganisationType>();
+    public DbSet<OrganisationAudit> OrganisationAudits => Set<OrganisationAudit>();
 
     public RoatpDataContext(DbContextOptions<RoatpDataContext> options) : base(options)
     { }

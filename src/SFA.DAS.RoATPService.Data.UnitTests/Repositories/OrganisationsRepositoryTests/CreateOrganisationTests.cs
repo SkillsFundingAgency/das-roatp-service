@@ -1,11 +1,12 @@
 ﻿using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using SFA.DAS.RoATPService.Data.Repositories;
-using SFA.DAS.RoATPService.Domain;
+using SFA.DAS.RoATPService.Domain.AuditModels;
 using SFA.DAS.RoATPService.Domain.Entities;
 using Organisation = SFA.DAS.RoATPService.Domain.Entities.Organisation;
 
 namespace SFA.DAS.RoATPService.Data.UnitTests.Repositories.OrganisationsRepositoryTests;
+
 public class CreateOrganisationTests
 {
     [Test]
@@ -41,7 +42,7 @@ public class CreateOrganisationTests
         var sut = new OrganisationsRepository(context);
 
         await sut.CreateOrganisation(organisation, audit, organisationStatusEvent, cancellationToken);
-        var addedOrganisation = context.Organisations.First(s => s.Id == organisationId);
+        Organisation addedOrganisation = await context.Organisations.FirstAsync(s => s.Id == organisationId);
         addedOrganisation.LegalName.Should().Be(newOrganisationName);
         addedOrganisation.UpdatedBy.Should().Be(userId);
         addedOrganisation.UpdatedAt!.Value.Date.Should().Be(DateTime.UtcNow.Date);
@@ -84,10 +85,11 @@ public class CreateOrganisationTests
         var sut = new OrganisationsRepository(context);
 
         await sut.CreateOrganisation(organisation, audit, new OrganisationStatusEvent(), cancellationToken);
-        context.Audits.Count().Should().Be(1);
-        context.Audits.First().OrganisationId.Should().Be(organisationId);
-        context.Audits.First().AuditData.FieldChanges.Should().BeEquivalentTo(new List<AuditLogEntry>());
-        context.Audits.First().AuditData.OrganisationId.Should().Be(organisationId);
+        context.Audits.CountAsync().Result.Should().Be(1);
+        var actual = await context.Audits.FirstAsync();
+        actual.OrganisationId.Should().Be(organisationId);
+        actual.AuditData.FieldChanges.Should().BeEquivalentTo(new List<AuditLogEntry>());
+        actual.AuditData.OrganisationId.Should().Be(organisationId);
     }
 
     [Test]
@@ -120,8 +122,8 @@ public class CreateOrganisationTests
         var sut = new OrganisationsRepository(context);
 
         await sut.CreateOrganisation(organisation, audit, organisationStatusEvent, cancellationToken);
-        var eventAdded = context.OrganisationStatusEvents.First();
-        context.OrganisationStatusEvents.Count().Should().Be(1);
+        var eventAdded = await context.OrganisationStatusEvents.FirstAsync();
+        context.OrganisationStatusEvents.CountAsync().Result.Should().Be(1);
         eventAdded.OrganisationStatus.Should().Be(organisation.Status);
         eventAdded.Ukprn.Should().Be(organisation.Ukprn);
     }
