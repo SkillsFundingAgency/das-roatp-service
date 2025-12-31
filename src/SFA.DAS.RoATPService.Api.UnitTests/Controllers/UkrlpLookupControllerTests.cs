@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.RoATPService.Api.Client.Interfaces;
-using SFA.DAS.RoATPService.Api.Client.Models.Ukrlp;
+using SFA.DAS.RoATPService.Api.Client.Models;
 using SFA.DAS.RoATPService.Application.Api.Controllers;
 
 namespace SFA.DAS.RoATPService.Api.UnitTests.Controllers;

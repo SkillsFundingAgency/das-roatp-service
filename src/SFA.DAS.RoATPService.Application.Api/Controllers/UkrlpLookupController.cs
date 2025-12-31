@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
 using SFA.DAS.RoATPService.Api.Client.Interfaces;
-using SFA.DAS.RoATPService.Api.Client.Models.Ukrlp;
+using SFA.DAS.RoATPService.Api.Client.Models;
 
 namespace SFA.DAS.RoATPService.Application.Api.Controllers;
 

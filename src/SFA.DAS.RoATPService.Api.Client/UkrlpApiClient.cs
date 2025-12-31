@@ -3,10 +3,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.RoATPService.Api.Client.Interfaces;
-using SFA.DAS.RoATPService.Api.Client.Models.Ukrlp;
+using SFA.DAS.RoATPService.Api.Client.Models;
 using SFA.DAS.RoATPService.Application.Api.Configuration;
 
 namespace SFA.DAS.RoATPService.Api.Client;
@@ -64,11 +63,11 @@ public class UkrlpApiClient : IUkrlpApiClient
         }
 
         var soapXml = await responseMessage.Content.ReadAsStringAsync();
-        var matchingProviderRecords = _serializer.DeserialiseMatchingProviderRecordsResponse(soapXml);
+        List<MatchingProviderRecords> matchingProviderRecords = _serializer.DeserialiseMatchingProviderRecordsResponse(soapXml);
 
         if (matchingProviderRecords != null)
         {
-            var result = matchingProviderRecords.Select(Mapper.Map<ProviderDetails>).ToList();
+            var result = matchingProviderRecords.Select(r => (ProviderDetails)r).ToList();
 
             var resultsFound = new UkprnLookupResponse
             {

@@ -1,12 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SFA.DAS.RoATPService.Api.Client;
-using SFA.DAS.RoATPService.Api.Client.AutoMapper;
 using SFA.DAS.RoATPService.Api.Client.Interfaces;
 using SFA.DAS.RoATPService.Application.Api.Configuration;
 using SFA.DAS.RoATPService.Application.Interfaces;
@@ -24,7 +22,6 @@ public static class AddServiceRegistrationsExtensions
 {
     public static IServiceCollection AddServiceRegistrations(this IServiceCollection services, IConfiguration configuration)
     {
-        AddMappings();
         RegisterConfigurations(services, configuration);
         services.AddMediatR(c => c.RegisterServicesFromAssembly(typeof(GetOrganisationQueryHandler).Assembly));
 
@@ -40,23 +37,6 @@ public static class AddServiceRegistrationsExtensions
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
         return services;
-    }
-
-    public static void AddMappings()
-    {
-        Mapper.Reset();
-
-        Mapper.Initialize(cfg =>
-        {
-            cfg.AddProfile<UkrlpVerificationDetailsProfile>();
-            cfg.AddProfile<UkrlpContactPersonalDetailsProfile>();
-            cfg.AddProfile<UkrlpContactAddressProfile>();
-            cfg.AddProfile<UkrlpProviderAliasProfile>();
-            cfg.AddProfile<UkrlpProviderContactProfile>();
-            cfg.AddProfile<UkrlpProviderDetailsProfile>();
-        });
-
-        Mapper.AssertConfigurationIsValid();
     }
 
     private static void RegisterConfigurations(IServiceCollection services, IConfiguration configuration)

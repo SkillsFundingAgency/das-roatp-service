@@ -1,4 +1,4 @@
-﻿namespace SFA.DAS.RoATPService.Api.Client.Models.Ukrlp
+﻿namespace SFA.DAS.RoATPService.Api.Client.Models
 {
     using System;
     using System.Collections.Generic;

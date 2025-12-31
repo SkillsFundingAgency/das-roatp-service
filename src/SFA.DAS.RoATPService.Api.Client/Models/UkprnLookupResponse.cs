@@ -1,7 +1,7 @@
 ﻿
 using System.Collections.Generic;
 
-namespace SFA.DAS.RoATPService.Api.Client.Models.Ukrlp
+namespace SFA.DAS.RoATPService.Api.Client.Models
 {
     public class UkprnLookupResponse
     {
