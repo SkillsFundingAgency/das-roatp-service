@@ -19,11 +19,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.RoATPService.Applic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.RoATPService.Api.UnitTests", "SFA.DAS.RoATPService.Api.UnitTests\SFA.DAS.RoATPService.Api.UnitTests.csproj", "{08EE85C1-621E-4FE0-AB48-7091C440AAED}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.RoATPService.Api.Client", "SFA.DAS.RoATPService.Api.Client\SFA.DAS.RoATPService.Api.Client.csproj", "{C63E2F50-316A-4DC9-B85C-042B206B90A0}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.RoATPService.Api.Client.IntegrationTests", "SFA.DAS.RoATPService.Api.Client.IntegrationTests\SFA.DAS.RoATPService.Api.Client.IntegrationTests.csproj", "{785E8F0C-5FA5-46C6-9150-0B45F6E83DD7}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.RoATPService.Data.UnitTests", "SFA.DAS.RoATPService.Data.UnitTests\SFA.DAS.RoATPService.Data.UnitTests.csproj", "{78F8F8C4-0D70-401D-BAAD-F833C2F25146}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.RoATPService.Ukrlp.Client", "SFA.DAS.RoATPService.Ukrlp.Client\SFA.DAS.RoATPService.Ukrlp.Client.csproj", "{C63E2F50-316A-4DC9-B85C-042B206B90A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.RoATPService.Ukrlp.Client.IntegrationTests", "SFA.DAS.RoATPService.Ukrlp.Client.IntegrationTests\SFA.DAS.RoATPService.Ukrlp.Client.IntegrationTests.csproj", "{785E8F0C-5FA5-46C6-9150-0B45F6E83DD7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,6 +61,10 @@ Global
 		{08EE85C1-621E-4FE0-AB48-7091C440AAED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08EE85C1-621E-4FE0-AB48-7091C440AAED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08EE85C1-621E-4FE0-AB48-7091C440AAED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78F8F8C4-0D70-401D-BAAD-F833C2F25146}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78F8F8C4-0D70-401D-BAAD-F833C2F25146}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78F8F8C4-0D70-401D-BAAD-F833C2F25146}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78F8F8C4-0D70-401D-BAAD-F833C2F25146}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C63E2F50-316A-4DC9-B85C-042B206B90A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C63E2F50-316A-4DC9-B85C-042B206B90A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C63E2F50-316A-4DC9-B85C-042B206B90A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -69,10 +73,6 @@ Global
 		{785E8F0C-5FA5-46C6-9150-0B45F6E83DD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{785E8F0C-5FA5-46C6-9150-0B45F6E83DD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{785E8F0C-5FA5-46C6-9150-0B45F6E83DD7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{78F8F8C4-0D70-401D-BAAD-F833C2F25146}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{78F8F8C4-0D70-401D-BAAD-F833C2F25146}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{78F8F8C4-0D70-401D-BAAD-F833C2F25146}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{78F8F8C4-0D70-401D-BAAD-F833C2F25146}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,8 +80,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{5740747C-1320-4F60-AE06-5C1C251931BD} = {A41E0780-CADF-4AEC-B37C-D37DAB8A79E5}
 		{08EE85C1-621E-4FE0-AB48-7091C440AAED} = {A41E0780-CADF-4AEC-B37C-D37DAB8A79E5}
-		{785E8F0C-5FA5-46C6-9150-0B45F6E83DD7} = {A41E0780-CADF-4AEC-B37C-D37DAB8A79E5}
 		{78F8F8C4-0D70-401D-BAAD-F833C2F25146} = {A41E0780-CADF-4AEC-B37C-D37DAB8A79E5}
+		{785E8F0C-5FA5-46C6-9150-0B45F6E83DD7} = {A41E0780-CADF-4AEC-B37C-D37DAB8A79E5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C5B677B2-0D72-4629-A5FD-F94B00EC858B}

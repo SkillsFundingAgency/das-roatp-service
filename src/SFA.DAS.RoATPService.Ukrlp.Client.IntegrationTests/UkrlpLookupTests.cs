@@ -4,7 +4,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.RoATPService.Application.Api.Configuration;
+using SFA.DAS.RoATPService.Ukrlp.Client;
 
 namespace SFA.DAS.RoATPService.Api.Client.IntegrationTests;
 

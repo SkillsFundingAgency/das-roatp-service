@@ -2,10 +2,10 @@
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml.XPath;
-using SFA.DAS.RoATPService.Api.Client.Interfaces;
-using SFA.DAS.RoATPService.Api.Client.Models;
+using SFA.DAS.RoATPService.Ukrlp.Client.Interfaces;
+using SFA.DAS.RoATPService.Ukrlp.Client.Models;
 
-namespace SFA.DAS.RoATPService.Api.Client;
+namespace SFA.DAS.RoATPService.Ukrlp.Client;
 
 public class UkrlpSoapSerializer : IUkrlpSoapSerializer
 {

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using SFA.DAS.RoATPService.Api.Client.Models;
+using SFA.DAS.RoATPService.Ukrlp.Client.Models;
 
-namespace SFA.DAS.RoATPService.Api.Client.Interfaces;
+namespace SFA.DAS.RoATPService.Ukrlp.Client.Interfaces;
 
 public interface IUkrlpApiClient
 {

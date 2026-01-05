@@ -30,7 +30,7 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\SFA.DAS.RoATPService.Api.Client\SFA.DAS.RoATPService.Api.Client.csproj" />
+    <ProjectReference Include="..\SFA.DAS.RoATPService.Ukrlp.Client\SFA.DAS.RoATPService.Ukrlp.Client.csproj" />
     <ProjectReference Include="..\SFA.DAS.RoATPService.Application\SFA.DAS.RoATPService.Application.csproj" />
     <ProjectReference Include="..\SFA.DAS.RoATPService.Data\SFA.DAS.RoATPService.Data.csproj" />
   </ItemGroup>

@@ -4,11 +4,10 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using SFA.DAS.RoATPService.Api.Client.Interfaces;
-using SFA.DAS.RoATPService.Api.Client.Models;
-using SFA.DAS.RoATPService.Application.Api.Configuration;
+using SFA.DAS.RoATPService.Ukrlp.Client.Interfaces;
+using SFA.DAS.RoATPService.Ukrlp.Client.Models;
 
-namespace SFA.DAS.RoATPService.Api.Client;
+namespace SFA.DAS.RoATPService.Ukrlp.Client;
 
 public class UkrlpApiClient : IUkrlpApiClient
 {

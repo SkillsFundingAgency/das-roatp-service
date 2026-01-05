@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
-using SFA.DAS.RoATPService.Api.Client.Interfaces;
-using SFA.DAS.RoATPService.Api.Client.Models;
+using SFA.DAS.RoATPService.Ukrlp.Client.Interfaces;
+using SFA.DAS.RoATPService.Ukrlp.Client.Models;
 
 namespace SFA.DAS.RoATPService.Application.Api.Controllers;
 

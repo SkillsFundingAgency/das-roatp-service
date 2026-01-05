@@ -4,12 +4,11 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SFA.DAS.RoATPService.Api.Client;
-using SFA.DAS.RoATPService.Api.Client.Interfaces;
-using SFA.DAS.RoATPService.Application.Api.Configuration;
 using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
 using SFA.DAS.RoATPService.Application.Queries.GetOrganisation;
 using SFA.DAS.RoATPService.Domain.Configuration;
+using SFA.DAS.RoATPService.Ukrlp.Client;
+using SFA.DAS.RoATPService.Ukrlp.Client.Interfaces;
 
 namespace SFA.DAS.RoATPService.Application.Api.AppStart;
 

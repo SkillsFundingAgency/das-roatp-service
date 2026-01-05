@@ -1,4 +1,4 @@
-﻿namespace SFA.DAS.RoATPService.Application.Api.Configuration;
+﻿namespace SFA.DAS.RoATPService.Ukrlp.Client;
 
 public class UkrlpApiAuthentication
 {
