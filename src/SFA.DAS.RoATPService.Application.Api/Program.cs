@@ -12,7 +12,6 @@ using SFA.DAS.Api.Common.Infrastructure;
 using SFA.DAS.RoATPService.Application.Api.AppStart;
 using SFA.DAS.RoATPService.Application.Api.Extensions;
 using SFA.DAS.RoATPService.Application.Api.Infrastructure;
-using SFA.DAS.RoATPService.Application.Api.Middleware;
 using SFA.DAS.RoATPService.Application.AppStart;
 using SFA.DAS.RoATPService.Data.Extensions;
 using SFA.DAS.Telemetry.Startup;
@@ -75,8 +74,6 @@ app.UseSwaggerUI(options =>
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseMiddleware(typeof(ErrorHandlingMiddleware));
 
 app.UseHealthChecks("/health",
     new HealthCheckOptions

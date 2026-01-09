@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using MediatR;
 using SFA.DAS.RoATPService.Application.Common.Models;
 using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
-using SFA.DAS.RoATPService.Application.Services;
-using SFA.DAS.RoATPService.Domain;
+using SFA.DAS.RoATPService.Domain.AuditModels;
+using SFA.DAS.RoATPService.Domain.Common;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
-using ProviderType = SFA.DAS.RoATPService.Domain.ProviderType;
+using ProviderType = SFA.DAS.RoATPService.Domain.Common.ProviderType;
 
 namespace SFA.DAS.RoATPService.Application.Commands.PatchOrganisation;
 
@@ -25,15 +25,15 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
 
         request.PatchDoc.ApplyTo(patchModel);
 
-        if (organisation.ProviderType != Domain.Common.ProviderType.Main &&
-            patchModel.ProviderType == Domain.Common.ProviderType.Main
-            && organisation.Status != Domain.Common.OrganisationStatus.OnBoarding)
+        if (organisation.ProviderType != ProviderType.Main &&
+            patchModel.ProviderType == ProviderType.Main
+            && organisation.Status != OrganisationStatus.OnBoarding)
         {
-            patchModel.Status = Domain.Common.OrganisationStatus.OnBoarding;
+            patchModel.Status = OrganisationStatus.OnBoarding;
         }
 
         // It is important that RemovedReasonId is cleared if status is not Removed and it is done before audit comparison
-        patchModel.RemovedReasonId = patchModel.Status == Domain.Common.OrganisationStatus.Removed ? patchModel.RemovedReasonId : null;
+        patchModel.RemovedReasonId = patchModel.Status == OrganisationStatus.Removed ? patchModel.RemovedReasonId : null;
 
         var auditRecord = GetAuditRecord(organisation, patchModel, request.UserId);
 
@@ -54,9 +54,9 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
             organisation.StatusDate = DateTime.UtcNow;
 
             var isMainEmployerAndStatusBecomingActive =
-                ((int)organisation.ProviderType == ProviderType.EmployerProvider ||
-                 (int)organisation.ProviderType == ProviderType.MainProvider) &&
-                (int)patchModel.Status == OrganisationStatus.Active;
+                (organisation.ProviderType == ProviderType.Employer ||
+                 organisation.ProviderType == ProviderType.Main) &&
+                patchModel.Status == OrganisationStatus.Active;
 
             if (isMainEmployerAndStatusBecomingActive)
             {
@@ -65,9 +65,8 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
         }
 
         var isMovingFromMainEmployerToSupporting =
-            ((int)organisation.ProviderType == ProviderType.EmployerProvider ||
-             (int)organisation.ProviderType == ProviderType.MainProvider) &&
-            (int)patchModel.ProviderType == ProviderType.SupportingProvider;
+            (organisation.ProviderType == ProviderType.Employer || organisation.ProviderType == ProviderType.Main)
+            && patchModel.ProviderType == ProviderType.Supporting;
 
         organisation.Status = patchModel.Status;
         organisation.RemovedReasonId = patchModel.RemovedReasonId;
@@ -86,14 +85,14 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
         return new ValidatedResponse<SuccessModel>(new SuccessModel(true));
     }
 
-    private static Audit GetAuditRecord(Domain.Entities.Organisation organisation, PatchOrganisationModel patchOrganisationModel, string userId)
+    private static Audit GetAuditRecord(Organisation organisation, PatchOrganisationModel patchOrganisationModel, string userId)
     {
         var auditData = new AuditData { FieldChanges = [], OrganisationId = organisation.Id, UpdatedAt = DateTime.Now, UpdatedBy = userId };
         if (organisation.Status != patchOrganisationModel.Status)
         {
             auditData.FieldChanges.Add(new AuditLogEntry
             {
-                FieldChanged = AuditLogField.OrganisationStatus,
+                FieldChanged = AuditLogFields.OrganisationStatus,
                 PreviousValue = organisation.Status.ToString(),
                 NewValue = patchOrganisationModel.Status.ToString()
             });
@@ -103,7 +102,7 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
         {
             auditData.FieldChanges.Add(new AuditLogEntry
             {
-                FieldChanged = AuditLogField.RemovedReason,
+                FieldChanged = AuditLogFields.RemovedReason,
                 PreviousValue = organisation.RemovedReasonId?.ToString() ?? "null",
                 NewValue = patchOrganisationModel.RemovedReasonId?.ToString() ?? "null"
             });
@@ -113,7 +112,7 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
         {
             auditData.FieldChanges.Add(new AuditLogEntry
             {
-                FieldChanged = AuditLogField.ProviderType,
+                FieldChanged = AuditLogFields.ProviderType,
                 PreviousValue = organisation.ProviderType.ToString(),
                 NewValue = patchOrganisationModel.ProviderType.ToString()
             });
@@ -123,7 +122,7 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
         {
             auditData.FieldChanges.Add(new AuditLogEntry
             {
-                FieldChanged = AuditLogField.OrganisationType,
+                FieldChanged = AuditLogFields.OrganisationType,
                 PreviousValue = organisation.OrganisationTypeId.ToString(),
                 NewValue = patchOrganisationModel.OrganisationTypeId.ToString()
             });

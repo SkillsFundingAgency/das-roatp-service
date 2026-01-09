@@ -1,30 +1,29 @@
 ﻿CREATE PROCEDURE [dbo].[RoATP_Audit_History]
 AS
     SELECT
-      UKPRN
-      ,LegalName AS [Legal name]
-      ,FieldChanged AS [Field of change]
-      ,PreviousValue AS [Old value]
-      ,CASE FieldChanged 
-      WHEN 'Organisation Status' THEN
-      CASE 
-      WHEN [newPreviousStatusDate] = '0' THEN CreatedAt 
-      ELSE
-      [newPreviousStatusDate]
-      END
-      ELSE ''
-      END AS [Old status date time]
-      ,NewValue AS [New value]
-     ,FORMAT([UpdatedAt], 'dd/MM/yyyy HH:mm:ss') AS [Change date time]
-     ,[UpdatedBy] AS [Who]
+      Ukprn,
+      LegalName,
+      FieldChanged,
+      PreviousValue,
+      CASE FieldChanged 
+        WHEN 'Organisation Status' THEN
+          CASE 
+            WHEN [HasPreviousStatusDate] = '0' THEN CreatedAt 
+            ELSE [HasPreviousStatusDate]
+          END
+        ELSE null
+      END AS [PreviousStatusDate],
+      NewValue,
+      [UpdatedAt],
+      [UpdatedBy]
     FROM (
-    SELECT distinct
-        au1.*, og1.LegalName, og1.UKPRN
-        ,LAG(Convert(nvarchar, FORMAT(au1.UpdatedAt, 'dd/MM/yyyy HH:mm:ss')), 1,0) OVER (PARTITION BY au1.OrganisationId ORDER BY au1.UpdatedAt ) AS newPreviousStatusDate,
-        JSON_VALUE(jsonValue.Value, '$.FieldChanged') AS FieldChanged,
-        JSON_VALUE(jsonValue.Value, '$.PreviousValue') AS PreviousValue,
-        JSON_VALUE(jsonValue.Value, '$.NewValue') AS NewValue,
-        Convert(nvarchar, FORMAT(og1.CreatedAt, 'dd/MM/yyyy HH:mm:ss')) createdAt
+        SELECT distinct
+            au1.*, og1.LegalName, og1.UKPRN,
+            LAG(Convert(nvarchar, au1.UpdatedAt), 1,0) OVER (PARTITION BY au1.OrganisationId ORDER BY au1.UpdatedAt ) AS HasPreviousStatusDate,
+            JSON_VALUE(jsonValue.Value, '$.FieldChanged') AS FieldChanged,
+            JSON_VALUE(jsonValue.Value, '$.PreviousValue') AS PreviousValue,
+            JSON_VALUE(jsonValue.Value, '$.NewValue') AS NewValue,
+            og1.CreatedAt
         FROM [Audit] au1
         CROSS APPLY OPENJSON(au1.[AuditData], '$.FieldChanges') jsonValue
         LEFT JOIN Organisations og1 ON og1.Id = au1.OrganisationId

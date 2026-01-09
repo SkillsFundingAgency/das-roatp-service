@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.RoATPService.Api.Client.Interfaces;
-using SFA.DAS.RoATPService.Api.Client.Models.Ukrlp;
 using SFA.DAS.RoATPService.Application.Api.Controllers;
+using SFA.DAS.RoATPService.Ukrlp.Client.Interfaces;
+using SFA.DAS.RoATPService.Ukrlp.Client.Models;
 
 namespace SFA.DAS.RoATPService.Api.UnitTests.Controllers;
 public class UkrlpLookupControllerTests
