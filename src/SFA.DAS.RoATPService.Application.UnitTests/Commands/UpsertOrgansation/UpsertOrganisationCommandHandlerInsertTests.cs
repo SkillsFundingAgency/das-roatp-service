@@ -6,8 +6,7 @@ using AutoFixture.NUnit3;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Commands.UpsertOrganisation;
-using SFA.DAS.RoATPService.Application.Interfaces;
-using SFA.DAS.RoATPService.Application.Services;
+using SFA.DAS.RoATPService.Domain.AuditModels;
 using SFA.DAS.RoATPService.Domain.Common;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
@@ -96,7 +95,6 @@ public class UpsertOrganisationCommandHandlerInsertTests
     [RecursiveMoqAutoData]
     public async Task Handle_CallsRepositoryWithExpectedAudit(
         [Frozen] Mock<IOrganisationsRepository> organisationsRepositoryMock,
-        [Frozen] Mock<ITextSanitiser> textSanitiserMock,
         UpsertOrganisationCommand command,
         string userId,
         UpsertOrganisationCommandHandler sut,
@@ -319,17 +317,17 @@ public class UpsertOrganisationCommandHandlerUpdateTests
                 a.AuditData.UpdatedAt >= DateTime.UtcNow.AddMinutes(-1) &&
                 a.AuditData.UpdatedBy == command.RequestingUserId &&
                 a.AuditData.FieldChanges.Count == 6
-                && VerifyAuditFields(AuditLogField.LegalName, a.AuditData.FieldChanges, clonedExistingOrganisation.LegalName, command.LegalName)
-                && VerifyAuditFields(AuditLogField.TradingName, a.AuditData.FieldChanges, clonedExistingOrganisation.TradingName, command.TradingName)
-                && VerifyAuditFields(AuditLogField.CompanyNumber, a.AuditData.FieldChanges, clonedExistingOrganisation.CompanyNumber, command.CompanyNumber)
-                && VerifyAuditFields(AuditLogField.CharityNumber, a.AuditData.FieldChanges, clonedExistingOrganisation.CharityNumber, command.CharityNumber)
-                && VerifyAuditFields(AuditLogField.ProviderType, a.AuditData.FieldChanges, clonedExistingOrganisation.ProviderType.ToString(), command.ProviderType.ToString())
-                && VerifyAuditFields(AuditLogField.OrganisationType, a.AuditData.FieldChanges, clonedExistingOrganisation.OrganisationTypeId.ToString(), command.OrganisationTypeId.ToString())),
+                && VerifyAuditFields(AuditLogFields.LegalName, a.AuditData.FieldChanges, clonedExistingOrganisation.LegalName, command.LegalName)
+                && VerifyAuditFields(AuditLogFields.TradingName, a.AuditData.FieldChanges, clonedExistingOrganisation.TradingName, command.TradingName)
+                && VerifyAuditFields(AuditLogFields.CompanyNumber, a.AuditData.FieldChanges, clonedExistingOrganisation.CompanyNumber, command.CompanyNumber)
+                && VerifyAuditFields(AuditLogFields.CharityNumber, a.AuditData.FieldChanges, clonedExistingOrganisation.CharityNumber, command.CharityNumber)
+                && VerifyAuditFields(AuditLogFields.ProviderType, a.AuditData.FieldChanges, clonedExistingOrganisation.ProviderType.ToString(), command.ProviderType.ToString())
+                && VerifyAuditFields(AuditLogFields.OrganisationType, a.AuditData.FieldChanges, clonedExistingOrganisation.OrganisationTypeId.ToString(), command.OrganisationTypeId.ToString())),
             null,
             cancellationToken), Times.Once);
     }
 
-    private static bool VerifyAuditFields(string fieldChanged, List<Domain.AuditLogEntry> fieldChanges, string oldValue, string newValue)
+    private static bool VerifyAuditFields(string fieldChanged, List<AuditLogEntry> fieldChanges, string oldValue, string newValue)
     {
         return fieldChanges.Exists(fc =>
             fc.FieldChanged == fieldChanged &&

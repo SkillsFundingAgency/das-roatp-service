@@ -7,9 +7,9 @@ namespace SFA.DAS.RoATPService.Domain.Repositories;
 
 public interface IOrganisationsRepository
 {
-    Task<Entities.Organisation> GetOrganisationByUkprn(int ukprn, CancellationToken cancellationToken);
-    Task<List<Entities.Organisation>> GetOrganisations(CancellationToken cancellationToken);
-    Task<List<Entities.Organisation>> GetOrganisationsBySearchTerm(string searchTerm, CancellationToken cancellationToken);
-    Task UpdateOrganisation(Entities.Organisation organisation, Audit audit, OrganisationStatusEvent statusEvent, CancellationToken cancellationToken);
-    Task CreateOrganisation(Entities.Organisation organisation, Audit audit, OrganisationStatusEvent statusEvent, CancellationToken cancellationToken);
+    Task<Organisation> GetOrganisationByUkprn(int ukprn, CancellationToken cancellationToken);
+    Task<List<Organisation>> GetOrganisations(CancellationToken cancellationToken);
+    Task<List<Organisation>> GetOrganisationsBySearchTerm(string searchTerm, CancellationToken cancellationToken);
+    Task UpdateOrganisation(Organisation organisation, Audit audit, OrganisationStatusEvent statusEvent, CancellationToken cancellationToken);
+    Task CreateOrganisation(Organisation organisation, Audit audit, OrganisationStatusEvent statusEvent, CancellationToken cancellationToken);
 }

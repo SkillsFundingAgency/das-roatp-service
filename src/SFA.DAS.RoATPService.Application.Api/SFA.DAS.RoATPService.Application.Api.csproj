@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0" />
-    <PackageReference Include="AutoMapper" Version="8.1.1" />
     <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.3.0" />
     <PackageReference Include="EPPlus" Version="8.2.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
@@ -31,10 +30,9 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\SFA.DAS.RoATPService.Api.Client\SFA.DAS.RoATPService.Api.Client.csproj" />
+    <ProjectReference Include="..\SFA.DAS.RoATPService.Ukrlp.Client\SFA.DAS.RoATPService.Ukrlp.Client.csproj" />
     <ProjectReference Include="..\SFA.DAS.RoATPService.Application\SFA.DAS.RoATPService.Application.csproj" />
     <ProjectReference Include="..\SFA.DAS.RoATPService.Data\SFA.DAS.RoATPService.Data.csproj" />
-    <ProjectReference Include="..\SFA.DAS.RoATPService.Infrastructure\SFA.DAS.RoATPService.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
