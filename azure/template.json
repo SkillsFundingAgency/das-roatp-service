@@ -23,6 +23,9 @@
         "sharedBackEndSubnetResourceId": {
             "type": "string"
         },
+        "backEndAccessRestrictions": {
+            "type": "array"
+        },
         "sharedSqlServerName": {
             "type": "string"
         },
@@ -249,7 +252,7 @@
                         "value": "[reference(concat('app-service-certificate-', parameters('utcValue'))).outputs.certificateThumbprint.value]"
                     },
                     "ipSecurityRestrictions": {
-                        "value": "[parameters('appServiceAllowedIPs')]"
+                        "value": "[parameters('backEndAccessRestrictions')]"
                     }
                 }
             }
