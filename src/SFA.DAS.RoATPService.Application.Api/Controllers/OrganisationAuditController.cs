@@ -11,7 +11,7 @@ namespace SFA.DAS.RoATPService.Application.Api.Controllers;
 
 [ApiController]
 [Route("organisations")]
-[Tags("Organisations")]
+[Tags("Organisations Change Events")]
 public class OrganisationAuditController(ILogger<OrganisationAuditController> _logger, IMediator _mediator) : ControllerBase
 {
     [HttpGet("audit-records")]

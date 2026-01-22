@@ -17,7 +17,6 @@ using SFA.DAS.RoATPService.Application.Common.Models;
 using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
 using SFA.DAS.RoATPService.Application.Queries.GetOrganisation;
 using SFA.DAS.RoATPService.Application.Queries.GetOrganisations;
-using SFA.DAS.RoATPService.Application.Queries.GetOrganisationsStatusEvents;
 
 namespace SFA.DAS.RoATPService.Application.Api.Controllers;
 
@@ -44,19 +43,6 @@ public class OrganisationsController(IMediator _mediator, ILogger<OrganisationsC
     {
         _logger.LogInformation("Processing Organisations-GetOrganisations");
         GetOrganisationsQueryResult result = await _mediator.Send(new GetOrganisationsQuery(searchTerm), cancellationToken);
-        return Ok(result);
-    }
-
-    [HttpGet]
-    [Route("status-events")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetOrganisationStatusEventsQueryResult))]
-    public async Task<IActionResult> GetOrganisationStatusEvents([FromQuery] int sinceEventId = 0, [FromQuery] int pageSize = 1000, [FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
-    {
-        sinceEventId = sinceEventId < 0 ? 0 : sinceEventId;
-        pageSize = pageSize is < 1 or > 1000 ? 1000 : pageSize;
-        pageNumber = pageNumber < 1 ? 1 : pageNumber;
-        GetOrganisationStatusEventsQuery query = new(sinceEventId, pageSize, pageNumber);
-        GetOrganisationStatusEventsQueryResult result = await _mediator.Send(query, cancellationToken);
         return Ok(result);
     }
 
