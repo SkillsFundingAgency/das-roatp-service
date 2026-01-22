@@ -3,6 +3,7 @@ using SFA.DAS.RoATPService.Data.Repositories;
 using SFA.DAS.RoATPService.Domain.Entities;
 
 namespace SFA.DAS.RoATPService.Data.UnitTests.Repositories.AuditsRepositoryTests;
+
 public class GetLastUpdatedDateForOrganisationTests
 {
     [Test]
@@ -21,11 +22,8 @@ public class GetLastUpdatedDateForOrganisationTests
         using (var context = new RoatpDataContext(options))
         {
             context.Audits.AddRange(audit1, expectedAudit, auditOther);
-            context.SaveChanges();
-        }
+            await context.SaveChangesAsync();
 
-        using (var context = new RoatpDataContext(options))
-        {
             var repo = new AuditsRepository(context);
             // Act
             var result = await repo.GetLastUpdatedDateForOrganisation(organisationId, CancellationToken.None);
@@ -44,11 +42,6 @@ public class GetLastUpdatedDateForOrganisationTests
             .Options;
 
         var organisationId = Guid.NewGuid();
-
-        using (var context = new RoatpDataContext(options))
-        {
-            // No audits added
-        }
 
         using (var context = new RoatpDataContext(options))
         {

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,9 +8,16 @@ using SFA.DAS.RoATPService.Domain.Repositories;
 
 namespace SFA.DAS.RoATPService.Data.Repositories;
 
-[ExcludeFromCodeCoverage]
 internal class OrganisationStatusEventsRepository(RoatpDataContext _dataContext) : IOrganisationStatusEventsRepository
 {
+    public async Task<List<OrganisationStatusEvent>> GetOrganisationStatusEvents(int sinceEventId, int pageSize, int pageNumber, CancellationToken cancellationToken)
+        => await _dataContext.OrganisationStatusEvents
+            .Where(e => e.Id > sinceEventId)
+            .OrderBy(e => e.Id)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
     public async Task<List<OrganisationStatusEvent>> GetOrganisationStatusHistory(int ukprn, CancellationToken cancellationToken)
         => await _dataContext.OrganisationStatusEvents.Where(e => e.Ukprn == ukprn).ToListAsync(cancellationToken);
 }
