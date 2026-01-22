@@ -18,6 +18,6 @@ internal class OrganisationStatusEventsRepository(RoatpDataContext _dataContext)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
 
-    public async Task<List<OrganisationStatusEvent>> GetOrganisationStatusHistory(int ukprn, CancellationToken cancellationToken)
+    public async Task<List<OrganisationStatusEvent>> GetOrganisationStatusEventsByUkprn(int ukprn, CancellationToken cancellationToken)
         => await _dataContext.OrganisationStatusEvents.Where(e => e.Ukprn == ukprn).ToListAsync(cancellationToken);
 }

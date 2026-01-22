@@ -60,7 +60,7 @@ public class OrganisationStatusEventsRepositoryTests
         var sut = new OrganisationStatusEventsRepository(context);
         var ukprn = 10000001;
         // Act
-        var result = await sut.GetOrganisationStatusHistory(ukprn, CancellationToken.None);
+        var result = await sut.GetOrganisationStatusEventsByUkprn(ukprn, CancellationToken.None);
         // Assert
         var expectedEvents = _events.Where(e => e.Ukprn == ukprn).ToList();
         Assert.That(result.Count, Is.EqualTo(expectedEvents.Count));
