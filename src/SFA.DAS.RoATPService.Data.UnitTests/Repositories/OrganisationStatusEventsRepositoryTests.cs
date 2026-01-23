@@ -31,11 +31,14 @@ public class OrganisationStatusEventsRepositoryTests
         // Act
         var result = await sut.GetOrganisationStatusEvents(0, 1000, 1, CancellationToken.None);
         // Assert
-        Assert.That(result.Count, Is.EqualTo(_events.Count));
-        foreach (var evt in _events)
+        Assert.Multiple(() =>
         {
-            Assert.That(result.Any(r => r.Id == evt.Id && r.Ukprn == evt.Ukprn && r.OrganisationStatus == evt.OrganisationStatus), Is.True);
-        }
+            Assert.That(result, Has.Count.EqualTo(_events.Count));
+            foreach (var evt in _events)
+            {
+                Assert.That(result.Any(r => r.Id == evt.Id && r.Ukprn == evt.Ukprn && r.OrganisationStatus == evt.OrganisationStatus), Is.True);
+            }
+        });
     }
 
     [Test]
@@ -47,9 +50,12 @@ public class OrganisationStatusEventsRepositoryTests
         // Act
         var result = await sut.GetOrganisationStatusEvents(1, 2, 1, CancellationToken.None);
         // Assert
-        Assert.That(result.Count, Is.EqualTo(2));
-        Assert.That(result[0].Id, Is.EqualTo(1));
-        Assert.That(result[1].Id, Is.EqualTo(2));
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Has.Count.EqualTo(2));
+            Assert.That(result[0].Id, Is.EqualTo(1));
+            Assert.That(result[1].Id, Is.EqualTo(2));
+        });
     }
 
     [Test]
@@ -63,7 +69,7 @@ public class OrganisationStatusEventsRepositoryTests
         var result = await sut.GetOrganisationStatusEventsByUkprn(ukprn, CancellationToken.None);
         // Assert
         var expectedEvents = _events.Where(e => e.Ukprn == ukprn).ToList();
-        Assert.That(result.Count, Is.EqualTo(expectedEvents.Count));
+        Assert.That(result, Has.Count.EqualTo(expectedEvents.Count));
         foreach (var evt in expectedEvents)
         {
             Assert.That(result.Any(r => r.Id == evt.Id && r.Ukprn == evt.Ukprn && r.OrganisationStatus == evt.OrganisationStatus), Is.True);
