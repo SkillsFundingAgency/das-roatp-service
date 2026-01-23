@@ -12,7 +12,7 @@ internal class OrganisationStatusEventsRepository(RoatpDataContext _dataContext)
 {
     public async Task<List<OrganisationStatusEvent>> GetOrganisationStatusEvents(int sinceEventId, int pageSize, int pageNumber, CancellationToken cancellationToken)
         => await _dataContext.OrganisationStatusEvents
-            .Where(e => e.Id > sinceEventId)
+            .Where(e => e.Id >= sinceEventId)
             .OrderBy(e => e.Id)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)

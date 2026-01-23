@@ -48,8 +48,8 @@ public class OrganisationStatusEventsRepositoryTests
         var result = await sut.GetOrganisationStatusEvents(1, 2, 1, CancellationToken.None);
         // Assert
         Assert.That(result.Count, Is.EqualTo(2));
-        Assert.That(result[0].Id, Is.EqualTo(2));
-        Assert.That(result[1].Id, Is.EqualTo(3));
+        Assert.That(result[0].Id, Is.EqualTo(1));
+        Assert.That(result[1].Id, Is.EqualTo(2));
     }
 
     [Test]
