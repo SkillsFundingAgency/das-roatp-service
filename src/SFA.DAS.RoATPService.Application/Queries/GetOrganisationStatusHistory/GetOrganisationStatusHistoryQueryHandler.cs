@@ -12,7 +12,7 @@ public class GetOrganisationStatusHistoryQueryHandler(IOrganisationStatusEventsR
 {
     public async Task<GetOrganisationStatusHistoryQueryResult> Handle(GetOrganisationStatusHistoryQuery request, CancellationToken cancellationToken)
     {
-        List<OrganisationStatusEvent> statusEvents = await _repository.GetOrganisationStatusHistory(request.Ukprn, cancellationToken);
+        List<OrganisationStatusEvent> statusEvents = await _repository.GetOrganisationStatusEventsByUkprn(request.Ukprn, cancellationToken);
         var statusHistory = statusEvents.Select(e => new StatusHistoryModel(e.OrganisationStatus, e.CreatedOn));
         return new GetOrganisationStatusHistoryQueryResult(statusHistory);
     }

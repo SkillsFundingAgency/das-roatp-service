@@ -21,7 +21,7 @@ public class GetOrganisationStatusHistoryQueryHandlerTests
         List<OrganisationStatusEvent> statusEvents,
         CancellationToken cancellationToken)
     {
-        repoMock.Setup(List => List.GetOrganisationStatusHistory(query.Ukprn, cancellationToken))
+        repoMock.Setup(List => List.GetOrganisationStatusEventsByUkprn(query.Ukprn, cancellationToken))
             .ReturnsAsync(statusEvents);
 
         var result = await sut.Handle(query, cancellationToken);
