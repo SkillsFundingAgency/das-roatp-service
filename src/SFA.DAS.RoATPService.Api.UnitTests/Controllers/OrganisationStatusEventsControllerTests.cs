@@ -57,6 +57,25 @@ public class OrganisationStatusEventsControllerTests
             cancellationToken), Times.Once);
     }
 
+    [Test, MoqAutoData]
+    public async Task GetAllStatusEvents_InvokesMediator_ReturnsList(
+        [Frozen] Mock<IMediator> mediatorMock,
+        [Greedy] OrganisationStatusEventsController sut,
+        GetOrganisationStatusEventsQueryResult expected,
+        int sinceEventId,
+        int pageSize,
+        int pageNumber,
+        CancellationToken cancellationToken)
+    {
+        mediatorMock
+            .Setup(m => m.Send(It.IsAny<GetOrganisationStatusEventsQuery>(), cancellationToken))
+            .ReturnsAsync(expected);
+
+        IActionResult result = await sut.GetAllStatusEvents(sinceEventId, pageSize, pageNumber, cancellationToken);
+
+        result.As<OkObjectResult>().Value.Should().BeEquivalentTo(expected.Events);
+    }
+
     [MoqInlineAutoData(-1)]
     [MoqInlineAutoData(1001)]
     public async Task GetAllStatusEvents_DefaultsFilters_AndInvokesMediator(

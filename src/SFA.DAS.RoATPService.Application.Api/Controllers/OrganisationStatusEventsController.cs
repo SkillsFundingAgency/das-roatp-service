@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -23,9 +24,19 @@ public class OrganisationStatusEventsController(IMediator _mediator) : Controlle
         return Ok(result);
     }
 
+    /// <summary>
+    /// This endpoint is used by external FCS systems to create provider agreements etc.
+    /// This was reintroduced after deleting as their PROD systems are dependent on this endpoint.
+    /// </summary>
+    /// <param name="sinceEventId"></param>
+    /// <param name="pageSize"></param>
+    /// <param name="pageNumber"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     [HttpGet]
     [Route("status-events")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetOrganisationStatusEventsQueryResult))]
+    [Route("/api/v1/organisation/engagements")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<OrganisationStatusEvent>))]
     public async Task<IActionResult> GetAllStatusEvents([FromQuery] int sinceEventId = 0, [FromQuery] int pageSize = 1000, [FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default)
     {
         sinceEventId = sinceEventId < 0 ? 0 : sinceEventId;
@@ -33,6 +44,6 @@ public class OrganisationStatusEventsController(IMediator _mediator) : Controlle
         pageNumber = pageNumber < 1 ? 1 : pageNumber;
         GetOrganisationStatusEventsQuery query = new(sinceEventId, pageSize, pageNumber);
         GetOrganisationStatusEventsQueryResult result = await _mediator.Send(query, cancellationToken);
-        return Ok(result);
+        return Ok(result.Events);
     }
 }

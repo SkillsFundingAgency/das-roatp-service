@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using SFA.DAS.RoATPService.Domain.Extensions;
 using SFA.DAS.RoATPService.Domain.Repositories;
 using Entities = SFA.DAS.RoATPService.Domain.Entities;
 
@@ -13,6 +14,6 @@ public class GetOrganisationStatusEventsQueryHandler(IOrganisationStatusEventsRe
     public async Task<GetOrganisationStatusEventsQueryResult> Handle(GetOrganisationStatusEventsQuery request, CancellationToken cancellationToken)
     {
         List<Entities.OrganisationStatusEvent> events = await _repository.GetOrganisationStatusEvents(request.SinceEventId, request.PageSize, request.PageNumber, cancellationToken);
-        return new GetOrganisationStatusEventsQueryResult(events.Select(e => new OrganisationStatusEvent(e.Id, e.Ukprn, e.OrganisationStatus, e.CreatedOn)));
+        return new GetOrganisationStatusEventsQueryResult(events.Select(e => new OrganisationStatusEvent(e.Id, e.Ukprn, e.OrganisationStatus.GetDescription(), e.CreatedOn)));
     }
 }

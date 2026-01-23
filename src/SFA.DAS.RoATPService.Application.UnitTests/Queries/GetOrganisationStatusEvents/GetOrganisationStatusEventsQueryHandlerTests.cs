@@ -5,6 +5,7 @@ using AutoFixture.NUnit3;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Queries.GetOrganisationsStatusEvents;
+using SFA.DAS.RoATPService.Domain.Extensions;
 using SFA.DAS.RoATPService.Domain.Repositories;
 using SFA.DAS.Testing.AutoFixture;
 using Entities = SFA.DAS.RoATPService.Domain.Entities;
@@ -35,7 +36,7 @@ public class GetOrganisationStatusEventsQueryHandlerTests
     {
         repoMock.Setup(r => r.GetOrganisationStatusEvents(query.SinceEventId, query.PageSize, query.PageNumber, cancellationToken)).ReturnsAsync(events);
 
-        GetOrganisationStatusEventsQueryResult expected = new(events.ConvertAll(e => new OrganisationStatusEvent(e.Id, e.Ukprn, e.OrganisationStatus, e.CreatedOn)));
+        GetOrganisationStatusEventsQueryResult expected = new(events.ConvertAll(e => new OrganisationStatusEvent(e.Id, e.Ukprn, e.OrganisationStatus.GetDescription(), e.CreatedOn)));
 
         GetOrganisationStatusEventsQueryResult actual = await sut.Handle(query, cancellationToken);
         Assert.That(actual.Events, Is.EquivalentTo(expected.Events));
