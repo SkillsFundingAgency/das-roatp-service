@@ -23,9 +23,6 @@
         "sharedBackEndSubnetResourceId": {
             "type": "string"
         },
-        "backEndAccessRestrictions": {
-            "type": "array"
-        },
         "sharedSqlServerName": {
             "type": "string"
         },
@@ -69,6 +66,10 @@
         "sharedManagementResourceGroup": {
             "type": "string"
         },
+        "appServiceAllowedIPs": {
+            "type": "array",
+            "defaultValue": []
+        },
         "utcValue": {
             "type": "string",
             "defaultValue": "[utcNow('yyMMddHHmmss')]"
@@ -90,8 +91,7 @@
             "type": "Microsoft.Resources/resourceGroups",
             "location": "[parameters('resourceGroupLocation')]",
             "tags": "[parameters('tags')]",
-            "properties": {
-            }
+            "properties": {}
         },
         {
             "apiVersion": "2020-06-01",
@@ -189,44 +189,44 @@
                     },
                     "appServiceAppSettings": {
                         "value": {
-                          "array": [
-                              {
-                                  "name": "ConfigurationStorageConnectionString",
-                                  "value": "[parameters('configurationStorageConnectionString')]"
-                              },
-                              {
-                                  "name": "EnvironmentName",
-                                  "value": "[parameters('environmentName')]"
-                              },
-                              {
-                                  "name": "ResourceEnvironmentName",
-                                  "value": "[parameters('resourceEnvironmentName')]"
-                              },
-                              {
-                                  "name": "ConfigNames",
-                                  "value": "[variables('configNames')]"
-                              },
-                              {
-                                  "name": "Version",
-                                  "value": "1.0"
-                              },
-                              {
-                                  "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
-                                  "value": "[reference(concat('api-app-insights-', parameters('utcValue'))).outputs.ConnectionString.value]"
-                              },
-                              {
-                                  "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                                  "value": "[reference(concat('api-app-insights-', parameters('utcValue'))).outputs.InstrumentationKey.value]"
-                              },
-                              {
-                                  "name": "WEBSITE_SWAP_WARMUP_PING_PATH",
-                                  "value": "/health"
-                              },
-                              {
-                                  "name": "WEBSITE_SWAP_WARMUP_PING_STATUSES",
-                                  "value": "200"
-                              }
-                          ]
+                            "array": [
+                                {
+                                    "name": "ConfigurationStorageConnectionString",
+                                    "value": "[parameters('configurationStorageConnectionString')]"
+                                },
+                                {
+                                    "name": "EnvironmentName",
+                                    "value": "[parameters('environmentName')]"
+                                },
+                                {
+                                    "name": "ResourceEnvironmentName",
+                                    "value": "[parameters('resourceEnvironmentName')]"
+                                },
+                                {
+                                    "name": "ConfigNames",
+                                    "value": "[variables('configNames')]"
+                                },
+                                {
+                                    "name": "Version",
+                                    "value": "1.0"
+                                },
+                                {
+                                    "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                                    "value": "[reference(concat('api-app-insights-', parameters('utcValue'))).outputs.ConnectionString.value]"
+                                },
+                                {
+                                    "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                                    "value": "[reference(concat('api-app-insights-', parameters('utcValue'))).outputs.InstrumentationKey.value]"
+                                },
+                                {
+                                    "name": "WEBSITE_SWAP_WARMUP_PING_PATH",
+                                    "value": "/health"
+                                },
+                                {
+                                    "name": "WEBSITE_SWAP_WARMUP_PING_STATUSES",
+                                    "value": "200"
+                                }
+                            ]
                         }
                     },
                     "appServiceConnectionStrings": {
@@ -247,7 +247,7 @@
                         "value": "[reference(concat('app-service-certificate-', parameters('utcValue'))).outputs.certificateThumbprint.value]"
                     },
                     "ipSecurityRestrictions": {
-                        "value": "[parameters('backEndAccessRestrictions')]"
+                        "value": "[parameters('appServiceAllowedIPs')]"
                     }
                 }
             }
