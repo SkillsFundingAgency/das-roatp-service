@@ -1,12 +1,13 @@
-﻿using AutoFixture.NUnit3;
+﻿using System.Threading.Tasks;
+using AutoFixture.NUnit3;
 using FluentValidation.TestHelper;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Commands.UpdateOrganisationCourseTypes;
+using SFA.DAS.RoATPService.Application.Common;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
 using SFA.DAS.Testing.AutoFixture;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.RoATPService.Application.UnitTests.Commands.UpdateOrganisationCourseTypes.UpdateOrganisationCourseTypesCommandValidatorTests;
 
@@ -48,7 +49,7 @@ public class MustHaveValidCourseTypeIds
         string userId)
     {
         UpdateOrganisationCourseTypesCommand command = new(ukprn, [1], userId);
-        courseTypesRepositoryMock.Setup(r => r.GetAllCourseTypes(default)).ReturnsAsync([new CourseType { Id = 1, LearningType = LearningType.ShortCourse }]);
+        courseTypesRepositoryMock.Setup(r => r.GetAllCourseTypes(default)).ReturnsAsync([new CourseType { Id = Constants.CourseTypes.Apprenticeship }]);
 
         var result = await sut.TestValidateAsync(command);
 

@@ -37,8 +37,8 @@ public class OganisationModelTests
     public void ImplicitOperator_MapsAllowedCourseTypesCorrectly(Organisation organisation)
     {
         // Arrange
-        var courseType1 = new CourseType { Id = 1, Name = "Apprenticeship", LearningType = LearningType.Standard };
-        var courseType2 = new CourseType { Id = 2, Name = "ApprenticeshipUnit", LearningType = LearningType.ShortCourse };
+        var courseType1 = new CourseType { Id = Constants.CourseTypes.Apprenticeship, Name = "Apprenticeship" };
+        var courseType2 = new CourseType { Id = Constants.CourseTypes.ShortCourse, Name = "ApprenticeshipUnit" };
 
         var orgCourseType1 = new OrganisationCourseType { CourseType = courseType1 };
         var orgCourseType2 = new OrganisationCourseType { CourseType = courseType2 };
@@ -54,11 +54,9 @@ public class OganisationModelTests
 
         Assert.That(allowedCourseTypes[0].CourseTypeId, Is.EqualTo(courseType1.Id));
         Assert.That(allowedCourseTypes[0].CourseTypeName, Is.EqualTo(courseType1.Name));
-        Assert.That(allowedCourseTypes[0].LearningType, Is.EqualTo(courseType1.LearningType));
 
         Assert.That(allowedCourseTypes[1].CourseTypeId, Is.EqualTo(courseType2.Id));
         Assert.That(allowedCourseTypes[1].CourseTypeName, Is.EqualTo(courseType2.Name));
-        Assert.That(allowedCourseTypes[1].LearningType, Is.EqualTo(courseType2.LearningType));
     }
 
     [Test, RecursiveMoqAutoData]

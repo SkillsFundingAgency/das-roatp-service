@@ -1,11 +1,12 @@
-﻿using FluentAssertions;
+﻿using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Queries.GetAllCourseTypes;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.Testing.AutoFixture;
-using System.Linq;
 
 namespace SFA.DAS.RoATPService.Application.UnitTests.Queries.GetAllCourseTypes;
+
 public class GetAllCourseTypesResultTests
 {
     [Test, RecursiveMoqAutoData]
@@ -22,6 +23,5 @@ public class GetAllCourseTypesResultTests
         // Assert
         result.Id.Should().Be(courseType.Id);
         result.Name.Should().Be(courseType.Name);
-        result.LearningType.Should().Be(courseType.LearningType);
     }
 }

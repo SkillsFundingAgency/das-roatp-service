@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using SFA.DAS.RoATPService.Application.Common;
 using SFA.DAS.RoATPService.Domain.AuditModels;
 using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.RoATPService.Domain.Repositories;
@@ -56,7 +57,7 @@ internal class OrganisationCourseTypesRepository(RoatpDataContext context) : IOr
         organisation.UpdatedAt = DateTime.UtcNow;
         organisation.UpdatedBy = userId;
 
-        List<OrganisationCourseType> courseTypesToRemove = await context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisation.Id && o.CourseType.LearningType == LearningType.ShortCourse).ToListAsync(cancellationToken);
+        List<OrganisationCourseType> courseTypesToRemove = await context.OrganisationCourseTypes.Where(o => o.OrganisationId == organisation.Id && o.CourseType.Id == Constants.CourseTypes.ShortCourse).ToListAsync(cancellationToken);
 
         context.OrganisationCourseTypes.RemoveRange(courseTypesToRemove);
 
