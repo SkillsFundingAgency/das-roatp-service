@@ -12,7 +12,6 @@ using SFA.DAS.RoATPService.Application.Api.Filters;
 using SFA.DAS.RoATPService.Application.Api.Models;
 using SFA.DAS.RoATPService.Application.Commands.PatchOrganisation;
 using SFA.DAS.RoATPService.Application.Commands.UpsertOrganisation;
-using SFA.DAS.RoATPService.Application.Common;
 using SFA.DAS.RoATPService.Application.Common.Models;
 using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
 using SFA.DAS.RoATPService.Application.Queries.GetOrganisation;
@@ -26,13 +25,13 @@ public class OrganisationsController(IMediator _mediator, ILogger<OrganisationsC
 {
     [HttpGet]
     [Route("{ukprn:int}", Name = "GetOrganisationByUkprn")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OrganisationModel))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Application.Common.OrganisationModel))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetOrganisationByUkprn([FromRoute] int ukprn, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Processing Organisations-GetOrganisationByUkprn for UKPRN {Ukprn}", ukprn);
         GetOrganisationQuery query = new(ukprn);
-        OrganisationModel result = await _mediator.Send(query, cancellationToken);
+        Application.Common.OrganisationModel result = await _mediator.Send(query, cancellationToken);
         return result == null ? NotFound() : Ok(result);
     }
 

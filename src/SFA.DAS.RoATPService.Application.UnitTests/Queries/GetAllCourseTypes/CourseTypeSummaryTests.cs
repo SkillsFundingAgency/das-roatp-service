@@ -5,6 +5,7 @@ using SFA.DAS.RoATPService.Domain.Entities;
 using SFA.DAS.Testing.AutoFixture;
 
 namespace SFA.DAS.RoATPService.Application.UnitTests.Queries.GetAllCourseTypes;
+
 public class CourseTypeSummaryTests
 {
     [Test, RecursiveMoqAutoData]
@@ -17,6 +18,5 @@ public class CourseTypeSummaryTests
         // Assert
         result.Id.Should().Be(courseType.Id);
         result.Name.Should().Be(courseType.Name);
-        result.LearningType.Should().Be(courseType.LearningType);
     }
 }

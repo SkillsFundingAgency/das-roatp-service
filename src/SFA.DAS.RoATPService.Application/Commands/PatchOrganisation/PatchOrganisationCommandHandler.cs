@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using SFA.DAS.RoATPService.Application.Common;
 using SFA.DAS.RoATPService.Application.Common.Models;
 using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
 using SFA.DAS.RoATPService.Domain.AuditModels;
@@ -75,7 +76,7 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
         organisation.UpdatedBy = request.UserId;
         organisation.UpdatedAt = DateTime.UtcNow;
 
-        if (isMovingFromMainEmployerToSupporting && organisation.OrganisationCourseTypes.Select(o => o.CourseType.LearningType).Contains(LearningType.ShortCourse))
+        if (isMovingFromMainEmployerToSupporting && organisation.OrganisationCourseTypes.Select(o => o.CourseType.Id).Contains(Constants.CourseTypes.ShortCourse))
         {
             await _organisationCourseTypesRepository.DeleteOrganisationShortCourseTypes(organisation, request.UserId, cancellationToken);
         }

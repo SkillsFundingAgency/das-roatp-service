@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Commands.PatchOrganisation;
+using SFA.DAS.RoATPService.Application.Common;
 using SFA.DAS.RoATPService.Domain.AuditModels;
 using SFA.DAS.RoATPService.Domain.Common;
 using SFA.DAS.RoATPService.Domain.Entities;
@@ -357,8 +358,8 @@ public class PatchOrganisationCommandHandlerTests
         organisation.ProviderType = Domain.Common.ProviderType.Main;
         organisation.OrganisationCourseTypes = new List<OrganisationCourseType>
         {
-            new() { CourseType = new CourseType { Id = (int)LearningType.Standard, IsActive = true, LearningType = LearningType.Standard } },
-            new() { CourseType = new CourseType { Id = (int)LearningType.ShortCourse, IsActive = true, LearningType = LearningType.ShortCourse } }
+            new() { CourseType = new CourseType { Id = Constants.CourseTypes.Apprenticeship, IsActive = true} },
+            new() { CourseType = new CourseType { Id = Constants.CourseTypes.ShortCourse, IsActive = true} }
         };
 
         var patchDoc = new JsonPatchDocument<PatchOrganisationModel>();
@@ -406,7 +407,7 @@ public class PatchOrganisationCommandHandlerTests
         organisation.ProviderType = Domain.Common.ProviderType.Main;
         organisation.OrganisationCourseTypes = new List<OrganisationCourseType>
         {
-            new() { CourseType = new CourseType { Id = (int)LearningType.Standard, IsActive = true, LearningType = LearningType.Standard } }
+            new() { CourseType = new CourseType { Id = Constants.CourseTypes.Apprenticeship, IsActive = true } }
         };
 
         var patchDoc = new JsonPatchDocument<PatchOrganisationModel>();
