@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -28,13 +29,20 @@ public static class AddServiceRegistrationsExtensions
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehaviour<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
+        var ukrlpConfig = configuration.GetSection(nameof(UkrlpApiAuthentication)).Get<UkrlpApiAuthentication>();
+        services.AddSingleton<IOAuthTokenService, OAuthTokenService>();
+        services.AddHttpClient("token-client", c => c.BaseAddress = new Uri(ukrlpConfig.TokenEndpoint));
+        services.AddTransient<BearerTokenHandler>();
+        services.AddHttpClient<IUkrlpService, UkrlpService>(c => c.BaseAddress = new Uri(ukrlpConfig.ApiBaseAddress))
+                .AddHttpMessageHandler<BearerTokenHandler>();
+
         return services;
     }
 
     private static void RegisterConfigurations(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton(configuration.GetSection("RegisterAuditLogSettings").Get<RegisterAuditLogSettings>());
+        services.AddSingleton(configuration.GetSection(nameof(RegisterAuditLogSettings)).Get<RegisterAuditLogSettings>());
 
-        services.AddSingleton(configuration.GetSection("UkrlpApiAuthentication").Get<UkrlpApiAuthentication>());
+        services.AddSingleton(configuration.GetSection(nameof(UkrlpApiAuthentication)).Get<UkrlpApiAuthentication>());
     }
 }
