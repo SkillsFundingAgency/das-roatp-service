@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,8 @@ public class ValuesController(IUkrlpService _ukrlpService) : ControllerBase
     public async Task<ActionResult<Provider>> Get(int count, CancellationToken cancellationToken)
     {
         var ukprns = Enumerable.Range(10000001, count);
-        var provider = await _ukrlpService.GetProviderDataAsync(ukprns, cancellationToken);
-        return Ok(provider);
+        List<UkrlpResponse> apiResponse = await _ukrlpService.GetProviderDataAsync(ukprns, cancellationToken);
+
+        return Ok(new { Providers = apiResponse.SelectMany(c => c.MatchingProviderRecords) });
     }
 }

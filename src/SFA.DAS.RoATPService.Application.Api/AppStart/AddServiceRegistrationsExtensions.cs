@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
+using System.Net.Http;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -34,7 +36,14 @@ public static class AddServiceRegistrationsExtensions
         services.AddHttpClient("token-client", c => c.BaseAddress = new Uri(ukrlpConfig.TokenEndpoint));
         services.AddTransient<BearerTokenHandler>();
         services.AddHttpClient<IUkrlpService, UkrlpService>(c => c.BaseAddress = new Uri(ukrlpConfig.ApiBaseAddress))
-                .AddHttpMessageHandler<BearerTokenHandler>();
+                .AddHttpMessageHandler<BearerTokenHandler>()
+                .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+                {
+                    AutomaticDecompression =
+                        DecompressionMethods.Brotli |
+                        DecompressionMethods.GZip |
+                        DecompressionMethods.Deflate
+                });
 
         return services;
     }

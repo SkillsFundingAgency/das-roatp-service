@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text.Json.Nodes;
+using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -130,10 +132,10 @@ public sealed class BearerTokenHandler(IOAuthTokenService _tokenService, UkrlpAp
         var token = await _tokenService.GetAccessTokenAsync(cancellationToken);
 
         // Set Accept header if not already present
-        //if (!request.Headers.Contains("Accept"))
-        //{
-        //    request.Headers.Add("Accept", "application/x-ndjson");
-        //}
+        if (!request.Headers.Contains("Accept"))
+        {
+            request.Headers.Add("Accept", "application/x-ndjson");
+        }
 
         //// Add other headers only if missing to avoid duplicate header values when retrying
         //if (!request.Headers.Contains("Accept-Encoding"))
@@ -169,21 +171,39 @@ public sealed class BearerTokenHandler(IOAuthTokenService _tokenService, UkrlpAp
 
 public interface IUkrlpService
 {
-    Task<UkrlpResponse> GetProviderDataAsync(IEnumerable<int> ukprn, CancellationToken ct = default);
+    Task<List<UkrlpResponse>> GetProviderDataAsync(IEnumerable<int> ukprn, CancellationToken ct = default);
 }
 
 public class UkrlpService(HttpClient _httpClient) : IUkrlpService
 {
     // Example method to call UKRLP API
-    public async Task<UkrlpResponse> GetProviderDataAsync(IEnumerable<int> ukprn, CancellationToken ct = default)
+    public async Task<List<UkrlpResponse>> GetProviderDataAsync(IEnumerable<int> ukprn, CancellationToken ct = default)
     {
         var ukprns = string.Join("&ukprns=", ukprn);
         var response = await _httpClient.GetAsync($"api/providers?ukprns={ukprns}", ct);
         response.EnsureSuccessStatusCode();
-        var str = await response.Content.ReadFromJsonAsync<JsonObject>(ct);
-        return null;
+        return await ParseNdjsonAsync(response);
+    }
 
-        return await response.Content.ReadFromJsonAsync<UkrlpResponse>(ct);
+    private static async Task<List<UkrlpResponse>> ParseNdjsonAsync(HttpResponseMessage response)
+    {
+        var results = new List<UkrlpResponse>();
+        Console.WriteLine($" Content header is {response.Content.Headers.ContentEncoding}");
+        using var stream = await response.Content.ReadAsStreamAsync();
+        using var reader = new StreamReader(stream, Encoding.UTF8);
+
+        string line;
+        while ((line = await reader.ReadLineAsync()) != null)
+        {
+            if (string.IsNullOrWhiteSpace(line))
+                continue;
+
+            var obj = JsonSerializer.Deserialize<UkrlpResponse>(line);
+            if (obj != null)
+                results.Add(obj);
+        }
+
+        return results;
     }
 }
 
@@ -195,6 +215,9 @@ public class Provider
     public string ProviderStatus { get; set; }
     public DateTime VerificationDate { get; set; }
     public Address LegalAddress { get; set; }
+    public Contact PrimaryContact { get; set; }
 }
 
-public record Address(string Address1, string Address2, string Address3, string Address4, string Town, string City, string PostCode);
+public record Address(string Address1, string Address2, string Address3, string Address4, string Town, string County, string PostCode);
+
+public record Contact(string ContactTelephone1, string ContactTelephone2, string ContactEmail, string Url);
