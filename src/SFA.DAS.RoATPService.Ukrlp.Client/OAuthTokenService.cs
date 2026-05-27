@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -66,7 +61,7 @@ public sealed class OAuthTokenService : IOAuthTokenService
         try
         {
             _logger.LogInformation("Fetching new token for Ukrlp Api");
-            using var client = _httpClientFactory.CreateClient("token-client");
+            using var client = _httpClientFactory.CreateClient(Constants.TokenClientName);
 
             var body = new FormUrlEncodedContent(new Dictionary<string, string>
             {
@@ -123,101 +118,3 @@ public record TokenResponse(
     [property: JsonPropertyName("expires_in")] int ExpiresIn,
     [property: JsonPropertyName("token_type")] string TokenType
 );
-
-public sealed class BearerTokenHandler(IOAuthTokenService _tokenService, UkrlpApiAuthentication _options) : DelegatingHandler
-{
-    protected override async Task<HttpResponseMessage> SendAsync(
-        HttpRequestMessage request, CancellationToken cancellationToken)
-    {
-        var token = await _tokenService.GetAccessTokenAsync(cancellationToken);
-
-        // Set Accept header if not already present
-        if (!request.Headers.Contains("Accept"))
-        {
-            request.Headers.Add("Accept", "application/x-ndjson");
-        }
-
-        //// Add other headers only if missing to avoid duplicate header values when retrying
-        //if (!request.Headers.Contains("Accept-Encoding"))
-        //{
-        //    request.Headers.TryAddWithoutValidation("Accept-Encoding", "gzip, deflate, br");
-        //}
-
-        if (!request.Headers.Contains("Ocp-Apim-Subscription-Key"))
-        {
-            request.Headers.TryAddWithoutValidation("Ocp-Apim-Subscription-Key", _options.SubscriptionKey);
-        }
-
-        // Always set/overwrite Authorization header
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-        var response = await base.SendAsync(request, cancellationToken);
-
-        // If 401, invalidate cache and retry once with a fresh token
-        if (response.StatusCode == HttpStatusCode.Unauthorized)
-        {
-            response.Dispose();
-
-            _tokenService.InvalidateAccessToken();
-
-            token = await _tokenService.GetAccessTokenAsync(cancellationToken);
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            response = await base.SendAsync(request, cancellationToken);
-        }
-
-        return response;
-    }
-}
-
-public interface IUkrlpService
-{
-    Task<List<UkrlpResponse>> GetProviderDataAsync(IEnumerable<int> ukprn, CancellationToken ct = default);
-}
-
-public class UkrlpService(HttpClient _httpClient) : IUkrlpService
-{
-    // Example method to call UKRLP API
-    public async Task<List<UkrlpResponse>> GetProviderDataAsync(IEnumerable<int> ukprn, CancellationToken ct = default)
-    {
-        var ukprns = string.Join("&ukprns=", ukprn);
-        var response = await _httpClient.GetAsync($"api/providers?ukprns={ukprns}", ct);
-        response.EnsureSuccessStatusCode();
-        return await ParseNdjsonAsync(response);
-    }
-
-    private static async Task<List<UkrlpResponse>> ParseNdjsonAsync(HttpResponseMessage response)
-    {
-        var results = new List<UkrlpResponse>();
-        Console.WriteLine($" Content header is {response.Content.Headers.ContentEncoding}");
-        using var stream = await response.Content.ReadAsStreamAsync();
-        using var reader = new StreamReader(stream, Encoding.UTF8);
-
-        string line;
-        while ((line = await reader.ReadLineAsync()) != null)
-        {
-            if (string.IsNullOrWhiteSpace(line))
-                continue;
-
-            var obj = JsonSerializer.Deserialize<UkrlpResponse>(line);
-            if (obj != null)
-                results.Add(obj);
-        }
-
-        return results;
-    }
-}
-
-public record UkrlpResponse(IEnumerable<Provider> MatchingProviderRecords);
-public class Provider
-{
-    public string UKPRN { get; set; }
-    public string ProviderName { get; set; }
-    public string ProviderStatus { get; set; }
-    public DateTime VerificationDate { get; set; }
-    public Address LegalAddress { get; set; }
-    public Contact PrimaryContact { get; set; }
-}
-
-public record Address(string Address1, string Address2, string Address3, string Address4, string Town, string County, string PostCode);
-
-public record Contact(string ContactTelephone1, string ContactTelephone2, string ContactEmail, string Url);

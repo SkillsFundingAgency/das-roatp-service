@@ -1,71 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Polly;
-using Polly.Retry;
-using SFA.DAS.RoATPService.Ukrlp.Client.Interfaces;
-using SFA.DAS.RoATPService.Ukrlp.Client.Models;
+using SFA.DAS.RoATPService.Application.Api.Models;
+using SFA.DAS.RoATPService.Ukrlp.Client;
 
 namespace SFA.DAS.RoATPService.Application.Api.Controllers;
 
 [ApiController]
 [Route("organisations")]
 [Tags("Ukrlp-Lookup")]
-public class UkrlpLookupController : ControllerBase
+public class UkrlpLookupController(IUkrlpService _ukrlpService) : ControllerBase
 {
-    private readonly ILogger<UkrlpLookupController> _logger;
-
-    private readonly IUkrlpApiClient _apiClient;
-
-    private readonly AsyncRetryPolicy _retryPolicy;
-
-    public UkrlpLookupController(ILogger<UkrlpLookupController> logger, IUkrlpApiClient apiClient)
-    {
-        _logger = logger;
-        _apiClient = apiClient;
-        _retryPolicy = GetRetryPolicy();
-    }
-
     [HttpGet]
-    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UkprnLookupResponse))]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UkrlpLookupModel))]
     [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
     [Route("{ukprn}/ukrlp-data")]
-    public async Task<IActionResult> UkrlpLookup(int ukprn)
+    public async Task<IActionResult> UkrlpLookup(int ukprn, CancellationToken cancellationToken)
     {
-        UkprnLookupResponse providerData;
+        var request = new UkrlpRequest(null, [ukprn]);
 
-        try
-        {
-            providerData = await _retryPolicy.ExecuteAsync(context => _apiClient.GetTrainingProviderByUkprn(ukprn), new Context());
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Unable to retrieve results from UKRLP");
-            providerData = new UkprnLookupResponse
-            {
-                Success = false,
-                Results = new List<ProviderDetails>()
-            };
-        }
-        return Ok(providerData);
-    }
+        UkrlpResponse response = await _ukrlpService.GetProviderDataAsync(request, cancellationToken);
 
-    private AsyncRetryPolicy GetRetryPolicy()
-    {
-        return Policy
-            .Handle<Exception>()
-            .WaitAndRetryAsync(new[]
-            {
-                TimeSpan.FromSeconds(1),
-                TimeSpan.FromSeconds(2),
-                TimeSpan.FromSeconds(4)
-            }, (exception, timeSpan, retryCount, context) =>
-            {
-                _logger.LogWarning("Error retrieving response from UKRLP. Reason: {ErrorMessage}. Retrying in {Seconds} secs...attempt: {RetryCount}", exception.Message, timeSpan.Seconds, retryCount);
-            });
+        return Ok(new UkrlpLookupModel(response.Success, response.Providers.Select(p => (ProviderDetails)p)));
     }
 }
