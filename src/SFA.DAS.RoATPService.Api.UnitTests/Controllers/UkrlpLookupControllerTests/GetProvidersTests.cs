@@ -24,8 +24,8 @@ public class GetProvidersTests
         provider.UKPRN = "10012001";
         ProviderModel expected = provider;
         mockService
-            .Setup(s => s.GetProviderDataAsync(It.IsAny<UkrlpRequest>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new UkrlpResponse(true, [provider]));
+            .Setup(s => s.GetProviderDataAsync(It.IsAny<UkrlpQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new UkrlpQueryResult(true, [provider]));
 
         var result = await sut.GetProviders([int.Parse(provider.UKPRN)], null, CancellationToken.None);
 
@@ -38,8 +38,8 @@ public class GetProvidersTests
         [Greedy] UkrlpLookupController sut)
     {
         mockService
-            .Setup(s => s.GetProviderDataAsync(It.IsAny<UkrlpRequest>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new UkrlpResponse(false, []));
+            .Setup(s => s.GetProviderDataAsync(It.IsAny<UkrlpQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new UkrlpQueryResult(false, []));
         var result = await sut.GetProviders([10012001], null, CancellationToken.None);
         result.As<ObjectResult>().StatusCode.Should().Be(500);
         result.As<ObjectResult>().Value.As<IDictionary<string, string>>().Should().ContainKey("Error").WhoseValue.Should().Be("Failed to retrieve provider data from UKRLP service");

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using AutoFixture.NUnit3;
+using FluentAssertions;
 using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Api.Models;
 
@@ -31,8 +32,8 @@ public class ProviderDetailsTests
         Assert.Multiple(() =>
         {
             Assert.That(sut.ContactType, Is.EqualTo("L"), "Only legal contact is available now");
-            Assert.That(sut.ContactAddress, Is.EqualTo((ContactAddress)(expectedProviderContact.LegalAddress)));
-            Assert.That(sut.ContactPersonalDetails, Is.EqualTo((ContactPersonalDetails)(expectedProviderContact.PrimaryContact.ContactPersonalDetails)));
+            sut.ContactAddress.Should().BeEquivalentTo(expectedProviderContact.LegalAddress, options => options.ExcludingMissingMembers());
+            sut.ContactPersonalDetails.Should().BeEquivalentTo(expectedProviderContact.PrimaryContact.ContactPersonalDetails);
             Assert.That(sut.ContactRole, Is.EqualTo(expectedProviderContact.PrimaryContact.ContactRole));
             Assert.That(sut.ContactTelephone1, Is.EqualTo(expectedProviderContact.PrimaryContact.ContactTelephone1));
             Assert.That(sut.ContactTelephone2, Is.EqualTo(expectedProviderContact.PrimaryContact.ContactTelephone2));

@@ -3,4 +3,4 @@ using System.Collections.Generic;
 
 namespace SFA.DAS.RoATPService.Ukrlp.Client;
 
-public record UkrlpRequest(DateTime? UpdatedSinceDate, IEnumerable<int> Ukprns);
+public record UkrlpQuery(DateTime? UpdatedSinceDate, IEnumerable<int> Ukprns);

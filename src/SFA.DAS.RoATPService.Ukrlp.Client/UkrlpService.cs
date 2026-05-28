@@ -11,12 +11,12 @@ namespace SFA.DAS.RoATPService.Ukrlp.Client;
 
 public interface IUkrlpService
 {
-    Task<UkrlpResponse> GetProviderDataAsync(UkrlpRequest request, CancellationToken cancellationToken = default);
+    Task<UkrlpQueryResult> GetProviderDataAsync(UkrlpQuery request, CancellationToken cancellationToken = default);
 }
 
 public class UkrlpService(HttpClient _httpClient) : IUkrlpService
 {
-    public async Task<UkrlpResponse> GetProviderDataAsync(UkrlpRequest request, CancellationToken cancellationToken = default)
+    public async Task<UkrlpQueryResult> GetProviderDataAsync(UkrlpQuery request, CancellationToken cancellationToken = default)
     {
         var queryParamsList = new List<string>();
         queryParamsList.AddRange(request.Ukprns.Select(ukprn => $"ukprns={ukprn}"));
@@ -26,15 +26,15 @@ public class UkrlpService(HttpClient _httpClient) : IUkrlpService
         }
         var queryParams = string.Join("&", queryParamsList);
         var response = await _httpClient.GetAsync($"api/providers?{queryParams}", cancellationToken);
-        if (!response.IsSuccessStatusCode) return new UkrlpResponse(false, []);
+        if (!response.IsSuccessStatusCode) return new UkrlpQueryResult(false, []);
 
-        List<MatchingProviders> matchingProviders = await ParseNdjsonAsync(response, cancellationToken);
-        return new UkrlpResponse(true, matchingProviders.SelectMany(c => c.MatchingProviderRecords));
+        List<UkrlpResponse> matchingProviders = await ParseNdjsonAsync(response, cancellationToken);
+        return new UkrlpQueryResult(true, matchingProviders.SelectMany(c => c.MatchingProviderRecords));
     }
 
-    private static async Task<List<MatchingProviders>> ParseNdjsonAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+    private static async Task<List<UkrlpResponse>> ParseNdjsonAsync(HttpResponseMessage response, CancellationToken cancellationToken)
     {
-        var results = new List<MatchingProviders>();
+        var results = new List<UkrlpResponse>();
         using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
         using var reader = new StreamReader(stream, Encoding.UTF8);
 
@@ -44,7 +44,7 @@ public class UkrlpService(HttpClient _httpClient) : IUkrlpService
             if (string.IsNullOrWhiteSpace(line))
                 continue;
 
-            var obj = JsonSerializer.Deserialize<MatchingProviders>(line);
+            var obj = JsonSerializer.Deserialize<UkrlpResponse>(line);
             if (obj != null)
                 results.Add(obj);
         }

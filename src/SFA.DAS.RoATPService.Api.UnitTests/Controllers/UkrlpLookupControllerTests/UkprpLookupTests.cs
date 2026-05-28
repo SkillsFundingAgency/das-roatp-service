@@ -18,13 +18,13 @@ public class UkprpLookupTests
     [Test, MoqAutoData]
     public async Task When_Calling_UkrlpLookup_Invokes_UkrlpService_Returns_Ok(
         int ukprn,
-        UkrlpResponse ukrlpResponse,
+        UkrlpQueryResult ukrlpResponse,
         [Frozen] Mock<IUkrlpService> mockService,
         [Greedy] UkrlpLookupController sut,
         CancellationToken cancellationToken)
     {
         mockService
-            .Setup(service => service.GetProviderDataAsync(It.IsAny<UkrlpRequest>(), cancellationToken))
+            .Setup(service => service.GetProviderDataAsync(It.IsAny<UkrlpQuery>(), cancellationToken))
             .ReturnsAsync(ukrlpResponse);
 
         var result = await sut.UkrlpLookup(ukprn, cancellationToken);
@@ -32,7 +32,7 @@ public class UkprpLookupTests
         result.As<OkObjectResult>().Should().NotBeNull();
         var actualResult = result.As<OkObjectResult>().Value.As<UkrlpLookupModel>();
         actualResult.Success.Should().Be(ukrlpResponse.Success);
-        mockService.Verify(service => service.GetProviderDataAsync(It.Is<UkrlpRequest>(r => r.Ukprns.Contains(ukprn)), cancellationToken), Times.Once);
+        mockService.Verify(service => service.GetProviderDataAsync(It.Is<UkrlpQuery>(r => r.Ukprns.Contains(ukprn)), cancellationToken), Times.Once);
     }
 
     [Test, MoqAutoData]
@@ -43,11 +43,11 @@ public class UkprpLookupTests
             [Greedy] UkrlpLookupController sut,
             CancellationToken cancellationToken)
     {
-        UkrlpResponse ukrlpResponse = new(true, [provider]);
+        UkrlpQueryResult ukrlpResponse = new(true, [provider]);
         ProviderDetails expected = provider;
 
         mockService
-            .Setup(service => service.GetProviderDataAsync(It.IsAny<UkrlpRequest>(), cancellationToken))
+            .Setup(service => service.GetProviderDataAsync(It.IsAny<UkrlpQuery>(), cancellationToken))
             .ReturnsAsync(ukrlpResponse);
 
         var result = await sut.UkrlpLookup(ukprn, cancellationToken);

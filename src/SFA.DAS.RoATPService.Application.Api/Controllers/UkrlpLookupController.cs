@@ -30,9 +30,9 @@ public class UkrlpLookupController(IUkrlpService _ukrlpService) : ControllerBase
     [Route("organisations/{ukprn}/ukrlp-data")]
     public async Task<IActionResult> UkrlpLookup(int ukprn, CancellationToken cancellationToken)
     {
-        var request = new UkrlpRequest(null, [ukprn]);
+        var request = new UkrlpQuery(null, [ukprn]);
 
-        UkrlpResponse response = await _ukrlpService.GetProviderDataAsync(request, cancellationToken);
+        UkrlpQueryResult response = await _ukrlpService.GetProviderDataAsync(request, cancellationToken);
 
         return Ok(new UkrlpLookupModel(response.Success, response.Providers.Select(p => (ProviderDetails)p)));
     }
@@ -43,7 +43,7 @@ public class UkrlpLookupController(IUkrlpService _ukrlpService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(IDictionary<string, string>))]
     public async Task<IActionResult> GetProviders([FromQuery] int[] ukprns, [FromQuery] DateTime? updatedSince, CancellationToken cancellationToken)
     {
-        UkrlpResponse apiResponse = await _ukrlpService.GetProviderDataAsync(new UkrlpRequest(updatedSince, ukprns), cancellationToken);
+        UkrlpQueryResult apiResponse = await _ukrlpService.GetProviderDataAsync(new UkrlpQuery(updatedSince, ukprns), cancellationToken);
         if (!apiResponse.Success) return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "Error", "Failed to retrieve provider data from UKRLP service" } });
         return Ok(new UkrlpProvidersModel(apiResponse.Providers.Select(p => (ProviderModel)p)));
     }

@@ -4,6 +4,11 @@ using System.Linq;
 
 namespace SFA.DAS.RoATPService.Application.Api.Models;
 
+/// <summary>
+/// Old model used for the UkrlpLookup endpoint which is being deprecated.
+/// </summary>
+/// <param name="Success"></param>
+/// <param name="Results"></param>
 public record UkrlpLookupModel(bool Success, IEnumerable<ProviderDetails> Results);
 
 public class ProviderDetails
@@ -47,8 +52,7 @@ public class ProviderContact
     public DateTime? LastUpdated { get; set; }
 
     public static implicit operator ProviderContact(Ukrlp.Client.Provider source)
-    {
-        ProviderContact target = new()
+        => new()
         {
             ContactType = "L",
             ContactAddress = source.LegalAddress,
@@ -60,8 +64,6 @@ public class ProviderContact
             ContactEmail = source.PrimaryContact.ContactEmail,
             LastUpdated = source.PrimaryContact.LastUpdated
         };
-        return target;
-    }
 }
 
 public class ProviderAlias
@@ -70,13 +72,10 @@ public class ProviderAlias
     [Obsolete("This information is not included in the new Ukrlp Api response")]
     public DateTime? LastUpdated => null;
     public static implicit operator ProviderAlias(Ukrlp.Client.ProviderAlias source)
-    {
-        ProviderAlias target = new()
+        => new()
         {
             Alias = source.Name
         };
-        return target;
-    }
 }
 
 public class ContactAddress
@@ -88,8 +87,7 @@ public class ContactAddress
     public string Town { get; set; }
     public string PostCode { get; set; }
     public static implicit operator ContactAddress(Ukrlp.Client.Address source)
-    {
-        ContactAddress target = new()
+        => new()
         {
             Address1 = string.IsNullOrWhiteSpace(source.Address1) ? null : source.Address1,
             Address2 = string.IsNullOrWhiteSpace(source.Address2) ? null : source.Address2,
@@ -98,8 +96,6 @@ public class ContactAddress
             Town = string.IsNullOrWhiteSpace(source.Town) ? null : source.Town,
             PostCode = string.IsNullOrWhiteSpace(source.PostCode) ? null : source.PostCode
         };
-        return target;
-    }
 }
 
 public class ContactPersonalDetails
@@ -111,15 +107,12 @@ public class ContactPersonalDetails
     public string PersonNameSuffix => null;
 
     public static implicit operator ContactPersonalDetails(Ukrlp.Client.ContactPerson source)
-    {
-        ContactPersonalDetails target = new()
+        => new()
         {
             PersonNameTitle = string.IsNullOrWhiteSpace(source.PersonNameTitle) ? null : source.PersonNameTitle,
             PersonGivenName = string.IsNullOrWhiteSpace(source.PersonGivenName) ? null : source.PersonGivenName,
             PersonFamilyName = string.IsNullOrWhiteSpace(source.PersonFamilyName) ? null : source.PersonFamilyName
         };
-        return target;
-    }
 }
 
 public class VerificationDetails
@@ -129,13 +122,10 @@ public class VerificationDetails
     public bool PrimaryVerificationSource { get; set; }
 
     public static implicit operator VerificationDetails(Ukrlp.Client.VerificationInfo source)
-    {
-        VerificationDetails target = new()
+        => new()
         {
             VerificationAuthority = string.IsNullOrWhiteSpace(source.VerificationAuthority) ? null : source.VerificationAuthority,
             VerificationId = string.IsNullOrWhiteSpace(source.VerificationId) ? null : source.VerificationId,
             //PrimaryVerificationSource = source.PrimaryVerificationSource
         };
-        return target;
-    }
 }
