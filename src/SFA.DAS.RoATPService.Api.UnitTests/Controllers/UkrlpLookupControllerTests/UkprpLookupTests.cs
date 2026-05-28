@@ -11,9 +11,9 @@ using SFA.DAS.RoATPService.Application.Api.Models;
 using SFA.DAS.RoATPService.Ukrlp.Client;
 using SFA.DAS.Testing.AutoFixture;
 
-namespace SFA.DAS.RoATPService.Api.UnitTests.Controllers;
+namespace SFA.DAS.RoATPService.Api.UnitTests.Controllers.UkrlpLookupControllerTests;
 
-public class UkrlpLookupControllerTests
+public class UkprpLookupTests
 {
     [Test, MoqAutoData]
     public async Task When_Calling_UkrlpLookup_Invokes_UkrlpService_Returns_Ok(
