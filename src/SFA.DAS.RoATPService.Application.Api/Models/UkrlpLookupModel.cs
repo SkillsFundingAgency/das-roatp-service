@@ -126,6 +126,6 @@ public class VerificationDetails
         {
             VerificationAuthority = string.IsNullOrWhiteSpace(source.VerificationAuthority) ? null : source.VerificationAuthority,
             VerificationId = string.IsNullOrWhiteSpace(source.VerificationId) ? null : source.VerificationId,
-            //PrimaryVerificationSource = source.PrimaryVerificationSource
+            PrimaryVerificationSource = source.PrimaryVerificationSource
         };
 }

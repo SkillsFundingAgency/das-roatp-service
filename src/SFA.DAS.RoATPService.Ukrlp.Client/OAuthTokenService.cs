@@ -11,14 +11,14 @@ namespace SFA.DAS.RoATPService.Ukrlp.Client;
 
 public interface IOAuthTokenService
 {
-    Task<string> GetAccessTokenAsync(CancellationToken ct = default);
+    Task<string> GetAccessTokenAsync(CancellationToken cancellationToken = default);
     void InvalidateAccessToken();
 }
 
 public sealed class OAuthTokenService : IOAuthTokenService
 {
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly UkrlpApiAuthentication _options;
+    private readonly UkrlpApiAuthentication _config;
     private string _cachedToken;
     private DateTimeOffset _tokenExpiry = DateTimeOffset.MinValue;
     private Task<string> _tokenTask;
@@ -26,15 +26,15 @@ public sealed class OAuthTokenService : IOAuthTokenService
     private readonly ILogger<OAuthTokenService> _logger;
 
     // Inject IHttpClientFactory instead of HttpClient directly
-    public OAuthTokenService(IHttpClientFactory httpClientFactory, UkrlpApiAuthentication options, ILogger<OAuthTokenService> logger)
+    public OAuthTokenService(IHttpClientFactory httpClientFactory, UkrlpApiAuthentication config, ILogger<OAuthTokenService> logger)
     {
         _httpClientFactory = httpClientFactory;
         _logger = logger;
-        _options = options;
+        _config = config;
     }
 
 
-    public Task<string> GetAccessTokenAsync(CancellationToken ct = default)
+    public Task<string> GetAccessTokenAsync(CancellationToken cancellationToken = default)
     {
         if (_cachedToken is not null && DateTimeOffset.UtcNow < _tokenExpiry)
             return Task.FromResult(_cachedToken);
@@ -56,7 +56,7 @@ public sealed class OAuthTokenService : IOAuthTokenService
         }
     }
 
-    private async Task<string> FetchAndCacheToken(CancellationToken ct)
+    private async Task<string> FetchAndCacheToken(CancellationToken cancellationToken)
     {
         try
         {
@@ -66,15 +66,15 @@ public sealed class OAuthTokenService : IOAuthTokenService
             var body = new FormUrlEncodedContent(new Dictionary<string, string>
             {
                 ["grant_type"] = "client_credentials",
-                ["client_id"] = _options.ClientId,
-                ["client_secret"] = _options.ClientSecret,
-                ["scope"] = _options.Scope,
+                ["client_id"] = _config.ClientId,
+                ["client_secret"] = _config.ClientSecret,
+                ["scope"] = _config.Scope,
             });
 
-            var response = await client.PostAsync(_options.TokenEndpoint, body, ct);
+            var response = await client.PostAsync(_config.TokenEndpoint, body, cancellationToken);
             response.EnsureSuccessStatusCode();
 
-            var tokenResponse = await response.Content.ReadFromJsonAsync<TokenResponse>(ct)
+            var tokenResponse = await response.Content.ReadFromJsonAsync<TokenResponse>(cancellationToken)
                 ?? throw new InvalidOperationException("Empty token response.");
 
             lock (_sync)
