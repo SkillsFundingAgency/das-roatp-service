@@ -33,4 +33,4 @@ public record ContactPerson(string PersonNameTitle, string PersonGivenName, stri
 
 public record ProviderAlias(string Name);
 
-public record VerificationInfo(string VerificationAuthority, string VerificationId, bool PrimaryVerificationSource);
+public record VerificationInfo(string VerificationAuthority, string VerificationID, bool PrimaryVerificationSource);

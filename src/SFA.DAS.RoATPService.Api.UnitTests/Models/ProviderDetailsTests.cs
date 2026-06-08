@@ -60,8 +60,8 @@ public class ProviderDetailsTests
         Assert.Multiple(() =>
         {
             Assert.That(sut.VerificationAuthority, Is.EqualTo(expectedVerificationDetails.VerificationAuthority));
-            Assert.That(sut.VerificationId, Is.EqualTo(expectedVerificationDetails.VerificationId));
-            //Assert.That(sut.PrimaryVerificationSource, Is.EqualTo(expectedVerificationDetails.PrimaryVerificationSource));
+            Assert.That(sut.VerificationId, Is.EqualTo(expectedVerificationDetails.VerificationID));
+            Assert.That(sut.PrimaryVerificationSource, Is.EqualTo(expectedVerificationDetails.PrimaryVerificationSource));
         });
     }
 

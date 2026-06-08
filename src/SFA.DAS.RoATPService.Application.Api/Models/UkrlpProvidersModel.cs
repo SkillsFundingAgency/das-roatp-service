@@ -23,12 +23,12 @@ public class ProviderModel
             LegalName = provider.ProviderName,
             TradingName = provider.ProviderAliases.FirstOrDefault()?.Name,
             ContactDetails = new ProviderContactModel(
-                provider.PrimaryContact.ContactPersonalDetails.PersonNameTitle,
-                provider.PrimaryContact.ContactPersonalDetails.PersonGivenName,
-                provider.PrimaryContact.ContactPersonalDetails.PersonFamilyName,
-                provider.PrimaryContact.ContactEmail,
-                provider.PrimaryContact.ContactTelephone1 ?? provider.PrimaryContact.ContactTelephone2,
-                provider.PrimaryContact.Url),
+                provider.PrimaryContact?.ContactPersonalDetails?.PersonNameTitle,
+                provider.PrimaryContact?.ContactPersonalDetails?.PersonGivenName,
+                provider.PrimaryContact?.ContactPersonalDetails?.PersonFamilyName,
+                provider.PrimaryContact?.ContactEmail,
+                provider.PrimaryContact?.ContactTelephone1 ?? provider.PrimaryContact?.ContactTelephone2,
+                provider.PrimaryContact?.Url),
             Address = provider.LegalAddress,
             VerificationDetails = provider.VerificationDetails
         };
