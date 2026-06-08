@@ -34,6 +34,8 @@ public class UkrlpLookupController(IUkrlpService _ukrlpService) : ControllerBase
 
         UkrlpQueryResult response = await _ukrlpService.GetProviderDataAsync(request, cancellationToken);
 
+        response.Providers.SelectMany(p => p.VerificationDetails).ToList().ForEach(c => c.VerificationAuthority = TransformValidationAuthority(c.VerificationAuthority));
+
         return Ok(new UkrlpLookupModel(response.Success, response.Providers.Select(p => (ProviderDetails)p)));
     }
 
@@ -47,4 +49,20 @@ public class UkrlpLookupController(IUkrlpService _ukrlpService) : ControllerBase
         if (!apiResponse.Success) return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "Error", "Failed to retrieve provider data from UKRLP service" } });
         return Ok(new UkrlpProvidersModel(apiResponse.Providers.Select(p => (ProviderModel)p)));
     }
+
+    private static string TransformValidationAuthority(string validationAuthority)
+        => validationAuthority switch
+        {
+            "ISC" => "Independent Schools Council",
+            "SCC" => "Scottish Executive Education Department",
+            "CHARITY" => "Charity Commission",
+            "URN" => "DfE(Schools Unique Reference Number)",
+            "NII" => "Department of Education in Northern Ireland",
+            "SFA" => "SFA Validated",
+            "SI" => "Government Statute",
+            "COMPANY" => "Companies House",
+            "SOLE" => "Sole Trader or Non-limited Partnership",
+            "DFES" => "DfE(LEA Code and Establishment Number)",
+            _ => "Unknown"
+        };
 }

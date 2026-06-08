@@ -12,7 +12,7 @@ public class ProviderModel
     public string LegalName { get; set; }
     public string TradingName { get; set; }
     public ProviderContactModel ContactDetails { get; set; }
-    public Address Address { get; set; }
+    public Address LegalAddress { get; set; }
     public IEnumerable<VerificationInfo> VerificationDetails { get; set; }
 
     public static implicit operator ProviderModel(Provider provider)
@@ -29,7 +29,7 @@ public class ProviderModel
                 provider.PrimaryContact?.ContactEmail,
                 provider.PrimaryContact?.ContactTelephone1 ?? provider.PrimaryContact?.ContactTelephone2,
                 provider.PrimaryContact?.Url),
-            Address = provider.LegalAddress,
+            LegalAddress = provider.LegalAddress,
             VerificationDetails = provider.VerificationDetails
         };
     }
