@@ -13,7 +13,7 @@ using SFA.DAS.Testing.AutoFixture;
 
 namespace SFA.DAS.RoATPService.Api.UnitTests.Controllers.UkrlpLookupControllerTests;
 
-public class UkprpLookupTests
+public class UkrlpLookupTests
 {
     [Test, MoqAutoData]
     public async Task WhenCallingUkrlpLookup_InvokesUkrlpService_ReturnsOk(

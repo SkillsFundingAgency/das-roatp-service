@@ -19,7 +19,7 @@ public class GetProvidersTests
     public async Task When_Getting_Single_Provider_From_Ukrlp_Returns_Expected_Provider_Details(
         [Frozen] Mock<IUkrlpService> mockService,
         [Greedy] UkrlpLookupController sut,
-        Ukrlp.Client.Provider provider)
+        Provider provider)
     {
         provider.UKPRN = "10012001";
         ProviderModel expected = provider;
