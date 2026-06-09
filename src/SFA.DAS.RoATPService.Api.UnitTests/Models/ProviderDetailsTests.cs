@@ -76,7 +76,7 @@ public class ProviderDetailsTests
             Assert.That(sut.Address3, Is.EqualTo(expectedContactAddress.Address3));
             Assert.That(sut.Address4, Is.EqualTo(expectedContactAddress.Address4));
             Assert.That(sut.Town, Is.EqualTo(expectedContactAddress.Town));
-            Assert.That(sut.PostCode, Is.EqualTo(expectedContactAddress.PostCode));
+            Assert.That(sut.PostCode, Is.EqualTo(expectedContactAddress.Postcode));
         });
     }
 

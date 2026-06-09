@@ -94,7 +94,7 @@ public class ContactAddress
             Address3 = string.IsNullOrWhiteSpace(source?.Address3) ? null : source.Address3,
             Address4 = string.IsNullOrWhiteSpace(source?.Address4) ? null : source.Address4,
             Town = string.IsNullOrWhiteSpace(source?.Town) ? null : source.Town,
-            PostCode = string.IsNullOrWhiteSpace(source?.PostCode) ? null : source.PostCode
+            PostCode = string.IsNullOrWhiteSpace(source?.Postcode) ? null : source.Postcode
         };
 }
 

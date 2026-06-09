@@ -18,7 +18,7 @@ public class Provider
     public IEnumerable<VerificationInfo> VerificationDetails { get; set; } = [];
 }
 
-public record Address(string Address1, string Address2, string Address3, string Address4, string Town, string County, string PostCode);
+public record Address(string Address1, string Address2, string Address3, string Address4, string Town, string County, string Postcode);
 
 public record ProviderContact(
     ContactPerson ContactPersonalDetails,
