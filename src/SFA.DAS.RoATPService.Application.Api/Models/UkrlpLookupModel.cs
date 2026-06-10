@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SFA.DAS.RoATPService.Application.Api.Extensions;
 
 namespace SFA.DAS.RoATPService.Application.Api.Models;
 
@@ -57,11 +58,11 @@ public class ProviderContact
             ContactType = "L",
             ContactAddress = source.LegalAddress,
             ContactPersonalDetails = source.PrimaryContact?.ContactPersonalDetails,
-            ContactRole = string.IsNullOrWhiteSpace(source.PrimaryContact?.ContactRole) ? null : source.PrimaryContact?.ContactRole,
-            ContactTelephone1 = string.IsNullOrWhiteSpace(source.PrimaryContact?.ContactTelephone1) ? null : source.PrimaryContact?.ContactTelephone1,
-            ContactTelephone2 = source.PrimaryContact?.ContactTelephone2,
-            ContactWebsiteAddress = source.PrimaryContact?.Url,
-            ContactEmail = source.PrimaryContact?.ContactEmail,
+            ContactRole = source.PrimaryContact?.ContactRole.NullIfEmpty(),
+            ContactTelephone1 = source.PrimaryContact?.ContactTelephone1.NullIfEmpty(),
+            ContactTelephone2 = source.PrimaryContact?.ContactTelephone2.NullIfEmpty(),
+            ContactWebsiteAddress = source.PrimaryContact?.Url.NullIfEmpty(),
+            ContactEmail = source.PrimaryContact?.ContactEmail.NullIfEmpty(),
             LastUpdated = source.PrimaryContact?.LastUpdated
         };
 }
@@ -89,12 +90,12 @@ public class ContactAddress
     public static implicit operator ContactAddress(Ukrlp.Client.Address source)
         => new()
         {
-            Address1 = string.IsNullOrWhiteSpace(source?.Address1) ? null : source.Address1,
-            Address2 = string.IsNullOrWhiteSpace(source?.Address2) ? null : source.Address2,
-            Address3 = string.IsNullOrWhiteSpace(source?.Address3) ? null : source.Address3,
-            Address4 = string.IsNullOrWhiteSpace(source?.Address4) ? null : source.Address4,
-            Town = string.IsNullOrWhiteSpace(source?.Town) ? null : source.Town,
-            PostCode = string.IsNullOrWhiteSpace(source?.Postcode) ? null : source.Postcode
+            Address1 = source.Address1.NullIfEmpty(),
+            Address2 = source.Address2.NullIfEmpty(),
+            Address3 = source.Address3.NullIfEmpty(),
+            Address4 = source.Address4.NullIfEmpty(),
+            Town = source.Town.NullIfEmpty(),
+            PostCode = source.Postcode.NullIfEmpty()
         };
 }
 
@@ -109,9 +110,9 @@ public class ContactPersonalDetails
     public static implicit operator ContactPersonalDetails(Ukrlp.Client.ContactPerson source)
         => new()
         {
-            PersonNameTitle = string.IsNullOrWhiteSpace(source?.PersonNameTitle) ? null : source.PersonNameTitle,
-            PersonGivenName = string.IsNullOrWhiteSpace(source?.PersonGivenName) ? null : source.PersonGivenName,
-            PersonFamilyName = string.IsNullOrWhiteSpace(source?.PersonFamilyName) ? null : source.PersonFamilyName
+            PersonNameTitle = source.PersonNameTitle.NullIfEmpty(),
+            PersonGivenName = source.PersonGivenName.NullIfEmpty(),
+            PersonFamilyName = source.PersonFamilyName.NullIfEmpty()
         };
 }
 
@@ -124,8 +125,8 @@ public class VerificationDetails
     public static implicit operator VerificationDetails(Ukrlp.Client.VerificationInfo source)
         => new()
         {
-            VerificationAuthority = string.IsNullOrWhiteSpace(source?.VerificationAuthority) ? null : source.VerificationAuthority,
-            VerificationId = string.IsNullOrWhiteSpace(source?.VerificationID) ? null : source.VerificationID,
+            VerificationAuthority = source.VerificationAuthority.NullIfEmpty(),
+            VerificationId = source.VerificationID.NullIfEmpty(),
             PrimaryVerificationSource = source?.PrimaryVerificationSource ?? false
         };
 }
