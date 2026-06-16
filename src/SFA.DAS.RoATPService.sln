@@ -23,7 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.RoATPService.Data.U
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.RoATPService.Ukrlp.Client", "SFA.DAS.RoATPService.Ukrlp.Client\SFA.DAS.RoATPService.Ukrlp.Client.csproj", "{C63E2F50-316A-4DC9-B85C-042B206B90A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.RoATPService.Ukrlp.Client.IntegrationTests", "SFA.DAS.RoATPService.Ukrlp.Client.IntegrationTests\SFA.DAS.RoATPService.Ukrlp.Client.IntegrationTests.csproj", "{785E8F0C-5FA5-46C6-9150-0B45F6E83DD7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.RoATPService.Ukrlp.Client.UnitTests", "SFA.DAS.RoATPService.Ukrlp.Client.UnitTests\SFA.DAS.RoATPService.Ukrlp.Client.UnitTests.csproj", "{785E8F0C-5FA5-46C6-9150-0B45F6E83DD7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

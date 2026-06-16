@@ -8,7 +8,6 @@ using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
 using SFA.DAS.RoATPService.Application.Queries.GetOrganisation;
 using SFA.DAS.RoATPService.Domain.Configuration;
 using SFA.DAS.RoATPService.Ukrlp.Client;
-using SFA.DAS.RoATPService.Ukrlp.Client.Interfaces;
 
 namespace SFA.DAS.RoATPService.Application.Api.AppStart;
 
@@ -21,20 +20,21 @@ public static class AddServiceRegistrationsExtensions
         services.AddMediatR(c => c.RegisterServicesFromAssembly(typeof(GetOrganisationQueryHandler).Assembly));
 
         services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
-        services.AddHttpClient<IUkrlpApiClient, UkrlpApiClient>();
-        services.AddTransient<IUkrlpSoapSerializer, UkrlpSoapSerializer>();
 
         services.AddValidatorsFromAssembly(typeof(ValidationBehavior<,>).Assembly);
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehaviour<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+        var ukrlpConfig = configuration.GetSection(nameof(UkrlpApiAuthentication)).Get<UkrlpApiAuthentication>();
+        services.AddUkrlpClient(ukrlpConfig);
 
         return services;
     }
 
     private static void RegisterConfigurations(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton(configuration.GetSection("RegisterAuditLogSettings").Get<RegisterAuditLogSettings>());
+        services.AddSingleton(configuration.GetSection(nameof(RegisterAuditLogSettings)).Get<RegisterAuditLogSettings>());
 
-        services.AddSingleton(configuration.GetSection("UkrlpApiAuthentication").Get<UkrlpApiAuthentication>());
+        services.AddSingleton(configuration.GetSection(nameof(UkrlpApiAuthentication)).Get<UkrlpApiAuthentication>());
     }
 }

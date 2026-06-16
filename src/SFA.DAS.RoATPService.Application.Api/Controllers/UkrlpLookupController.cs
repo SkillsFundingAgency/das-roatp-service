@@ -1,71 +1,68 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Polly;
-using Polly.Retry;
-using SFA.DAS.RoATPService.Ukrlp.Client.Interfaces;
-using SFA.DAS.RoATPService.Ukrlp.Client.Models;
+using SFA.DAS.RoATPService.Application.Api.Models;
+using SFA.DAS.RoATPService.Ukrlp.Client;
 
 namespace SFA.DAS.RoATPService.Application.Api.Controllers;
 
 [ApiController]
-[Route("organisations")]
+[Route("")]
 [Tags("Ukrlp-Lookup")]
-public class UkrlpLookupController : ControllerBase
+public class UkrlpLookupController(IUkrlpService _ukrlpService) : ControllerBase
 {
-    private readonly ILogger<UkrlpLookupController> _logger;
-
-    private readonly IUkrlpApiClient _apiClient;
-
-    private readonly AsyncRetryPolicy _retryPolicy;
-
-    public UkrlpLookupController(ILogger<UkrlpLookupController> logger, IUkrlpApiClient apiClient)
+    /// <summary>
+    /// This endpoint is consumed by Roatp Apply journies. Ideally we want to move towards using the GetProviders endpoint, 
+    /// but this is a more direct way to get the data we need for the Apply journeys without having to change the code in Apply at this time. 
+    /// </summary>
+    /// <param name="ukprn"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [Obsolete("This endpoint is being deprecated in favour of the GetProviders endpoint.")]
+    [HttpGet]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UkrlpLookupModel))]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
+    [Route("organisations/{ukprn}/ukrlp-data")]
+    public async Task<IActionResult> UkrlpLookup(int ukprn, CancellationToken cancellationToken)
     {
-        _logger = logger;
-        _apiClient = apiClient;
-        _retryPolicy = GetRetryPolicy();
+        var request = new UkrlpQuery(null, [ukprn]);
+
+        UkrlpQueryResult response = await _ukrlpService.GetProviderDataAsync(request, cancellationToken);
+
+        response.Providers.SelectMany(p => p.VerificationDetails).ToList().ForEach(c => c.VerificationAuthority = TransformValidationAuthority(c.VerificationAuthority));
+
+        return Ok(new UkrlpLookupModel(response.Success, response.Providers.Select(p => (ProviderDetails)p)));
     }
 
     [HttpGet]
-    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UkprnLookupResponse))]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
-    [Route("{ukprn}/ukrlp-data")]
-    public async Task<IActionResult> UkrlpLookup(int ukprn)
+    [Route("ukrlp/providers")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UkrlpProvidersModel))]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(IDictionary<string, string>))]
+    public async Task<IActionResult> GetProviders([FromQuery] int[] ukprns, [FromQuery] DateTime? updatedSince, CancellationToken cancellationToken)
     {
-        UkprnLookupResponse providerData;
-
-        try
-        {
-            providerData = await _retryPolicy.ExecuteAsync(context => _apiClient.GetTrainingProviderByUkprn(ukprn), new Context());
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Unable to retrieve results from UKRLP");
-            providerData = new UkprnLookupResponse
-            {
-                Success = false,
-                Results = new List<ProviderDetails>()
-            };
-        }
-        return Ok(providerData);
+        UkrlpQueryResult apiResponse = await _ukrlpService.GetProviderDataAsync(new UkrlpQuery(updatedSince, ukprns), cancellationToken);
+        if (!apiResponse.Success) return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "Error", "Failed to retrieve provider data from UKRLP service" } });
+        return Ok(new UkrlpProvidersModel(apiResponse.Providers.Select(p => (ProviderModel)p)));
     }
 
-    private AsyncRetryPolicy GetRetryPolicy()
-    {
-        return Policy
-            .Handle<Exception>()
-            .WaitAndRetryAsync(new[]
-            {
-                TimeSpan.FromSeconds(1),
-                TimeSpan.FromSeconds(2),
-                TimeSpan.FromSeconds(4)
-            }, (exception, timeSpan, retryCount, context) =>
-            {
-                _logger.LogWarning("Error retrieving response from UKRLP. Reason: {ErrorMessage}. Retrying in {Seconds} secs...attempt: {RetryCount}", exception.Message, timeSpan.Seconds, retryCount);
-            });
-    }
+    private static string TransformValidationAuthority(string validationAuthority)
+        => validationAuthority switch
+        {
+            "ISC" => "Independent Schools Council",
+            "SCC" => "Scottish Executive Education Department",
+            "CHARITY" => "Charity Commission",
+            "URN" => "DfE(Schools Unique Reference Number)",
+            "NII" => "Department of Education in Northern Ireland",
+            "SFA" => "SFA Validated",
+            "SI" => "Government Statute",
+            "COMPANY" => "Companies House",
+            "SOLE" => "Sole Trader or Non-limited Partnership",
+            "DFES" => "DfE(LEA Code and Establishment Number)",
+            _ => "Unknown"
+        };
 }
