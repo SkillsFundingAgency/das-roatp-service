@@ -156,21 +156,28 @@ public class ContactPersonalDetails
     public string PersonNameSuffix { get; set; }
 
     public static implicit operator ContactPersonalDetails(Ukrlp.Client.ContactPerson source)
-        => new()
+    {
+        if (source is null) return null;
+        return new()
         {
             PersonNameTitle = source.PersonNameTitle.NullIfEmpty(),
             PersonGivenName = source.PersonGivenName.NullIfEmpty(),
             PersonFamilyName = source.PersonFamilyName.NullIfEmpty(),
             PersonNameSuffix = null
         };
+    }
+
     public static implicit operator ContactPersonalDetails(ContactPersonalDetailsStructure source)
-        => new()
+    {
+        if (source is null) return null;
+        return new()
         {
             PersonNameTitle = source.PersonNameTitle,
             PersonGivenName = source.PersonGivenName,
             PersonFamilyName = source.PersonFamilyName,
             PersonNameSuffix = source.PersonNameSuffix
         };
+    }
 }
 
 public class VerificationDetails
