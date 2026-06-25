@@ -8,13 +8,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.RoATPService.Application.Api.Models;
 using SFA.DAS.RoATPService.Ukrlp.Client;
+using SFA.DAS.RoATPService.Ukrlp.Client.SoapClient;
+using SFA.DAS.RoATPService.Ukrlp.SoapClient;
 
 namespace SFA.DAS.RoATPService.Application.Api.Controllers;
 
 [ApiController]
 [Route("")]
 [Tags("Ukrlp-Lookup")]
-public class UkrlpLookupController(IUkrlpService _ukrlpService) : ControllerBase
+public class UkrlpLookupController(IUkrlpService _ukrlpService, IUkrlpSoapApiClient _ukrlpSoapApiClient) : ControllerBase
 {
     /// <summary>
     /// This endpoint is consumed by Roatp Apply journies. Ideally we want to move towards using the GetProviders endpoint, 
@@ -26,17 +28,22 @@ public class UkrlpLookupController(IUkrlpService _ukrlpService) : ControllerBase
     [Obsolete("This endpoint is being deprecated in favour of the GetProviders endpoint.")]
     [HttpGet]
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UkrlpLookupModel))]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(IDictionary<string, string>))]
     [Route("organisations/{ukprn}/ukrlp-data")]
     public async Task<IActionResult> UkrlpLookup(int ukprn, CancellationToken cancellationToken)
     {
         var request = new UkrlpQuery(null, [ukprn]);
 
         UkrlpQueryResult response = await _ukrlpService.GetProviderDataAsync(request, cancellationToken);
+        if (response.Providers.Any())
+        {
+            response.Providers.SelectMany(p => p.VerificationDetails).ToList().ForEach(c => c.VerificationAuthority = TransformValidationAuthority(c.VerificationAuthority));
 
-        response.Providers.SelectMany(p => p.VerificationDetails).ToList().ForEach(c => c.VerificationAuthority = TransformValidationAuthority(c.VerificationAuthority));
+            return Ok(new UkrlpLookupModel(response.Success, response.Providers.Select(p => (ProviderDetails)p)));
+        }
 
-        return Ok(new UkrlpLookupModel(response.Success, response.Providers.Select(p => (ProviderDetails)p)));
+        // This is a temporary fallback attempt to get provider details via soap api
+        UkrlpLookupResponse soapResponse = await _ukrlpSoapApiClient.GetTrainingProviderByUkprn(ukprn);
+        return Ok(new UkrlpLookupModel(soapResponse.Success, soapResponse.Results.Select(s => (ProviderDetails)s)));
     }
 
     [HttpGet]
@@ -48,6 +55,32 @@ public class UkrlpLookupController(IUkrlpService _ukrlpService) : ControllerBase
         UkrlpQueryResult apiResponse = await _ukrlpService.GetProviderDataAsync(new UkrlpQuery(updatedSince, ukprns), cancellationToken);
         if (!apiResponse.Success) return StatusCode(StatusCodes.Status500InternalServerError, new Dictionary<string, string> { { "Error", "Failed to retrieve provider data from UKRLP service" } });
         return Ok(new UkrlpProvidersModel(apiResponse.Providers.Select(p => (ProviderModel)p)));
+    }
+
+    [HttpGet]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(ProviderModel))]
+    [Route("ukrlp/providers/{ukprn}")]
+    public async Task<IActionResult> GetProvider(int ukprn, CancellationToken cancellationToken)
+    {
+        var request = new UkrlpQuery(null, [ukprn]);
+
+        UkrlpQueryResult response = await _ukrlpService.GetProviderDataAsync(request, cancellationToken);
+        var provider = response.Providers.FirstOrDefault();
+        if (provider != null)
+        {
+            ProviderModel result = provider;
+            return Ok(result);
+        }
+
+        // This is a temporary fallback attempt to get provider details via soap api
+        UkrlpLookupResponse soapResponse = await _ukrlpSoapApiClient.GetTrainingProviderByUkprn(ukprn);
+        if (soapResponse.Success && soapResponse.Results.Any())
+        {
+            ProviderModel result = soapResponse.Results.First();
+            return Ok(result);
+        }
+
+        return NotFound();
     }
 
     private static string TransformValidationAuthority(string validationAuthority)

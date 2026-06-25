@@ -14,6 +14,7 @@ using SFA.DAS.RoATPService.Application.Api.Extensions;
 using SFA.DAS.RoATPService.Application.Api.Infrastructure;
 using SFA.DAS.RoATPService.Application.AppStart;
 using SFA.DAS.RoATPService.Data.Extensions;
+using SFA.DAS.RoATPService.Ukrlp.Client.SoapClient;
 using SFA.DAS.Telemetry.Startup;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +31,7 @@ builder.Services
     .AddOpenTelemetry(_configuration)
     .AddTelemetryNotFoundAsSuccessfulResponse()
     .AddServiceRegistrations(_configuration)
+    .AddUkrlpSoapService()
     .AddEndpointsApiExplorer()
     .AddSwaggerGen(options =>
     {

@@ -11,6 +11,7 @@ using NUnit.Framework;
 namespace SFA.DAS.RoATPService.Ukrlp.Client.UnitTests;
 
 [TestFixture]
+[NonParallelizable]
 public class OAuthTokenServiceTests
 {
     private Mock<IHttpClientFactory> _mockHttpClientFactory;
@@ -141,9 +142,12 @@ public class OAuthTokenServiceTests
         var token2 = await _sut.GetAccessTokenAsync();
 
         // Assert
-        Assert.That(token1, Is.EqualTo(expiredToken));
-        Assert.That(token2, Is.EqualTo(freshToken));
-        VerifyHttpCallCount(Times.Exactly(2));
+        Assert.Multiple(() =>
+        {
+            Assert.That(token1, Is.EqualTo(expiredToken));
+            Assert.That(token2, Is.EqualTo(freshToken));
+            VerifyHttpCallCount(Times.Exactly(2));
+        });
     }
 
     [Test]
