@@ -27,7 +27,7 @@ public class WhenConvertingFromUkrlpRestApiResponse
         // Action
         ProviderModel sut = source;
 
-        Assert.That(sut.LegalName, Is.EqualTo(source.ProviderName));
+        Assert.That(sut.LegalName, Is.EqualTo(source.ProviderName.ToUpper()));
     }
 
     [Test, AutoData]
@@ -39,7 +39,7 @@ public class WhenConvertingFromUkrlpRestApiResponse
         // Action
         ProviderModel sut = source;
 
-        Assert.That(sut.LegalName, Is.EqualTo(source.ProviderName.Trim()));
+        Assert.That(sut.LegalName, Is.EqualTo(source.ProviderName.Trim().ToUpper()));
     }
 
     [Test, AutoData]

@@ -30,7 +30,7 @@ public class WhenConvertingFromUkrlpSoapApiResponse
         // Action
         ProviderModel sut = source;
 
-        Assert.That(sut.LegalName, Is.EqualTo(source.ProviderName));
+        Assert.That(sut.LegalName, Is.EqualTo(source.ProviderName.ToUpper()));
     }
 
     [Test, AutoData]

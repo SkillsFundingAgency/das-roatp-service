@@ -28,7 +28,7 @@ public class ProviderDetails
         ProviderDetails target = new()
         {
             UKPRN = source.UKPRN,
-            ProviderName = source.ProviderName,
+            ProviderName = source.ProviderName.ToUpper(),
             ProviderStatus = source.ProviderStatus,
             VerificationDate = source.VerificationDate,
             ContactDetails = [(ProviderContact)source],
@@ -44,7 +44,7 @@ public class ProviderDetails
         ProviderDetails target = new()
         {
             UKPRN = source.UnitedKingdomProviderReferenceNumber,
-            ProviderName = source.ProviderName,
+            ProviderName = source.ProviderName.ToUpper(),
             ProviderStatus = source.ProviderStatus,
             ContactDetails = source.ProviderContacts.Select(c => (ProviderContact)c),
             VerificationDate = source.ProviderVerificationDate,

@@ -68,4 +68,25 @@ public class GetProviderTests
         mockService.Verify(service => service.GetProviderDataAsync(It.Is<UkrlpQuery>(r => r.Ukprns.Contains(ukprn)), cancellationToken), Times.Once);
         soapServiceMock.Verify(s => s.GetTrainingProviderByUkprn(It.IsAny<long>()), Times.Once);
     }
+
+    [Test, MoqAutoData]
+    public async Task WhenCallingUkrlpLookup_UkprnNotFound_ReturnsNotFound(
+        int ukprn,
+        [Frozen] Mock<IUkrlpService> mockService,
+        [Frozen] Mock<IUkrlpSoapApiClient> soapServiceMock,
+        [Greedy] UkrlpLookupController sut,
+        CancellationToken cancellationToken)
+    {
+        mockService
+            .Setup(service => service.GetProviderDataAsync(It.IsAny<UkrlpQuery>(), cancellationToken))
+            .ReturnsAsync(new UkrlpQueryResult(true, []));
+
+        soapServiceMock.Setup(s => s.GetTrainingProviderByUkprn(ukprn)).ReturnsAsync(new UkrlpLookupResponse(true, []));
+
+        var result = await sut.GetProvider(ukprn, cancellationToken);
+
+        result.Should().BeOfType<NotFoundResult>();
+        mockService.Verify(service => service.GetProviderDataAsync(It.Is<UkrlpQuery>(r => r.Ukprns.Contains(ukprn)), cancellationToken), Times.Once);
+        soapServiceMock.Verify(s => s.GetTrainingProviderByUkprn(It.IsAny<long>()), Times.Once);
+    }
 }

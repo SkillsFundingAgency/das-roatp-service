@@ -22,7 +22,7 @@ public class ProviderModel
         return new ProviderModel
         {
             Ukprn = int.Parse(provider.UKPRN),
-            LegalName = provider.ProviderName.Trim(),
+            LegalName = provider.ProviderName.Trim().ToUpper(),
             TradingName = provider.ProviderAliases.FirstOrDefault()?.Name.NullIfEmpty(),
             ContactDetails = new ProviderContactModel(
                 provider.PrimaryContact?.ContactPersonalDetails?.PersonNameTitle.NullIfEmpty(),
@@ -54,7 +54,7 @@ public class ProviderModel
         return new ProviderModel()
         {
             Ukprn = int.Parse(source.UnitedKingdomProviderReferenceNumber),
-            LegalName = source.ProviderName,
+            LegalName = source.ProviderName.ToUpper(),
             TradingName = source.ProviderAliases.FirstOrDefault()?.ProviderAlias,
             ContactDetails = new ProviderContactModel(
                 contactSource?.ContactPersonalDetails?.PersonNameTitle,

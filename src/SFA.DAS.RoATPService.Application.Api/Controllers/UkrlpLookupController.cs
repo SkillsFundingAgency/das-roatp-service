@@ -74,7 +74,7 @@ public class UkrlpLookupController(IUkrlpService _ukrlpService, IUkrlpSoapApiCli
 
         // This is a temporary fallback attempt to get provider details via soap api
         UkrlpLookupResponse soapResponse = await _ukrlpSoapApiClient.GetTrainingProviderByUkprn(ukprn);
-        if (soapResponse.Success && soapResponse.Results.Any())
+        if (soapResponse.Success && soapResponse.Results.Count != 0)
         {
             ProviderModel result = soapResponse.Results.First();
             return Ok(result);
