@@ -16,7 +16,7 @@ public class ProviderDetailsTests
         Assert.Multiple(() =>
         {
             Assert.That(sut.UKPRN, Is.EqualTo(expected.UKPRN));
-            Assert.That(sut.ProviderName, Is.EqualTo(expected.ProviderName));
+            Assert.That(sut.ProviderName, Is.EqualTo(expected.ProviderName.ToUpper()));
             Assert.That(sut.ProviderStatus, Is.EqualTo(expected.ProviderStatus));
             Assert.That(sut.VerificationDate, Is.EqualTo(expected.VerificationDate));
             Assert.That(sut.ContactDetails?.Count(), Is.EqualTo(1), "There is only one PrimaryContact in the MatchingProviderRecords, and this is mapped to ContactDetails");

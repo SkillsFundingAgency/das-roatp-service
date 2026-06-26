@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SFA.DAS.RoATPService.Application.Api.Extensions;
+using SFA.DAS.RoATPService.Ukrlp.Client.SoapClient;
 
 namespace SFA.DAS.RoATPService.Application.Api.Models;
 
@@ -27,7 +28,7 @@ public class ProviderDetails
         ProviderDetails target = new()
         {
             UKPRN = source.UKPRN,
-            ProviderName = source.ProviderName,
+            ProviderName = source.ProviderName.ToUpper(),
             ProviderStatus = source.ProviderStatus,
             VerificationDate = source.VerificationDate,
             ContactDetails = [(ProviderContact)source],
@@ -38,6 +39,21 @@ public class ProviderDetails
         return target;
     }
 
+    public static implicit operator ProviderDetails(MatchingProviderRecords source)
+    {
+        ProviderDetails target = new()
+        {
+            UKPRN = source.UnitedKingdomProviderReferenceNumber,
+            ProviderName = source.ProviderName.ToUpper(),
+            ProviderStatus = source.ProviderStatus,
+            ContactDetails = source.ProviderContacts.Select(c => (ProviderContact)c),
+            VerificationDate = source.ProviderVerificationDate,
+            ProviderAliases = source.ProviderAliases.Select(a => (ProviderAlias)a),
+            VerificationDetails = source.VerificationDetails.Select(v => (VerificationDetails)v)
+        };
+
+        return target;
+    }
 }
 
 public class ProviderContact
@@ -58,24 +74,47 @@ public class ProviderContact
             ContactType = "L",
             ContactAddress = source.LegalAddress,
             ContactPersonalDetails = source.PrimaryContact?.ContactPersonalDetails,
-            ContactRole = source.PrimaryContact?.ContactRole.NullIfEmpty(),
-            ContactTelephone1 = source.PrimaryContact?.ContactTelephone1.NullIfEmpty(),
-            ContactTelephone2 = source.PrimaryContact?.ContactTelephone2.NullIfEmpty(),
-            ContactWebsiteAddress = source.PrimaryContact?.Url.NullIfEmpty(),
-            ContactEmail = source.PrimaryContact?.ContactEmail.NullIfEmpty(),
+            ContactRole = source.PrimaryContact?.ContactRole?.NullIfEmpty(),
+            ContactTelephone1 = source.PrimaryContact?.ContactTelephone1?.NullIfEmpty(),
+            ContactTelephone2 = source.PrimaryContact?.ContactTelephone2?.NullIfEmpty(),
+            ContactWebsiteAddress = source.PrimaryContact?.Url?.NullIfEmpty(),
+            ContactEmail = source.PrimaryContact?.ContactEmail?.NullIfEmpty(),
             LastUpdated = source.PrimaryContact?.LastUpdated
         };
+
+    public static implicit operator ProviderContact(ProviderContactStructure source)
+    {
+        ProviderContact target = new()
+        {
+            ContactType = source.ContactType,
+            ContactAddress = source.ContactAddress,
+            ContactPersonalDetails = source.ContactPersonalDetails,
+            ContactRole = source.ContactRole,
+            ContactTelephone1 = source.ContactTelephone1,
+            ContactTelephone2 = source.ContactTelephone2,
+            ContactWebsiteAddress = source.ContactWebsiteAddress,
+            ContactEmail = source.ContactEmail,
+            LastUpdated = source.LastUpdated
+        };
+        return target;
+    }
 }
 
 public class ProviderAlias
 {
     public string Alias { get; set; }
-    [Obsolete("This information is not included in the new Ukrlp Api response")]
-    public DateTime? LastUpdated => null;
+    public DateTime? LastUpdated { get; set; }
     public static implicit operator ProviderAlias(Ukrlp.Client.ProviderAlias source)
         => new()
         {
-            Alias = source.Name
+            Alias = source.Name,
+            LastUpdated = null
+        };
+    public static implicit operator ProviderAlias(ProviderAliasesStructure source)
+        => new()
+        {
+            Alias = source.ProviderAlias,
+            LastUpdated = source.LastUpdated
         };
 }
 
@@ -97,6 +136,16 @@ public class ContactAddress
             Town = source.Town.NullIfEmpty(),
             PostCode = source.Postcode.NullIfEmpty()
         };
+    public static implicit operator ContactAddress(ProviderContactAddress source)
+        => new()
+        {
+            Address1 = source.Address1,
+            Address2 = source.Address2,
+            Address3 = source.Address3,
+            Address4 = source.Address4,
+            Town = source.Town,
+            PostCode = source.PostCode
+        };
 }
 
 public class ContactPersonalDetails
@@ -104,16 +153,31 @@ public class ContactPersonalDetails
     public string PersonNameTitle { get; set; }
     public string PersonGivenName { get; set; }
     public string PersonFamilyName { get; set; }
-    [Obsolete("This information is not included in the new Ukrlp Api response")]
-    public string PersonNameSuffix => null;
+    public string PersonNameSuffix { get; set; }
 
     public static implicit operator ContactPersonalDetails(Ukrlp.Client.ContactPerson source)
-        => new()
+    {
+        if (source is null) return null;
+        return new()
         {
             PersonNameTitle = source.PersonNameTitle.NullIfEmpty(),
             PersonGivenName = source.PersonGivenName.NullIfEmpty(),
-            PersonFamilyName = source.PersonFamilyName.NullIfEmpty()
+            PersonFamilyName = source.PersonFamilyName.NullIfEmpty(),
+            PersonNameSuffix = null
         };
+    }
+
+    public static implicit operator ContactPersonalDetails(ContactPersonalDetailsStructure source)
+    {
+        if (source is null) return null;
+        return new()
+        {
+            PersonNameTitle = source.PersonNameTitle,
+            PersonGivenName = source.PersonGivenName,
+            PersonFamilyName = source.PersonFamilyName,
+            PersonNameSuffix = source.PersonNameSuffix
+        };
+    }
 }
 
 public class VerificationDetails
@@ -128,5 +192,12 @@ public class VerificationDetails
             VerificationAuthority = source.VerificationAuthority.NullIfEmpty(),
             VerificationId = source.VerificationID.NullIfEmpty(),
             PrimaryVerificationSource = source?.PrimaryVerificationSource ?? false
+        };
+    public static implicit operator VerificationDetails(VerificationDetailsStructure source)
+        => new()
+        {
+            VerificationAuthority = source.VerificationAuthority,
+            VerificationId = source.VerificationId,
+            PrimaryVerificationSource = source.PrimaryVerificationSource
         };
 }
