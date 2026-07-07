@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NServiceBus;
+using static SFA.DAS.RoATPService.Application.Api.AppStart.ConfigureNServiceBusExtension;
 
 namespace SFA.DAS.RoATPService.Application.Api.AppStart;
 
@@ -11,8 +12,10 @@ public static class AddNServiceBusExtension
 {
     public static IServiceCollection AddNServiceBus(this IServiceCollection services, IConfiguration configuration)
     {
-        var endpointConfiguration = new EndpointConfiguration("SFA.DAS.RoATPService.Application.Api");
+        var endpointConfiguration = new EndpointConfiguration("SFA.DAS.RoATPService");
+
         var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
+        transport.Transport.SubscriptionRuleNamingConvention = AzureRuleNameShortener.Shorten;
         transport.ConnectionString(configuration["AzureWebJobsServiceBus"]);
         endpointConfiguration.SendOnly();
         endpointConfiguration.UseSerialization<NewtonsoftJsonSerializer>();

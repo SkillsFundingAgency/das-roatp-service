@@ -89,10 +89,13 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
 
         if (patchModel.Status == OrganisationStatus.Removed)
         {
-            ProviderStatusChangedEvent providerStatusChangedEvent = new(organisation.Ukprn, patchModel.Status.GetDescription() ?? patchModel.Status.ToString().ToUpperInvariant());
+            var providerStatusChangedEvent = new ProviderStatusChangedEvent
+            {
+                Ukprn = organisation.Ukprn,
+                Status = patchModel.Status.GetDescription() ?? patchModel.Status.ToString().ToUpperInvariant()
+            };
 
             await _messageSession.Publish(providerStatusChangedEvent, cancellationToken);
-
         }
 
         return new ValidatedResponse<SuccessModel>(new SuccessModel(true));

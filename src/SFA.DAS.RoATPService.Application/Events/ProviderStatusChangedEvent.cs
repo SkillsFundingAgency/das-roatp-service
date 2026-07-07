@@ -1,3 +1,7 @@
 namespace SFA.DAS.RoATPService.Application.Events;
 
-public record ProviderStatusChangedEvent(long ukprn, string status);
+public class ProviderStatusChangedEvent
+{
+    public long Ukprn { get; set; }
+    public string Status { get; set; } = string.Empty;
+}
