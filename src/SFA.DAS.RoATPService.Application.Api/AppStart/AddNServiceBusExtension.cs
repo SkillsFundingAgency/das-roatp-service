@@ -8,7 +8,7 @@ using static SFA.DAS.RoATPService.Application.Api.AppStart.ConfigureNServiceBusE
 namespace SFA.DAS.RoATPService.Application.Api.AppStart;
 
 [ExcludeFromCodeCoverage]
-public static class AddNServiceBusExtension
+public static partial class AddNServiceBusExtension
 {
     public static IServiceCollection AddNServiceBus(this IServiceCollection services, IConfiguration configuration)
     {
@@ -20,12 +20,18 @@ public static class AddNServiceBusExtension
         endpointConfiguration.SendOnly();
         endpointConfiguration.UseSerialization<NewtonsoftJsonSerializer>();
         endpointConfiguration.Conventions()
-            .DefiningCommandsAs(t => Regex.IsMatch(t.Name, "Command(V\\d+)?$"))
-            .DefiningEventsAs(t => Regex.IsMatch(t.Name, "Event(V\\d+)?$"));
+            .DefiningCommandsAs(t => CommandGeneratedRegex().IsMatch(t.Name))
+            .DefiningEventsAs(t => EventGeneratedRegex().IsMatch(t.Name));
 
         var endpointInstance = Endpoint.Start(endpointConfiguration).GetAwaiter().GetResult();
         services.AddSingleton(endpointInstance);
         services.AddSingleton<IMessageSession>(endpointInstance);
         return services;
     }
+
+    [GeneratedRegex("Command(V\\d+)?$")]
+    private static partial Regex CommandGeneratedRegex();
+
+    [GeneratedRegex("Event(V\\d+)?$")]
+    private static partial Regex EventGeneratedRegex();
 }
