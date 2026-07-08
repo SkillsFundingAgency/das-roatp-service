@@ -127,9 +127,9 @@ public class PatchOrganisationCommandHandlerTests
             cancellationToken), Times.Exactly(expectedTimesCalled));
 
         messageSessionMock.Verify(x => x.Publish(
-            It.Is<object>(e => e.GetType() == typeof(ProviderStatusChangedEvent)
-                               && ((ProviderStatusChangedEvent)e).Ukprn == organisation.Ukprn
-                               && ((ProviderStatusChangedEvent)e).Status.Equals(expectedStatus.ToString(), StringComparison.CurrentCultureIgnoreCase)),
+            It.Is<object>(e => e.GetType() == typeof(ProviderRemovedEvent)
+                               && ((ProviderRemovedEvent)e).Ukprn == organisation.Ukprn
+                               && ((ProviderRemovedEvent)e).Status.Equals(expectedStatus.ToString(), StringComparison.CurrentCultureIgnoreCase)),
             It.IsAny<PublishOptions>(),
             cancellationToken), Times.Exactly(neverCalled));
 
