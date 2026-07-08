@@ -11,7 +11,6 @@ using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
 using SFA.DAS.RoATPService.Domain.AuditModels;
 using SFA.DAS.RoATPService.Domain.Common;
 using SFA.DAS.RoATPService.Domain.Entities;
-using SFA.DAS.RoATPService.Domain.Extensions;
 using SFA.DAS.RoATPService.Domain.Repositories;
 using ProviderType = SFA.DAS.RoATPService.Domain.Common.ProviderType;
 
@@ -92,7 +91,7 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
             var providerStatusChangedEvent = new ProviderStatusChangedEvent
             {
                 Ukprn = organisation.Ukprn,
-                Status = patchModel.Status.GetDescription() ?? patchModel.Status.ToString().ToUpperInvariant()
+                Status = patchModel.Status.ToString()
             };
 
             await _messageSession.Publish(providerStatusChangedEvent, cancellationToken);
