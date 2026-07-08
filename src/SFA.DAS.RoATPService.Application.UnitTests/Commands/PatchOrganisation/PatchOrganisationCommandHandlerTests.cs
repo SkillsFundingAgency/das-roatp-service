@@ -129,7 +129,7 @@ public class PatchOrganisationCommandHandlerTests
         messageSessionMock.Verify(x => x.Publish(
             It.Is<object>(e => e.GetType() == typeof(ProviderStatusChangedEvent)
                                && ((ProviderStatusChangedEvent)e).Ukprn == organisation.Ukprn
-                               && ((ProviderStatusChangedEvent)e).Status == expectedStatus.ToString().ToUpper()),
+                               && ((ProviderStatusChangedEvent)e).Status.Equals(expectedStatus.ToString(), StringComparison.CurrentCultureIgnoreCase)),
             It.IsAny<PublishOptions>(),
             cancellationToken), Times.Exactly(neverCalled));
 
