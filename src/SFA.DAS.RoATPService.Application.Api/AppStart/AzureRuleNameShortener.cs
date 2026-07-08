@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace SFA.DAS.RoATPService.Application.Api.AppStart;
-
 
 [ExcludeFromCodeCoverage]
 public static partial class ConfigureNServiceBusExtension
@@ -19,9 +19,10 @@ public static partial class ConfigureNServiceBusExtension
             {
                 return ruleName;
             }
-            var bytes = System.Text.Encoding.Default.GetBytes(ruleName);
-            var hash = MD5.HashData(bytes);
-            var shortenedRuleName = new Guid(hash).ToString();
+
+            var bytes = Encoding.UTF8.GetBytes(ruleName);
+            var hash = SHA256.HashData(bytes);
+            var shortenedRuleName = Convert.ToHexString(hash)[..AzureServiceBusRuleNameMaxLength];
 
             return shortenedRuleName;
         }
