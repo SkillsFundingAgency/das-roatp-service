@@ -18,9 +18,8 @@ public static partial class AddNServiceBusExtension
         transport.Transport.SubscriptionRuleNamingConvention = AzureRuleNameShortener.Shorten;
         transport.ConnectionString(configuration["AzureWebJobsServiceBus"]);
         endpointConfiguration.SendOnly();
-        endpointConfiguration.UseSerialization<NewtonsoftJsonSerializer>();
+        endpointConfiguration.UseSerialization<SystemJsonSerializer>();
         endpointConfiguration.Conventions()
-            .DefiningCommandsAs(t => CommandGeneratedRegex().IsMatch(t.Name))
             .DefiningEventsAs(t => EventGeneratedRegex().IsMatch(t.Name));
 
         var endpointInstance = Endpoint.Start(endpointConfiguration).GetAwaiter().GetResult();
@@ -28,9 +27,6 @@ public static partial class AddNServiceBusExtension
         services.AddSingleton<IMessageSession>(endpointInstance);
         return services;
     }
-
-    [GeneratedRegex("Command(V\\d+)?$")]
-    private static partial Regex CommandGeneratedRegex();
 
     [GeneratedRegex("Event(V\\d+)?$")]
     private static partial Regex EventGeneratedRegex();
