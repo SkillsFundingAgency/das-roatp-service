@@ -74,7 +74,7 @@
       "defaultValue": "[utcNow('yyMMddHHmmss')]"
     },
     "serviceBusConnectionString": {
-      "type": "string"
+      "type": "securestring"
     }
   },
     "variables": {
