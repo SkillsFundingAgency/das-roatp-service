@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using AutoFixture.NUnit3;
 using Microsoft.AspNetCore.JsonPatch;
 using Moq;
+using NServiceBus;
 using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Commands.PatchOrganisation;
 using SFA.DAS.RoATPService.Application.Common;
+using SFA.DAS.RoATPService.Application.Events;
 using SFA.DAS.RoATPService.Domain.AuditModels;
 using SFA.DAS.RoATPService.Domain.Common;
 using SFA.DAS.RoATPService.Domain.Entities;
@@ -76,22 +78,27 @@ public class PatchOrganisationCommandHandlerTests
         Assert.That(actual.Result.IsSuccess, Is.True);
     }
 
-    [Test, RecursiveMoqAutoData]
-    public async Task Handle_UkprnFound_UpdatesOrganisationStatusAndCreatesStatusEvent(
+    [Test]
+    [RecursiveMoqInlineAutoData(OrganisationStatus.OnBoarding, OrganisationStatus.Active, 1, 0)]
+    [RecursiveMoqInlineAutoData(OrganisationStatus.Active, OrganisationStatus.ActiveNoStarts, 1, 0)]
+    public async Task Handle_ValidUkprnWithPatchStatusNotRemoved_UpdatesOrganisationStatusAndDoesNotPublishProviderRemovedEvent(
+        OrganisationStatus currentStatus,
+        OrganisationStatus patchStatus,
+        int expectedTimesCalled,
+        int neverCalled,
         [Frozen] Mock<IOrganisationsRepository> organisationsRepositoryMock,
+        [Frozen] Mock<IMessageSession> messageSessionMock,
         Organisation organisation,
         string userId,
         PatchOrganisationCommandHandler sut,
         CancellationToken cancellationToken)
     {
-        organisation.Status = OrganisationStatus.OnBoarding;
+        organisation.Status = currentStatus;
         organisation.StatusDate = DateTime.UtcNow.AddDays(-10);
         organisation.RemovedReasonId = null;
 
-        var expectedStatus = OrganisationStatus.Active;
-
         var patchDoc = new JsonPatchDocument<PatchOrganisationModel>();
-        patchDoc.Replace(o => o.Status, expectedStatus);
+        patchDoc.Replace(o => o.Status, patchStatus);
 
         PatchOrganisationCommand command = new(organisation.Ukprn, userId, patchDoc);
         organisationsRepositoryMock.Setup(x => x.GetOrganisationByUkprn(command.Ukprn, cancellationToken)).ReturnsAsync(organisation);
@@ -100,7 +107,7 @@ public class PatchOrganisationCommandHandlerTests
 
         organisationsRepositoryMock.Verify(x => x.UpdateOrganisation(
             It.Is<Organisation>(o =>
-                o.Status == expectedStatus &&
+                o.Status == patchStatus &&
                 // below are unchanged
                 o.RemovedReasonId == organisation.RemovedReasonId &&
                 o.ProviderType == organisation.ProviderType &&
@@ -110,13 +117,72 @@ public class PatchOrganisationCommandHandlerTests
             It.Is<Audit>(a =>
                 a.AuditData.FieldChanges.Count == 1
                 && a.AuditData.FieldChanges[0].FieldChanged == AuditLogFields.OrganisationStatus
-                && a.AuditData.FieldChanges[0].PreviousValue == OrganisationStatus.OnBoarding.ToString()
-                && a.AuditData.FieldChanges[0].NewValue == expectedStatus.ToString()
+                && a.AuditData.FieldChanges[0].PreviousValue == currentStatus.ToString()
+                && a.AuditData.FieldChanges[0].NewValue == patchStatus.ToString()
             ),
             It.Is<OrganisationStatusEvent>(e =>
-                e.OrganisationStatus == expectedStatus
+                e.OrganisationStatus == patchStatus
                 && e.Ukprn == organisation.Ukprn
             ),
+            cancellationToken), Times.Exactly(expectedTimesCalled));
+
+        messageSessionMock.Verify(x => x.Publish(
+            It.Is<object>(e => e.GetType() == typeof(ProviderRemovedEvent)
+                               && ((ProviderRemovedEvent)e).Ukprn == organisation.Ukprn),
+            It.IsAny<PublishOptions>(),
+            cancellationToken), Times.Exactly(neverCalled));
+
+        Assert.That(actual.Result.IsSuccess, Is.True);
+    }
+
+    [Test, RecursiveMoqAutoData]
+    public async Task Handle_ValidUkprnWithPatchStatusRemoved_UpdatesOrganisationStatusAndPublishProviderRemovedEvent(
+        [Frozen] Mock<IOrganisationsRepository> organisationsRepositoryMock,
+        [Frozen] Mock<IMessageSession> messageSessionMock,
+        Organisation organisation,
+        string userId,
+        PatchOrganisationCommandHandler sut,
+        CancellationToken cancellationToken)
+    {
+        var currentStatus = OrganisationStatus.Active;
+        var patchStatus = OrganisationStatus.Removed;
+        organisation.Status = currentStatus;
+        organisation.StatusDate = DateTime.UtcNow.AddDays(-10);
+        organisation.RemovedReasonId = 1;
+
+        var patchDoc = new JsonPatchDocument<PatchOrganisationModel>();
+        patchDoc.Replace(o => o.Status, patchStatus);
+
+        PatchOrganisationCommand command = new(organisation.Ukprn, userId, patchDoc);
+        organisationsRepositoryMock.Setup(x => x.GetOrganisationByUkprn(command.Ukprn, cancellationToken)).ReturnsAsync(organisation);
+
+        var actual = await sut.Handle(command, cancellationToken);
+
+        organisationsRepositoryMock.Verify(x => x.UpdateOrganisation(
+            It.Is<Organisation>(o =>
+                o.Status == patchStatus &&
+                // below are unchanged
+                o.RemovedReasonId == organisation.RemovedReasonId &&
+                o.ProviderType == organisation.ProviderType &&
+                o.OrganisationTypeId == organisation.OrganisationTypeId &&
+                organisation.StatusDate.Date == DateTime.UtcNow.Date
+            ),
+            It.Is<Audit>(a =>
+                a.AuditData.FieldChanges.Count == 1
+                && a.AuditData.FieldChanges[0].FieldChanged == AuditLogFields.OrganisationStatus
+                && a.AuditData.FieldChanges[0].PreviousValue == currentStatus.ToString()
+                && a.AuditData.FieldChanges[0].NewValue == patchStatus.ToString()
+            ),
+            It.Is<OrganisationStatusEvent>(e =>
+                e.OrganisationStatus == patchStatus
+                && e.Ukprn == organisation.Ukprn
+            ),
+            cancellationToken), Times.Once);
+
+        messageSessionMock.Verify(x => x.Publish(
+            It.Is<object>(e => e.GetType() == typeof(ProviderRemovedEvent)
+                               && ((ProviderRemovedEvent)e).Ukprn == organisation.Ukprn),
+            It.IsAny<PublishOptions>(),
             cancellationToken), Times.Once);
 
         Assert.That(actual.Result.IsSuccess, Is.True);
@@ -222,6 +288,7 @@ public class PatchOrganisationCommandHandlerTests
     [Test, RecursiveMoqAutoData]
     public async Task Handle_UkprnFound_NoChanges_AvoidsRepositoryCall(
         [Frozen] Mock<IOrganisationsRepository> organisationsRepositoryMock,
+        [Frozen] Mock<IMessageSession> messageSessionMock,
         Organisation organisation,
         string userId,
         PatchOrganisationCommandHandler sut,
@@ -245,6 +312,12 @@ public class PatchOrganisationCommandHandlerTests
             It.IsAny<OrganisationStatusEvent>(),
             It.IsAny<CancellationToken>()),
 
+            Times.Never);
+
+        messageSessionMock.Verify(x => x.Publish(
+            It.IsAny<object>(),
+            It.IsAny<PublishOptions>(),
+            It.IsAny<CancellationToken>()),
             Times.Never);
 
         Assert.That(actual.Result.IsSuccess, Is.True);

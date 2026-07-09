@@ -1,79 +1,82 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json",
     "contentVersion": "1.0.0.0",
-    "parameters": {
-        "serviceName": {
-            "type": "string"
-        },
-        "tags": {
-            "type": "object"
-        },
-        "resourceGroupLocation": {
-            "type": "string"
-        },
-        "resourceEnvironmentName": {
-            "type": "string"
-        },
-        "environmentName": {
-            "type": "string"
-        },
-        "sharedBackendAppServicePlanName": {
-            "type": "string"
-        },
-        "sharedBackEndSubnetResourceId": {
-            "type": "string"
-        },
-        "backEndAccessRestrictions": {
-            "type": "array"
-        },
-        "sharedSqlServerName": {
-            "type": "string"
-        },
-        "sharedEnvResourceGroup": {
-            "type": "string"
-        },
-        "deployPrivateLinkedScopedResource": {
-            "type": "bool"
-        },
-        "elasticPoolName": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "databaseSkuName": {
-            "type": "string",
-            "defaultValue": "S0"
-        },
-        "databaseTier": {
-            "type": "string",
-            "defaultValue": "Standard"
-        },
-        "logAnalyticsWorkspaceName": {
-            "type": "string"
-        },
-        "configurationStorageConnectionString": {
-            "type": "securestring"
-        },
-        "loggingRedisConnectionString": {
-            "type": "securestring"
-        },
-        "apiCustomHostname": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "apiCertificateName": {
-            "type": "string"
-        },
-        "sharedKeyVaultName": {
-            "type": "string"
-        },
-        "sharedManagementResourceGroup": {
-            "type": "string"
-        },
-        "utcValue": {
-            "type": "string",
-            "defaultValue": "[utcNow('yyMMddHHmmss')]"
-        }
+  "parameters": {
+    "serviceName": {
+      "type": "string"
     },
+    "tags": {
+      "type": "object"
+    },
+    "resourceGroupLocation": {
+      "type": "string"
+    },
+    "resourceEnvironmentName": {
+      "type": "string"
+    },
+    "environmentName": {
+      "type": "string"
+    },
+    "sharedBackendAppServicePlanName": {
+      "type": "string"
+    },
+    "sharedBackEndSubnetResourceId": {
+      "type": "string"
+    },
+    "backEndAccessRestrictions": {
+      "type": "array"
+    },
+    "sharedSqlServerName": {
+      "type": "string"
+    },
+    "sharedEnvResourceGroup": {
+      "type": "string"
+    },
+    "deployPrivateLinkedScopedResource": {
+      "type": "bool"
+    },
+    "elasticPoolName": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "databaseSkuName": {
+      "type": "string",
+      "defaultValue": "S0"
+    },
+    "databaseTier": {
+      "type": "string",
+      "defaultValue": "Standard"
+    },
+    "logAnalyticsWorkspaceName": {
+      "type": "string"
+    },
+    "configurationStorageConnectionString": {
+      "type": "securestring"
+    },
+    "loggingRedisConnectionString": {
+      "type": "securestring"
+    },
+    "apiCustomHostname": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "apiCertificateName": {
+      "type": "string"
+    },
+    "sharedKeyVaultName": {
+      "type": "string"
+    },
+    "sharedManagementResourceGroup": {
+      "type": "string"
+    },
+    "utcValue": {
+      "type": "string",
+      "defaultValue": "[utcNow('yyMMddHHmmss')]"
+    },
+    "serviceBusConnectionString": {
+      "type": "securestring"
+    }
+  },
     "variables": {
         "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
         "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'), '-', parameters('serviceName')))]",
@@ -190,42 +193,46 @@
                     "appServiceAppSettings": {
                         "value": {
                           "array": [
-                              {
-                                  "name": "ConfigurationStorageConnectionString",
-                                  "value": "[parameters('configurationStorageConnectionString')]"
-                              },
-                              {
-                                  "name": "EnvironmentName",
-                                  "value": "[parameters('environmentName')]"
-                              },
-                              {
-                                  "name": "ResourceEnvironmentName",
-                                  "value": "[parameters('resourceEnvironmentName')]"
-                              },
-                              {
-                                  "name": "ConfigNames",
-                                  "value": "[variables('configNames')]"
-                              },
-                              {
-                                  "name": "Version",
-                                  "value": "1.0"
-                              },
-                              {
-                                  "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
-                                  "value": "[reference(concat('api-app-insights-', parameters('utcValue'))).outputs.ConnectionString.value]"
-                              },
-                              {
-                                  "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                                  "value": "[reference(concat('api-app-insights-', parameters('utcValue'))).outputs.InstrumentationKey.value]"
-                              },
-                              {
-                                  "name": "WEBSITE_SWAP_WARMUP_PING_PATH",
-                                  "value": "/health"
-                              },
-                              {
-                                  "name": "WEBSITE_SWAP_WARMUP_PING_STATUSES",
-                                  "value": "200"
-                              }
+                            {
+                              "name": "ConfigurationStorageConnectionString",
+                              "value": "[parameters('configurationStorageConnectionString')]"
+                            },
+                            {
+                              "name": "EnvironmentName",
+                              "value": "[parameters('environmentName')]"
+                            },
+                            {
+                              "name": "ResourceEnvironmentName",
+                              "value": "[parameters('resourceEnvironmentName')]"
+                            },
+                            {
+                              "name": "ConfigNames",
+                              "value": "[variables('configNames')]"
+                            },
+                            {
+                              "name": "Version",
+                              "value": "1.0"
+                            },
+                            {
+                              "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                              "value": "[reference(concat('api-app-insights-', parameters('utcValue'))).outputs.ConnectionString.value]"
+                            },
+                            {
+                              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                              "value": "[reference(concat('api-app-insights-', parameters('utcValue'))).outputs.InstrumentationKey.value]"
+                            },
+                            {
+                              "name": "WEBSITE_SWAP_WARMUP_PING_PATH",
+                              "value": "/health"
+                            },
+                            {
+                              "name": "WEBSITE_SWAP_WARMUP_PING_STATUSES",
+                              "value": "200"
+                            },
+                            {
+                              "name": "AzureWebJobsServiceBus",
+                              "value": "[parameters('serviceBusConnectionString')]"
+                            }
                           ]
                         }
                     },

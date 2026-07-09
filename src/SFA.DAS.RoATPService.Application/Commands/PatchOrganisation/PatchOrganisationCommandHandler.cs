@@ -3,8 +3,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using NServiceBus;
 using SFA.DAS.RoATPService.Application.Common;
 using SFA.DAS.RoATPService.Application.Common.Models;
+using SFA.DAS.RoATPService.Application.Events;
 using SFA.DAS.RoATPService.Application.Mediatr.Behaviors;
 using SFA.DAS.RoATPService.Domain.AuditModels;
 using SFA.DAS.RoATPService.Domain.Common;
@@ -14,7 +16,7 @@ using ProviderType = SFA.DAS.RoATPService.Domain.Common.ProviderType;
 
 namespace SFA.DAS.RoATPService.Application.Commands.PatchOrganisation;
 
-public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisationRepository, IOrganisationCourseTypesRepository _organisationCourseTypesRepository) : IRequestHandler<PatchOrganisationCommand, ValidatedResponse<SuccessModel>>
+public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisationRepository, IOrganisationCourseTypesRepository _organisationCourseTypesRepository, IMessageSession _messageSession) : IRequestHandler<PatchOrganisationCommand, ValidatedResponse<SuccessModel>>
 {
     public async Task<ValidatedResponse<SuccessModel>> Handle(PatchOrganisationCommand request, CancellationToken cancellationToken)
     {
@@ -63,6 +65,7 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
             {
                 organisation.StartDate = DateTime.UtcNow;
             }
+
         }
 
         var isMovingFromMainEmployerToSupporting =
@@ -82,6 +85,16 @@ public class PatchOrganisationCommandHandler(IOrganisationsRepository _organisat
         }
 
         await _organisationRepository.UpdateOrganisation(organisation, auditRecord, statusEvent, cancellationToken);
+
+        if (patchModel.Status == OrganisationStatus.Removed)
+        {
+            var providerRemovedEvent = new ProviderRemovedEvent
+            {
+                Ukprn = organisation.Ukprn,
+            };
+
+            await _messageSession.Publish(providerRemovedEvent, cancellationToken);
+        }
 
         return new ValidatedResponse<SuccessModel>(new SuccessModel(true));
     }

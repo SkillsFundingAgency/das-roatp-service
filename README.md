@@ -16,11 +16,13 @@
 - Install [Azure Storage Emulator](https://go.microsoft.com/fwlink/?linkid=717179&clcid=0x409) (Make sure you are on v5.3 or above)
 - Install [Azure Storage Explorer](http://storageexplorer.com/)
 - Administrator Access
+- Access to an Azure Service Bus namespace/connection string for event publishing
 
 #### Setup
 
 - Create a Configuration table in your (Development) local storage account.
-- Obtain the local config json from the das-employer-config repo (<https://github.com/SkillsFundingAgency/das-employer-config>) and adjust the SqlConnectionString property to match your local setup
+- Obtain the local config json from the das-employer-config repo (<https://github.com/SkillsFundingAgency/das-employer-config>) and adjust the `SqlConnectionString` property to match your local setup
+- Ensure the local config json also includes `AzureWebJobsServiceBus` (Service Bus connection string) so `ProviderRemovedEvent` messages can be published
 - Add a row to the Configuration table with fields: 
   - PartitionKey: LOCAL
   - RowKey: SFA.DAS.RoATPService_1.0
