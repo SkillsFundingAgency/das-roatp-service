@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,11 +15,16 @@ public static partial class AddNServiceBusExtension
         var endpointConfiguration = new EndpointConfiguration("SFA.DAS.RoATPService");
 
         var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
-        transport.ConnectionString(configuration["AzureWebJobsServiceBus"]);
+        transport.ConnectionString(configuration["NServiceBusConfiguration:NServiceBusConnectionString"]);
         endpointConfiguration.SendOnly();
         endpointConfiguration.UseSerialization<SystemJsonSerializer>();
         endpointConfiguration.Conventions()
             .DefiningEventsAs(t => EventGeneratedRegex().IsMatch(t.Name));
+
+        var decodedLicense = WebUtility.HtmlDecode(
+            configuration["NServiceBusConfiguration:NServiceBusLicense"]);
+
+        endpointConfiguration.License(decodedLicense);
 
         var endpointInstance = Endpoint.Start(endpointConfiguration).GetAwaiter().GetResult();
         services.AddSingleton(endpointInstance);

@@ -72,9 +72,6 @@
     "utcValue": {
       "type": "string",
       "defaultValue": "[utcNow('yyMMddHHmmss')]"
-    },
-    "serviceBusConnectionString": {
-      "type": "securestring"
     }
   },
     "variables": {
@@ -228,10 +225,6 @@
                             {
                               "name": "WEBSITE_SWAP_WARMUP_PING_STATUSES",
                               "value": "200"
-                            },
-                            {
-                              "name": "AzureWebJobsServiceBus",
-                              "value": "[parameters('serviceBusConnectionString')]"
                             }
                           ]
                         }
