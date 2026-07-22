@@ -8,15 +8,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.RoATPService.Application.Api.Models;
 using SFA.DAS.RoATPService.Ukrlp.Client;
-using SFA.DAS.RoATPService.Ukrlp.Client.SoapClient;
-using SFA.DAS.RoATPService.Ukrlp.SoapClient;
 
 namespace SFA.DAS.RoATPService.Application.Api.Controllers;
 
 [ApiController]
 [Route("")]
 [Tags("Ukrlp-Lookup")]
-public class UkrlpLookupController(IUkrlpService _ukrlpService, IUkrlpSoapApiClient _ukrlpSoapApiClient) : ControllerBase
+public class UkrlpLookupController(IUkrlpService _ukrlpService) : ControllerBase
 {
     /// <summary>
     /// This endpoint is consumed by Roatp Apply journies. Ideally we want to move towards using the GetProviders endpoint, 
@@ -34,16 +32,11 @@ public class UkrlpLookupController(IUkrlpService _ukrlpService, IUkrlpSoapApiCli
         var request = new UkrlpQuery(null, [ukprn]);
 
         UkrlpQueryResult response = await _ukrlpService.GetProviderDataAsync(request, cancellationToken);
-        if (response.Providers.Any())
-        {
-            response.Providers.SelectMany(p => p.VerificationDetails).ToList().ForEach(c => c.VerificationAuthority = TransformValidationAuthority(c.VerificationAuthority));
 
-            return Ok(new UkrlpLookupModel(response.Success, response.Providers.Select(p => (ProviderDetails)p)));
-        }
+        if (!response.Providers.Any()) return Ok(new UkrlpLookupModel(response.Success, []));
 
-        // This is a temporary fallback attempt to get provider details via soap api
-        UkrlpLookupResponse soapResponse = await _ukrlpSoapApiClient.GetTrainingProviderByUkprn(ukprn);
-        return Ok(new UkrlpLookupModel(soapResponse.Success, soapResponse.Results.Select(s => (ProviderDetails)s)));
+        response.Providers.SelectMany(p => p.VerificationDetails).ToList().ForEach(c => c.VerificationAuthority = TransformValidationAuthority(c.VerificationAuthority));
+        return Ok(new UkrlpLookupModel(response.Success, response.Providers.Select(p => (ProviderDetails)p)));
     }
 
     [HttpGet]
@@ -69,14 +62,6 @@ public class UkrlpLookupController(IUkrlpService _ukrlpService, IUkrlpSoapApiCli
         if (provider != null)
         {
             ProviderModel result = provider;
-            return Ok(result);
-        }
-
-        // This is a temporary fallback attempt to get provider details via soap api
-        UkrlpLookupResponse soapResponse = await _ukrlpSoapApiClient.GetTrainingProviderByUkprn(ukprn);
-        if (soapResponse.Success && soapResponse.Results.Count != 0)
-        {
-            ProviderModel result = soapResponse.Results.First();
             return Ok(result);
         }
 
