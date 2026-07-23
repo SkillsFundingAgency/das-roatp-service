@@ -9,8 +9,6 @@ using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Api.Controllers;
 using SFA.DAS.RoATPService.Application.Api.Models;
 using SFA.DAS.RoATPService.Ukrlp.Client;
-using SFA.DAS.RoATPService.Ukrlp.Client.SoapClient;
-using SFA.DAS.RoATPService.Ukrlp.SoapClient;
 using SFA.DAS.Testing.AutoFixture;
 
 namespace SFA.DAS.RoATPService.Api.UnitTests.Controllers.UkrlpLookupControllerTests;
@@ -94,29 +92,5 @@ public class UkrlpLookupTests
         var model = result.As<OkObjectResult>().Value.As<UkrlpLookupModel>();
         model.Results.Should().HaveCount(1);
         model.Results.First().VerificationDetails.Should().ContainSingle(v => v.VerificationAuthority == expectedOldValue);
-    }
-
-    [Test, MoqAutoData]
-    public async Task WhenCallingUkrlpLookup_UkprnNotFoundInRestApi_GetDataFromSoapApi(
-        int ukprn,
-        MatchingProviderRecords provider,
-        [Frozen] Mock<IUkrlpService> mockService,
-        [Frozen] Mock<IUkrlpSoapApiClient> soapServiceMock,
-        [Greedy] UkrlpLookupController sut,
-        CancellationToken cancellationToken)
-    {
-        mockService
-            .Setup(service => service.GetProviderDataAsync(It.IsAny<UkrlpQuery>(), cancellationToken))
-            .ReturnsAsync(new UkrlpQueryResult(true, []));
-
-        UkrlpLookupResponse soapResponse = new(true, [provider]);
-        ProviderDetails expected = provider;
-        soapServiceMock.Setup(s => s.GetTrainingProviderByUkprn(ukprn)).ReturnsAsync(soapResponse);
-
-        var result = await sut.UkrlpLookup(ukprn, cancellationToken);
-
-        var model = result.As<OkObjectResult>().Value.As<UkrlpLookupModel>();
-        model.Results.Should().HaveCount(1);
-        model.Results.First().Should().BeEquivalentTo(expected);
     }
 }
