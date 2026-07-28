@@ -32,6 +32,9 @@
     "sharedEnvResourceGroup": {
       "type": "string"
     },
+    "sharedServiceBusName": {
+        "type": "string"
+    },
     "deployPrivateLinkedScopedResource": {
       "type": "bool"
     },
