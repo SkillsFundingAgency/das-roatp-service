@@ -254,7 +254,7 @@
         },
     {
       "apiVersion": "2020-06-01",
-      "name": "[concat('function-app-sb-role-assignment-', parameters('utcValue'))]",
+      "name": "[concat('api-app-service-sb-role-assignment-', parameters('utcValue'))]",
       "type": "Microsoft.Resources/deployments",
       "resourceGroup": "[parameters('sharedEnvResourceGroup')]",
       "properties": {
@@ -265,7 +265,7 @@
         },
         "parameters": {
           "principalId": {
-            "value": "[reference(concat('function-app-', parameters('utcValue'))).outputs.managedServiceIdentityId.value]"
+            "value": "[reference(concat('api-app-service-', parameters('utcValue'))).outputs.managedServiceIdentityId.value]"
           },
           "assignmentType": {
             "value": "ServiceBusOwner"
