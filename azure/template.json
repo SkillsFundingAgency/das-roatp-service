@@ -252,6 +252,33 @@
                 }
             }
         },
+    {
+      "apiVersion": "2020-06-01",
+      "name": "[concat('function-app-sb-role-assignment-', parameters('utcValue'))]",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[parameters('sharedEnvResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'role-assignments/role-assignment-service-bus.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "principalId": {
+            "value": "[reference(concat('function-app-', parameters('utcValue'))).outputs.managedServiceIdentityId.value]"
+          },
+          "assignmentType": {
+            "value": "ServiceBusOwner"
+          },
+          "resourceName": {
+            "value": "[parameters('sharedServiceBusName')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('api-app-service-', parameters('utcValue'))]"
+      ]
+    },
         {
             "apiVersion": "2020-06-01",
             "name": "[concat('roatp-sql-database-', parameters('utcValue'))]",
