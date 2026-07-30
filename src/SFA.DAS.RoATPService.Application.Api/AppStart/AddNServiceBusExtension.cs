@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NServiceBus;
@@ -23,15 +24,22 @@ public static partial class AddNServiceBusExtension
 
         var endpointConfiguration = new EndpointConfiguration("SFA.DAS.RoATPService");
 
+        endpointConfiguration.AssemblyScanner().ScanFileSystemAssemblies = false;
+
+        endpointConfiguration.CustomDiagnosticsWriter((diagnostics, _) =>
+        {
+            Console.WriteLine(diagnostics);
+            return Task.CompletedTask;
+        });
+
         var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
         transport.ConnectionString(configuration[connectionString]);
         endpointConfiguration.SendOnly();
         endpointConfiguration.UseSerialization<SystemJsonSerializer>();
-        endpointConfiguration.Conventions()
-            .DefiningEventsAs(t => EventGeneratedRegex().IsMatch(t.Name));
 
-        var decodedLicense = WebUtility.HtmlDecode(
-            configuration[license]);
+        endpointConfiguration.Conventions().DefiningEventsAs(t => EventGeneratedRegex().IsMatch(t.Name));
+
+        var decodedLicense = WebUtility.HtmlDecode(configuration[license]);
 
         endpointConfiguration.License(decodedLicense);
 
