@@ -58,6 +58,7 @@ jobs:
             TargetFileName: '*.schema.json'
             TableName: Configuration
             ConfigurationSecrets:
+              NServiceBusLicense: $(NServiceBusLicense)
               SessionRedisConnectionString: $(SessionRedisConnectionString)
               UkrlpApiSubscriptionKey: $(UkrlpApiSubscriptionKey)
               UkrlpApiClientId: $(UkrlpApiClientId)
