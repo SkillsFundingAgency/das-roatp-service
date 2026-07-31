@@ -27,7 +27,7 @@ builder.Services
     .AddRoatpDataContext(_configuration[ConfigurationConstants.SqlConnectionString])
     .AddOptions()
     .AddLogging()
-    .AddNServiceBus(_configuration)
+    //.AddNServiceBus(_configuration)
     .AddApplicationInsightsTelemetry()
     .AddOpenTelemetry(_configuration)
     .AddTelemetryNotFoundAsSuccessfulResponse()
