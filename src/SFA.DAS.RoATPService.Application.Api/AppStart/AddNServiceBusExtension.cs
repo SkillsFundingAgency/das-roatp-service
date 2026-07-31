@@ -14,14 +14,6 @@ public static partial class AddNServiceBusExtension
 {
     public static IServiceCollection AddNServiceBus(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration["NServiceBusConfiguration:NServiceBusConnectionString"]
-            ?? throw new InvalidOperationException(
-                "Configuration NServiceBusConnectionString was not found.");
-
-        var license = configuration["NServiceBusConfiguration:NServiceBusLicense"]
-            ?? throw new InvalidOperationException(
-                "Configuration NServiceBusLicense was not found.");
-
         var endpointConfiguration = new EndpointConfiguration("SFA.DAS.RoATPService");
 
         endpointConfiguration.AssemblyScanner().ScanFileSystemAssemblies = false;
@@ -33,13 +25,13 @@ public static partial class AddNServiceBusExtension
         });
 
         var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
-        transport.ConnectionString(configuration[connectionString]);
+        transport.ConnectionString(configuration["NServiceBusConnectionString"]);
         endpointConfiguration.SendOnly();
         endpointConfiguration.UseSerialization<SystemJsonSerializer>();
 
         endpointConfiguration.Conventions().DefiningEventsAs(t => EventGeneratedRegex().IsMatch(t.Name));
 
-        var decodedLicense = WebUtility.HtmlDecode(configuration[license]);
+        var decodedLicense = WebUtility.HtmlDecode(configuration["NServiceBusLicense"]);
 
         endpointConfiguration.License(decodedLicense);
 

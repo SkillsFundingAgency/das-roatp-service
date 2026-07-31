@@ -41,12 +41,14 @@ jobs:
             TemplateSecrets:
               LoggingRedisConnectionString: $(LoggingRedisConnectionString)
               ConfigurationStorageConnectionString: $(ConfigurationStorageConnectionString)
+              ServiceBusConnectionString: $(ServiceBusConnectionString)
+              NServiceBusLicense: $(NServiceBusLicense)
         - template: azure-pipelines-templates/deploy/step/app-role-assignments.yml@das-platform-building-blocks
           parameters:
             ServiceConnection: ${{ parameters.AppRoleAssignmentsServiceConnection }}
             ResourceName: $(ApiAppServiceName)
             Tenant: $(Tenant)
-            IsMultiRepoCheckout: true      
+            IsMultiRepoCheckout: true
         - template: azure-pipelines-templates/deploy/step/generate-config.yml@das-platform-building-blocks
           parameters:
             EnvironmentName: $(EnvironmentName)
@@ -57,7 +59,6 @@ jobs:
             TargetFileName: '*.schema.json'
             TableName: Configuration
             ConfigurationSecrets:
-              NServiceBusLicense: $(NServiceBusLicense)
               SessionRedisConnectionString: $(SessionRedisConnectionString)
               UkrlpApiSubscriptionKey: $(UkrlpApiSubscriptionKey)
               UkrlpApiClientId: $(UkrlpApiClientId)

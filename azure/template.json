@@ -33,7 +33,7 @@
       "type": "string"
     },
     "sharedServiceBusName": {
-        "type": "string"
+      "type": "string"
     },
     "deployPrivateLinkedScopedResource": {
       "type": "bool"
@@ -68,6 +68,12 @@
     },
     "sharedKeyVaultName": {
       "type": "string"
+    },
+    "serviceBusConnectionString": {
+      "type": "string"
+    },
+    "NServiceBusLicense": {
+      "type": "securestring"
     },
     "sharedManagementResourceGroup": {
       "type": "string"
@@ -228,6 +234,14 @@
                             {
                               "name": "WEBSITE_SWAP_WARMUP_PING_STATUSES",
                               "value": "200"
+                            },
+                            {
+                              "name": "NServiceBusConnectionString",
+                              "value": "[parameters('serviceBusConnectionString')]"
+                            },
+                            {
+                              "name": "NServiceBusLicense",
+                              "value": "[parameters('NServiceBusLicense')]"
                             }
                           ]
                         }
