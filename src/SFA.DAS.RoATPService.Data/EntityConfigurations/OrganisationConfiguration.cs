@@ -29,11 +29,5 @@ public class OrganisationConfiguration : IEntityTypeConfiguration<Organisation>
             .Property(e => e.ProviderType)
             .HasColumnName("ProviderTypeId")
             .HasConversion<int>();
-
-        var options = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = false
-        };
     }
 }
