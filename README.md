@@ -9,7 +9,7 @@
 [![License](https://img.shields.io/badge/license-MIT-lightgrey.svg?longCache=true&style=flat-square)](https://en.wikipedia.org/wiki/MIT_License)
 
 
-This API encapsulates ROATP Organisation data. This repo and its contained appare is in the process of being deprecated in favour of [das-roatp-api](https://github.com/SkillsFundingAgency/das-roatp-api) 
+This API encapsulates ROATP Organisation data. This repo and its contained apps are in the process of being deprecated in favour of [das-roatp-api](https://github.com/SkillsFundingAgency/das-roatp-api) 
 
 
 ### Developer Setup
