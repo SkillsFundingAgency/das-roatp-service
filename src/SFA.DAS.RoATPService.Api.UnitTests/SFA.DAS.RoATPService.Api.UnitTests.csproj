@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <ProjectGuid>{08EE85C1-621E-4FE0-AB48-7091C440AAED}</ProjectGuid>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -27,8 +27,9 @@
 
 	<!-- Transitive Package References -->
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Build" Version="17.8.43" />
-	</ItemGroup>
+		<PackageReference Include="Microsoft.Build" Version="18.8.2" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.10" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SFA.DAS.RoATPService.Application.Api\SFA.DAS.RoATPService.Application.Api.csproj" />

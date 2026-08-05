@@ -1,8 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <ProjectGuid>{5740747C-1320-4F60-AE06-5C1C251931BD}</ProjectGuid>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -21,6 +21,11 @@
     <PackageReference Include="NUnit3TestAdapter" Version="5.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="SFA.DAS.Testing.AutoFixture" Version="17.1.146" />
+  </ItemGroup>
+
+  <!--Transitive Package References-->
+  <ItemGroup>
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.10" />
   </ItemGroup>
 
   <ItemGroup>
