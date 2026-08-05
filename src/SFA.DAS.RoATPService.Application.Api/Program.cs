@@ -99,6 +99,3 @@ else
 }
 
 await app.RunAsync();
-
-[ExcludeFromCodeCoverage]
-public static partial class Program { }

@@ -2,7 +2,6 @@
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using SFA.DAS.RoATPService.Domain.Entities;
 
@@ -11,8 +10,6 @@ namespace SFA.DAS.RoATPService.Data.EntityConfigurations;
 [ExcludeFromCodeCoverage]
 public class OrganisationConfiguration : IEntityTypeConfiguration<Organisation>
 {
-    private static readonly IsoDateTimeConverter DateTimeConverter = new() { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" };
-
     public void Configure(EntityTypeBuilder<Organisation> builder)
     {
         builder.ToTable("Organisations");
