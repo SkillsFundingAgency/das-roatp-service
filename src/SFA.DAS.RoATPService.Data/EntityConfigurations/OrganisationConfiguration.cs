@@ -2,7 +2,6 @@
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Newtonsoft.Json.Converters;
 using SFA.DAS.RoATPService.Domain.Entities;
 
 namespace SFA.DAS.RoATPService.Data.EntityConfigurations;
