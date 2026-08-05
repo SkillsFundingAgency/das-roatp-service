@@ -39,12 +39,5 @@ public class OrganisationConfiguration : IEntityTypeConfiguration<Organisation>
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             WriteIndented = false
         };
-
-        builder
-            .Property(o => o.OrganisationData)
-            .HasConversion(
-                v => JsonConvert.SerializeObject(v, DateTimeConverter),
-                v => JsonConvert.DeserializeObject<OrganisationData>(v, DateTimeConverter)
-            );
     }
 }
