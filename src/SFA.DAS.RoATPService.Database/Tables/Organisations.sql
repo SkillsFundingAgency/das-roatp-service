@@ -11,7 +11,6 @@
 	[LegalName] [nvarchar] (200) NOT NULL,
 	[TradingName] [nvarchar] (200) NULL,
 	[StatusDate] [datetime] NOT NULL,
-	OrganisationData [nvarchar](max) NULL,
 	[CompanyNumber] NVARCHAR(20) NULL, 
 	[CharityNumber] NVARCHAR(20) NULL, 
 	[StartDate] DATETIME2 NULL,

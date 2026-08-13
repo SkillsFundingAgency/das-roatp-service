@@ -13,7 +13,6 @@ public class Organisation
     public string LegalName { get; set; }
     public string TradingName { get; set; }
     public DateTime StatusDate { get; set; }
-    public OrganisationData OrganisationData { get; set; }
 
     public string CreatedBy { get; set; }
     public DateTime CreatedAt { get; set; }

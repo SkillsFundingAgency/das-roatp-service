@@ -43,14 +43,6 @@ public class UpsertOrganisationCommandHandler(IOrganisationsRepository organisat
 
         var isSupportingProvider = command.ProviderType.ToString() == ProviderType.Supporting.ToString();
 
-        var organisationData = new Domain.Entities.OrganisationData
-        {
-            CompanyNumber = command.CompanyNumber?.ToUpper(),
-            CharityNumber = command.CharityNumber,
-            StartDate = isSupportingProvider ? DateTime.UtcNow : null,
-            ApplicationDeterminedDate = DateTime.UtcNow
-        };
-
         var organisation = new Domain.Entities.Organisation
         {
             Id = organisationId,
@@ -63,7 +55,6 @@ public class UpsertOrganisationCommandHandler(IOrganisationsRepository organisat
             LegalName = command.LegalName,
             TradingName = command.TradingName,
             StatusDate = DateTime.UtcNow,
-            OrganisationData = organisationData,
             CompanyNumber = command.CompanyNumber,
             CharityNumber = command.CharityNumber,
             StartDate = isSupportingProvider ? DateTime.UtcNow : null,
