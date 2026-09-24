@@ -75,6 +75,10 @@
     },
     "serviceBusConnectionString": {
       "type": "securestring"
+    },
+    "vnetRouteAllEnabled": {
+        "type": "bool",
+        "defaultValue": false
     }
   },
     "variables": {
@@ -255,6 +259,9 @@
                     },
                     "ipSecurityRestrictions": {
                         "value": "[parameters('backEndAccessRestrictions')]"
+                    },
+                    "vnetRouteAllEnabled": {
+                        "value": "[parameters('vnetRouteAllEnabled')]"
                     }
                 }
             }
