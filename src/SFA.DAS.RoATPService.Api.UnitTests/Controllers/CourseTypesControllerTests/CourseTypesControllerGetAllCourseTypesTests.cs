@@ -1,4 +1,6 @@
-﻿using AutoFixture.NUnit3;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using AutoFixture.NUnit4;
 using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -7,10 +9,9 @@ using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Api.Controllers;
 using SFA.DAS.RoATPService.Application.Queries.GetAllCourseTypes;
 using SFA.DAS.Testing.AutoFixture;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.RoATPService.Api.UnitTests.Controllers.CourseTypesControllerTests;
+
 public class CourseTypesControllerGetAllCourseTypesTests
 {
     [Test, MoqAutoData]

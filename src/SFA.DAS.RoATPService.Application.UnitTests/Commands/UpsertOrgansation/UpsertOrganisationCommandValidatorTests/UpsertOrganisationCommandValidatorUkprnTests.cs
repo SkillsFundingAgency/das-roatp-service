@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using AutoFixture.NUnit3;
+using AutoFixture.NUnit4;
 using FluentValidation.TestHelper;
 using NUnit.Framework;
 using SFA.DAS.RoATPService.Application.Commands.UpsertOrganisation;
