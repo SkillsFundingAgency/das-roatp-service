@@ -11,6 +11,10 @@
 
 This API encapsulates ROATP Organisation data. This repo and its contained apps are in the process of being deprecated in favour of [das-roatp-api](https://github.com/SkillsFundingAgency/das-roatp-api) 
 
+### Environment Setup
+UKRLP API secrets are required to run the application. The non-prod secrets are owned by Deven Shah and PP+PROD are owned by Sonny Singh. The have used their respective Gov One login to subscribe to the API on https://beta-find-and-use-an-api.education.gov.uk/index
+For local setup, you can generate your own secrets by  signing up on Find and Use an API and subscribing to the UKRLP API. The secrets must be added to the employer config in the `UkrlpApiAuthentication` section.
+
 
 ### Developer Setup
 
@@ -130,5 +134,3 @@ Open the solution with Visual Studio, and run the project SFA.DAS.RoATPService.A
 * Moq
 * FluentAssertions
 
-
-  
